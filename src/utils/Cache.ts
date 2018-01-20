@@ -5,9 +5,10 @@ try {
     if (window.localStorage) {
         storageReference = window.localStorage;
     }
-} catch {
+} catch (err) {
     // Swallow
- }
+    console.warn('Unable to setup localstorage cache.', err.message);
+}
 
 /**
  * A Singleton Class that wraps localStorage calls to simply setting and

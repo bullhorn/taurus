@@ -43,8 +43,9 @@ export class StaffingOAuthPopupProvider implements StaffingAuthProvider {
                         authWindow.close();
                         return qs.params.access_token;
                     }
-                } catch {
+                } catch (err) {
                     // Do Something Maybe?
+                    console.warn('Error retrieving AuthCode', err.message);
                 }
             }, 1000);
         });

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ListResults | @bullhorn/taurus</title>
+	<title>BullhornMessage | @bullhorn/taurus</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="listresults.html">ListResults</a>
+					<a href="bullhornmessage.html">BullhornMessage</a>
 				</li>
 			</ul>
-			<h1>Interface ListResults</h1>
+			<h1>Interface BullhornMessage</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ListResults</span>
+						<span class="target">BullhornMessage</span>
 					</li>
 				</ul>
 			</section>
@@ -81,10 +81,9 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="listresults.html#count" class="tsd-kind-icon">count</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="listresults.html#data" class="tsd-kind-icon">data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="listresults.html#start" class="tsd-kind-icon">start</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="listresults.html#total" class="tsd-kind-icon">total</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmessage.html#detailmessage" class="tsd-kind-icon">detail<wbr>Message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmessage.html#severity" class="tsd-kind-icon">severity</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmessage.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,42 +92,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="count" class="tsd-anchor"></a>
-					<h3>count</h3>
-					<div class="tsd-signature tsd-kind-icon">count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="detailmessage" class="tsd-anchor"></a>
+					<h3>detail<wbr>Message</h3>
+					<div class="tsd-signature tsd-kind-icon">detail<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityList.ts#L14">core/EntityList.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L4">types/Responses.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="data" class="tsd-anchor"></a>
-					<h3>data</h3>
-					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
+					<a name="severity" class="tsd-anchor"></a>
+					<h3>severity</h3>
+					<div class="tsd-signature tsd-kind-icon">severity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityList.ts#L15">core/EntityList.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L5">types/Responses.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="start" class="tsd-anchor"></a>
-					<h3>start</h3>
-					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityList.ts#L13">core/EntityList.ts:13</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="total" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> total</h3>
-					<div class="tsd-signature tsd-kind-icon">total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityList.ts#L16">core/EntityList.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L6">types/Responses.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -147,19 +136,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="listresults.html" class="tsd-kind-icon">List<wbr>Results</a>
+						<a href="bullhornmessage.html" class="tsd-kind-icon">Bullhorn<wbr>Message</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="listresults.html#count" class="tsd-kind-icon">count</a>
+								<a href="bullhornmessage.html#detailmessage" class="tsd-kind-icon">detail<wbr>Message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="listresults.html#data" class="tsd-kind-icon">data</a>
+								<a href="bullhornmessage.html#severity" class="tsd-kind-icon">severity</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="listresults.html#start" class="tsd-kind-icon">start</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="listresults.html#total" class="tsd-kind-icon">total</a>
+								<a href="bullhornmessage.html#type" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>

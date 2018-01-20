@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>EntityListOptions | @bullhorn/taurus</title>
+	<title>BullhornMetaResponse | @bullhorn/taurus</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="entitylistoptions.html">EntityListOptions</a>
+					<a href="bullhornmetaresponse.html">BullhornMetaResponse</a>
 				</li>
 			</ul>
-			<h1>Interface EntityListOptions</h1>
+			<h1>Interface BullhornMetaResponse</h1>
 		</div>
 	</div>
 </header>
@@ -70,13 +70,9 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">EntityListOptions</span>
+						<span class="target">BullhornMetaResponse</span>
 					</li>
 				</ul>
-			</section>
-			<section class="tsd-panel tsd-kind-interface tsd-is-external">
-				<h3 class="tsd-before-signature">Indexable</h3>
-				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
@@ -85,14 +81,11 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#fields" class="tsd-kind-icon">fields</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#filter" class="tsd-kind-icon">filter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#layout" class="tsd-kind-icon">layout</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#limitto" class="tsd-kind-icon">limit<wbr>To</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#meta" class="tsd-kind-icon">meta</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#orderby" class="tsd-kind-icon">order<wbr>By</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#params" class="tsd-kind-icon">params</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="entitylistoptions.html#startat" class="tsd-kind-icon">start<wbr>At</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmetaresponse.html#datelastmodified" class="tsd-kind-icon">date<wbr>Last<wbr>Modified</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmetaresponse.html#entity" class="tsd-kind-icon">entity</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmetaresponse.html#entitymetaurl" class="tsd-kind-icon">entity<wbr>Meta<wbr>Url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmetaresponse.html#fields" class="tsd-kind-icon">fields</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="bullhornmetaresponse.html#label" class="tsd-kind-icon">label</a></li>
 							</ul>
 						</section>
 					</div>
@@ -101,82 +94,52 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="datelastmodified" class="tsd-anchor"></a>
+					<h3>date<wbr>Last<wbr>Modified</h3>
+					<div class="tsd-signature tsd-kind-icon">date<wbr>Last<wbr>Modified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L19">types/Responses.ts:19</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="entity" class="tsd-anchor"></a>
+					<h3>entity</h3>
+					<div class="tsd-signature tsd-kind-icon">entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L16">types/Responses.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="entitymetaurl" class="tsd-anchor"></a>
+					<h3>entity<wbr>Meta<wbr>Url</h3>
+					<div class="tsd-signature tsd-kind-icon">entity<wbr>Meta<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L17">types/Responses.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="fields" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> fields</h3>
-					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<h3>fields</h3>
+					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <a href="field.html" class="tsd-signature-type">Field</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L23">core/EntityListOptions.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L20">types/Responses.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="filter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter</h3>
-					<div class="tsd-signature tsd-kind-icon">filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="label" class="tsd-anchor"></a>
+					<h3>label</h3>
+					<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L29">core/EntityListOptions.ts:29</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="layout" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> layout</h3>
-					<div class="tsd-signature tsd-kind-icon">layout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L24">core/EntityListOptions.ts:24</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="limitto" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> limit<wbr>To</h3>
-					<div class="tsd-signature tsd-kind-icon">limit<wbr>To<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L28">core/EntityListOptions.ts:28</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="meta" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> meta</h3>
-					<div class="tsd-signature tsd-kind-icon">meta<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L25">core/EntityListOptions.ts:25</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="orderby" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> order<wbr>By</h3>
-					<div class="tsd-signature tsd-kind-icon">order<wbr>By<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L26">core/EntityListOptions.ts:26</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="params" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> params</h3>
-					<div class="tsd-signature tsd-kind-icon">params<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L30">core/EntityListOptions.ts:30</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="startat" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> start<wbr>At</h3>
-					<div class="tsd-signature tsd-kind-icon">start<wbr>At<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/core/EntityListOptions.ts#L27">core/EntityListOptions.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/bullhorn/taurus/blob/0d9aa6b/src/types/Responses.ts#L18">types/Responses.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,31 +158,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="entitylistoptions.html" class="tsd-kind-icon">Entity<wbr>List<wbr>Options</a>
+						<a href="bullhornmetaresponse.html" class="tsd-kind-icon">Bullhorn<wbr>Meta<wbr>Response</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#fields" class="tsd-kind-icon">fields</a>
+								<a href="bullhornmetaresponse.html#datelastmodified" class="tsd-kind-icon">date<wbr>Last<wbr>Modified</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#filter" class="tsd-kind-icon">filter</a>
+								<a href="bullhornmetaresponse.html#entity" class="tsd-kind-icon">entity</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#layout" class="tsd-kind-icon">layout</a>
+								<a href="bullhornmetaresponse.html#entitymetaurl" class="tsd-kind-icon">entity<wbr>Meta<wbr>Url</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#limitto" class="tsd-kind-icon">limit<wbr>To</a>
+								<a href="bullhornmetaresponse.html#fields" class="tsd-kind-icon">fields</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#meta" class="tsd-kind-icon">meta</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#orderby" class="tsd-kind-icon">order<wbr>By</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#params" class="tsd-kind-icon">params</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="entitylistoptions.html#startat" class="tsd-kind-icon">start<wbr>At</a>
+								<a href="bullhornmetaresponse.html#label" class="tsd-kind-icon">label</a>
 							</li>
 						</ul>
 					</li>

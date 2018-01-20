@@ -58,6 +58,7 @@
     "tslib": "^1.9.0",
     "tslint": "~5.9.0",
     "tslint-xo": "^0.5.0",
+    "typedoc": "^0.9.0",
     "typescript": "~2.6.x"
   },
   "scripts": {
@@ -67,11 +68,7 @@
     "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
-    "preversion": "npm run build && npm test",
-    "postversion": "git push && git push --tags",
     "prepare": "npm run build",
-    "publish:docs": "easystatic deploy docs --repo bullhorn/taurus",
-    "docs": "typedoc src/index.ts --excludePrivate --theme node_modules/typedoc-clarity-theme/bin --mode file --out docs && opn docs/index.html",
-    "docs:json": "typedoc --mode file --json build/docs/typedoc.json src/index.ts"
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && opn docs/index.html"
   }
 }
