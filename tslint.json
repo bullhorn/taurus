@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "member-access": false,
+    "jsdoc-format": false,
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator"
+    ],
+    "variable-name": false,
+    "typedef-whitespace": [
+      true, {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
+    "no-console": [
+      true,
+      "log",
+      "time",
+      "timeEnd",
+      "trace"
+    ]
+  }
+}
