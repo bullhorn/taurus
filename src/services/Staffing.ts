@@ -1,19 +1,33 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs/Subject';
-/* jslint camelcase: false */
-import { RestCredentials, StaffingAuthProvider, StaffingCredentialsAuthProvider } from './StaffingAuthProvider';
+import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 
+const getCookie = (cname: string) => {
+    if (document) {
+        const name = `${cname}=`;
+        const ca = document.cookie.split(';');
+        for (let c of ca) {
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+    }
+    return false;
+};
+
 /**
  * Used to authenticate with Bullhorn OAuth Service and track session.
- * @class Staffing
- * @param {Object} config - object used to configure you bullhorn service
- * @param {string} [config.authUrl] URL to be used for Authentication
- * @param {string} [config.callbackUrl] URL to return to after authentication defaults to window.location
- * @param {string} [config.clientId] Bullhorn Client ID provided by the developer center.
- * @param {string} [config.clientSecret] Bullhorn Client Secret provided by the developer center.
- * @param {string} [config.apiVersion] API Version to target, defaults '*' (latest)
+ * @param config - object used to configure you bullhorn service
+ * @param [config.authUrl] URL to be used for Authentication
+ * @param [config.callbackUrl] URL to return to after authentication defaults to window.location
+ * @param [config.clientId] Bullhorn Client ID provided by the developer center.
+ * @param [config.clientSecret] Bullhorn Client Secret provided by the developer center.
+ * @param [config.apiVersion] API Version to target, defaults '*' (latest)
  * @example
  * ```
  * let conn = new Staffing({
@@ -24,9 +38,8 @@ import { Cache, QueryString } from '../utils';
  */
 export class Staffing {
     public static unauthorized: Subject<any> = new Subject();
-    private static _httpErrorSubscription: number;
-    private static _http: AxiosInstance = axios.create({
-        paramsSerializer: function (params) {
+    private static readonly _http: AxiosInstance = axios.create({
+        paramsSerializer: params => {
             return QueryString.stringify(params);
         }
     });
@@ -39,25 +52,25 @@ export class Staffing {
         authorization_url: 'https://auth.bullhornstaffing.com/oauth/authorize',
         token_url: 'https://auth.bullhornstaffing.com/oauth/token',
         login_url: 'https://rest.bullhornstaffing.com/rest-services/login',
-        redirect_url: 'http://localhost:3000',
+        redirect_url: 'https://localhost:3000',
         apiVersion: '*',
         useCookies: false
     };
 
-    constructor(private options: StaffingConfiguration = {}) {
-        this.config = Object.assign(this.config, options);
+    constructor(private readonly options: StaffingConfiguration = {}) {
+        this.config = { ...this.config, ...this.options };
         this.useCookies = options.useCookies || false;
-        if (options.BhRestToken) {
+        if (this.options.BhRestToken) {
             Cache.put('BhRestToken', this.config.BhRestToken);
         } else {
             this.useCookies = true;
         }
-        if (options.restUrl) {
+        if (this.options.restUrl) {
             Cache.put('restUrl', this.config.restUrl);
         }
     }
 
-    login(provider: StaffingAuthProvider): Promise<RestCredentials> {
+    async login(provider: StaffingAuthProvider): Promise<RestCredentials> {
         return provider.credential(this.config).then((credentials: RestCredentials) => {
             Cache.put('BhRestToken', credentials.BhRestToken);
             Cache.put('restUrl', credentials.restUrl);
@@ -65,37 +78,34 @@ export class Staffing {
         });
     }
 
-    isLoggedIn() {
+    async isLoggedIn(): Promise<AxiosResponse> {
         return this.ping();
     }
     /**
      * Retrieves the HttpService created to connect to the Bullhorn RestApi
-     * @name http
-     * @memberof Application#
-     * @static
-     * @return {HttpService}
      */
     static http(): AxiosInstance {
-        let cookie = getCookie('UL_identity');
+        const cookie = getCookie('UL_identity');
         if (cookie && cookie.length) {
-            let identity = JSON.parse(JSON.parse(cookie));
-            let endpoints = identity.sessions.reduce((obj, session) => {
+            const identity = JSON.parse(JSON.parse(cookie));
+            const endpoints = identity.sessions.reduce((obj, session) => {
                 obj[session.name] = session.value.endpoint;
                 return obj;
             }, {});
-            this._http.defaults.baseURL = endpoints.rest;
-            this._http.defaults.withCredentials = true;
+            Staffing._http.defaults.baseURL = endpoints.rest;
+            Staffing._http.defaults.withCredentials = true;
         } else {
-            let BhRestToken = Cache.get('BhRestToken');
-            let endpoint = Cache.get('restUrl');
+            // tslint:disable-next-line:variable-name
+            const BhRestToken = Cache.get('BhRestToken');
+            const endpoint = Cache.get('restUrl');
             if (BhRestToken && endpoint) {
-                this._http.defaults.baseURL = endpoint;
-                this._http.defaults.params = { BhRestToken };
-                this._http.defaults.withCredentials = false;
+                Staffing._http.defaults.baseURL = endpoint;
+                Staffing._http.defaults.params = { BhRestToken };
+                Staffing._http.defaults.withCredentials = false;
             }
         }
         // Add a response interceptor
-        this._httpErrorSubscription = this._http.interceptors.response.use((response: AxiosResponse<any>) => response, (error: any) => {
+        Staffing._http.interceptors.response.use((response: AxiosResponse) => response, async (error: any) => {
             // Check if Unauthorized Error
             if (error.response.status === 401) {
                 Staffing.unauthorized.next(error);
@@ -103,28 +113,11 @@ export class Staffing {
             return Promise.reject(error);
         });
 
-        return this._http;
+        return Staffing._http;
     }
 
-    ping(): Promise<AxiosResponse> {
-        let http = Staffing.http();
+    async ping(): Promise<AxiosResponse> {
+        const http = Staffing.http();
         return http.get('ping');
     }
-}
-
-function getCookie(cname) {
-    if (document) {
-        let name = `${cname}=`;
-        let ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) === 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-    }
-    return false;
 }

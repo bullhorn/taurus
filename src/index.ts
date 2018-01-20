@@ -2,7 +2,7 @@
 export * from './types';
 export * from './broker';
 export * from './services';
-// utils
+export * from './utils';
 // Core Features
 export * from './core/Entity';
 export * from './core/EntityOptions';

@@ -1,20 +1,16 @@
-/**
-* Spec...
-* Can(item).have('data.properties.value');  //return undefined or value;
-**/
-
 export class Can {
-    constructor(private obj: any) { }
+    constructor(private readonly obj: any) { }
 
     have(key: string) {
-        let props = key.split('.');
+        const properties = key.split('.');
         let item = this.obj;
-        for (let i = 0; i < props.length; i++) {
-            item = item[props[i]];
+        for (const property of properties) {
+            item = item[property];
             if (this.check(item) === false) {
                 return item;
             }
         }
+
         return item;
     }
 
@@ -23,6 +19,7 @@ export class Can {
     }
 }
 
+// tslint:disable-next-line:only-arrow-functions
 export function can(obj: any) {
     return new Can(obj);
 }

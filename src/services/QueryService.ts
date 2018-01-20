@@ -5,26 +5,24 @@ import { Where } from './Where';
 import { MetaService } from './MetaService';
 
 /**
-* A base class for making Query calls via Rest
-* @class Query
-*/
+ * A base class for making Query calls via Rest
+ */
 export class QueryService<T> {
-    http: AxiosInstance;
-    meta: MetaService;
-    records: Array<any> = [];
-    _page: number = 0;
-    _where: any = {};
-    _endpoint: string;
-    _lastResponse: BullhornListResponse<T>;
-    parameters: any = {
+    public http: AxiosInstance;
+    public meta: MetaService;
+    public records: any[] = [];
+    public parameters: any = {
         fields: ['id'],
         orderBy: ['-dateAdded'],
         start: 0,
         count: 10
     };
+    protected _page: number = 0;
+    protected _endpoint: string;
+    protected _lastResponse: BullhornListResponse<T>;
     /**
      * constructor description
-     * @param {string} endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
+     * @param endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
      */
     constructor(public entity: string) {
         this.http = Staffing.http();
@@ -38,7 +36,7 @@ export class QueryService<T> {
     }
 
     get total(): Promise<number> {
-        if ( this._lastResponse && this._lastResponse.total ) {
+        if (this._lastResponse && this._lastResponse.total) {
             return Promise.resolve(this._lastResponse.total);
         }
         return this.http.get(this.endpoint, { params: { fields: 'id', count: 0, ...this.parameters } })
@@ -47,7 +45,7 @@ export class QueryService<T> {
                 return result.total || 0;
             });
     }
-    
+
     get snapshot(): BullhornListResponse<T> {
         return this._lastResponse;
     }
@@ -61,7 +59,6 @@ export class QueryService<T> {
         return this;
     }
     where(value: any) {
-        this._where = value;
         return this.query(Where.toQuerySyntax(value));
     }
     query(value: any) {
@@ -77,17 +74,17 @@ export class QueryService<T> {
         this.parameters.start = this.parameters.count * value;
         return this;
     }
-    nextpage(): Promise<BullhornListResponse<T>> {
+    async nextpage(): Promise<BullhornListResponse<T>> {
         return this.page(++this._page).run(true);
     }
     params(object) {
-        this.parameters = Object.assign(this.parameters, object);
+        this.parameters = { ...this.parameters, ...object };
         return this;
     }
-    get(add): Promise<BullhornListResponse<T>> {
+    async get(add): Promise<BullhornListResponse<T>> {
         return this.run(add);
     }
-    run(add): Promise<BullhornListResponse<T>> {
+    async run(add): Promise<BullhornListResponse<T>> {
         return Promise.all([
             this.http.get(this.endpoint, { params: this.parameters }),
             this.meta.getFull(this.parameters.fields, this.parameters.layout)
@@ -95,13 +92,16 @@ export class QueryService<T> {
             .then(([response, metadata]) => [response.data, metadata])
             .then(([result, metadata]: [BullhornListResponse<T>, BullhornMetaResponse]) => {
                 this._lastResponse = result;
-                let records = result.data;
-                if (add) this.records = this.records.concat(records);
-                else this.records = records;
+                const records = result.data;
+                if (add) {
+                    this.records = this.records.concat(records);
+                } else {
+                     this.records = records;
+                }
                 result.meta = metadata;
                 return result;
-            }).catch((message) => {
-                return Promise.reject(message);
+            }).catch(message => {
+                return message;
             });
     }
     async then(done: any, fail?: any): Promise<any> {

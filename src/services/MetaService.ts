@@ -4,12 +4,10 @@ import { BullhornMetaResponse, Field } from '../types';
 import { Staffing } from './Staffing';
 
 /**
-* A Class that defines the base Meta Model
-* @class Meta
-* @param {string} endpoint - Base Url for all relative http calls eg. 'meta/JobOrder'
-* @param {function} [parser] - Optional function to use to manipulate meta data returned
-*/
-
+ * A Class that defines the base Meta Model
+ * @param endpoint - Base Url for all relative http calls eg. 'meta/JobOrder'
+ * @param [parser] - Optional function to use to manipulate meta data returned
+ */
 export class MetaService {
     static BASIC: string = 'basic';
     static FULL: string = 'full';
@@ -34,106 +32,98 @@ export class MetaService {
     }
 
     /**
-    * Define how much meta data to return
-    * @name style
-	* @memberOf MetaService#
-	* @param {string} value - 'basic', 'full', or 'track'
-    * @return {this}
-    */
+     * Define how much meta data to return
+     */
     style(value: string = 'full'): MetaService {
         this.parameters.meta = value;
         return this;
     }
 
     /**
-    * Will merge object into the entity's parameter to be sent in any http request.
-    * @name params
-	* @memberOf MetaService#
-	* @param {Object} object - all additional parameters
-    * @return {this}
-    */
+     * Will merge object into the entity's parameter to be sent in any http request.
+     * @param object - all additional parameters
+     */
     params(object: any): MetaService {
-        this.parameters = Object.assign(this.parameters, object);
+        this.parameters = { ...this.parameters, ...object };
         return this;
     }
 
     /**
-    * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
-    * @name get
-	* @memberOf MetaService#
-	* @return {Promise}
-    */
-    get(requested: string[], layout?: string): Promise<Field[]> {
-        let missing = this.missing(requested);
+     * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
+     */
+    async get(requested: string[], layout?: string): Promise<Field[]> {
+        const missing = this.missing(requested);
         if (missing.length || layout) {
-            // console.log('Fields', requested);
+            // Console.log('Fields', requested);
             this.parameters.fields = missing.join(',');
-            if (layout) this.parameters.layout = layout;
-            return this.http
-                .get(this.endpoint, { params: this.parameters })
-                .then((response: AxiosResponse) => response.data)
-                .then((result: BullhornMetaResponse) => {
-                    this.parse(result);
-                    this.label = result.label;
-                    requested = [...result.fields.map(x => x.name)];
-                    return this.extract(requested);
-                })
-                .catch((message) => {
-                    return Promise.reject(`Failed to get MetaData: ${message}`);
-                });
+            if (layout) {
+                this.parameters.layout = layout;
+            }
+            const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
+            const result: BullhornMetaResponse = response.data;
+            this.parse(result);
+            this.label = result.label;
+            return this.extract([...result.fields.map(x => x.name)]);
         }
-        return Promise.resolve(this.extract(requested));
+        return this.extract(requested);
     }
 
-    getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
-        return this.get(requested, layout).then((fields: Field[]) => {
-            let full: BullhornMetaResponse = Cache.get(this.endpoint);
-            full.fields = fields;
-            return full;
-        });
+    async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
+        const fields: Field[] = await this.get(requested, layout);
+        const full: BullhornMetaResponse = Cache.get(this.endpoint);
+        full.fields = fields;
+        return full;
     }
 
     parse(result: any): void {
-        if (result) {
-            for (let field of result.fields) {
-                // console.log('Parsing', field);
-                if (!this.memory.hasOwnProperty(field.name)) {
-                    Object.defineProperty(this, field.name, {
-                        get: function getter() {
-                            return this.memory[field.name];
-                        },
-                        set: function setter(value) {
-                            this.memory[field.name] = value;
-                        },
-                        configurable: true,
-                        enumerable: true
-                    });
-                }
-                //let md:Field = field; // TODO: new MetaData(field);
-                let exists = this.fields.find((f: any) => f.name === field.name);
-                if (!exists) {
-                    this.fields.push(field);
-                }
-                this.memory[field.name] = field;
-            }
-            this.fields.sort((a, b) => {
-                let aa = a.sortOrder ? a.sortOrder : a.name;
-                let bb = b.sortOrder ? b.sortOrder : b.name;
-                if (aa > bb) return 1;
-                if (bb > aa) return -1;
-                return 0;
-            });
-            result.fields = this.fields;
-            Cache.put(this.endpoint, result);
+        if (!result) {
+            return;
         }
+
+        for (const field of result.fields) {
+            // Console.log('Parsing', field);
+            if (!this.memory.hasOwnProperty(field.name)) {
+                Object.defineProperty(this, field.name, {
+                    get() {
+                        return this.memory[field.name];
+                    },
+                    set(value) {
+                        this.memory[field.name] = value;
+                    },
+                    configurable: true,
+                    enumerable: true
+                });
+            }
+            // Let md:Field = field; // TODO: new MetaData(field);
+            const exists = this.fields.find((f: any) => f.name === field.name);
+            if (!exists) {
+                this.fields.push(field);
+            }
+            this.memory[field.name] = field;
+        }
+        this.fields.sort((a, b) => {
+            const aa = a.sortOrder ? a.sortOrder : a.name;
+            const bb = b.sortOrder ? b.sortOrder : b.name;
+            if (aa > bb) {
+                return 1;
+            }
+            if (bb > aa) {
+                return -1;
+            }
+            return 0;
+        });
+        result.fields = this.fields;
+        Cache.put(this.endpoint, result);
     }
 
     missing(fields): string[] {
-        if (!this.memory) return fields;
-        let result: string[] = [];
-        for (let field of fields) {
-            let cleaned: string = this._clean(field);
-            let meta: any = this.memory[cleaned];
+        if (!this.memory) {
+            return fields;
+        }
+        const result: string[] = [];
+        for (const field of fields) {
+            const cleaned: string = this._clean(field);
+            const meta: any = this.memory[cleaned];
             if (!meta) {
                 result.push(cleaned);
             }
@@ -146,45 +136,40 @@ export class MetaService {
     }
 
     /**
-    * Get specific meta data properties
-    * @name extract
-	* @memberOf MetaService#
-	* @return {Array}
-    */
+     * Get specific meta data properties
+     */
     extract(fields: string[]): Field[] {
-        if (!this.memory) return [];
-        let result: Field[] = [];
-        for (let field of fields) {
-            let cleaned: string = this._clean(field);
-            let meta: Field = this.memory[cleaned];
-            if (meta) {
-                if (meta.name === 'id') {
-                    result.unshift(meta);
-                } else {
-                    result.push(meta);
-                }
+        if (!this.memory) {
+            return [];
+        }
+        const result: Field[] = [];
+        for (const field of fields) {
+            const cleaned: string = this._clean(field);
+            const meta: Field = this.memory[cleaned];
+            if (meta && meta.name === 'id') {
+                result.unshift(meta);
+            } else {
+                result.push(meta);
             }
         }
         return result;
     }
 
-    static validate(): Promise<boolean> {
-        return Staffing.http().get('/meta')
-            .then((response: AxiosResponse) => response.data)
-            .then((result: any[]) => {
-                if (result && result) {
-                    for (let meta of result) {
-                        if (meta.dateLastModified) {
-                            let item = Cache.get(`meta/${meta.entity}`);
-                            if (item && item.dateLastModified !== meta.dateLastModified) {
-                                Cache.remove(`meta/${meta.entity}`);
-                            }
-                        } else {
-                            Cache.remove(`meta/${meta.entity}`);
-                        }
+    static async validate(): Promise<boolean> {
+        const response: AxiosResponse = await Staffing.http().get('/meta');
+        const result: any[] = response.data;
+        if (result && result) {
+            for (const meta of result) {
+                if (meta.dateLastModified) {
+                    const item = Cache.get(`meta/${meta.entity}`);
+                    if (item && item.dateLastModified !== meta.dateLastModified) {
+                        Cache.remove(`meta/${meta.entity}`);
                     }
+                    continue;
                 }
-                return true;
-            });
+                Cache.remove(`meta/${meta.entity}`);
+            }
+        }
+        return true;
     }
 }

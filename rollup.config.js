@@ -21,7 +21,9 @@ export default [
       resolve({ jsnext: true, preferBuiltins: true, browser: true }),
       json(),
       commonjs(),
-      license({ banner: path.join(__dirname, 'LICENSE') })
+      license({ banner: path.join(__dirname, 'LICENSE') }),
+      uglify(),
+      sourcemaps()
     ],
     onwarn: ( warning ) => {
       if ( warning.code === 'THIS_IS_UNDEFINED' ) return;
@@ -48,7 +50,8 @@ export default [
       resolve({ jsnext: true, preferBuiltins: true, browser: true }),
       json(),
       commonjs(),
-      license({ banner: path.join(__dirname, 'LICENSE') })
+      license({ banner: path.join(__dirname, 'LICENSE') }),
+      sourcemaps()
     ],
     onwarn: ( warning ) => {
       if ( warning.code === 'THIS_IS_UNDEFINED' ) return;

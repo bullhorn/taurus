@@ -8,49 +8,48 @@ import 'rxjs/add/operator/take';
 export const EMPTY: Symbol = Symbol('EMPTY');
 
 /**
- * @class StatefulSubject<T>
+ * Observable subject that may have an initial value
  */
 export class StatefulSubject<T> extends Subject<T> {
     constructor(private _value: T | Symbol = EMPTY) {
         super();
     }
-    get snapshot():T {
+    get snapshot(): T {
         return this.getValue();
     }
-    get value():T {
+    get value(): T {
         return this.getValue();
     }
     _subscribe(subscriber) {
-        const subscription = super._subscribe(subscriber);
+        const subscription: Subscription = super._subscribe(subscriber);
         // BehaviorSubject would call next to dispatch initial state of subject
         if (subscription && !subscription.closed && this.hasValue()) {
             subscriber.next(this._value as T);
         }
         return subscription;
     }
-    getValue():T {
+    getValue(): T {
         if (this.hasError) {
             throw this.thrownError;
         }
-        else if (this.closed) {
+        if (this.closed) {
             throw new ObjectUnsubscribedError();
         }
-        else {
-            return this._value as T;
-        }
+        return this._value as T;
     }
-    hasValue():boolean {
+    hasValue(): boolean {
         if (this.hasError) {
             return false;
-        } else if (this.closed) {
+        }
+        if (this.closed) {
             return false;
         }
         return (this._value !== EMPTY);
     }
-    next(value:T) {
+    next(value: T) {
         super.next(this._value = value);
     }
-    once() {
+    once(): Observable<T> {
         return this.take(1);
     }
 }

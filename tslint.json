@@ -1,38 +1,14 @@
 {
+  "extends": "tslint-xo/space",
   "rules": {
-    "quotemark": [
+    "no-import-side-effect": false,
+    "newline-before-return": false,
+    "no-unnecessary-type-annotation": false,
+    "no-stateless-class": false,
+    "variable-name": [true, "check-format", "ban-keywords", "allow-leading-underscore"],
+    "object-curly-spacing": [
       true,
-      "single"
-    ],
-    "member-access": false,
-    "jsdoc-format": false,
-    "whitespace": [
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator"
-    ],
-    "variable-name": false,
-    "typedef-whitespace": [
-      true, {
-        "call-signature": "nospace",
-        "index-signature": "nospace",
-        "parameter": "nospace",
-        "property-declaration": "nospace",
-        "variable-declaration": "nospace"
-      }
-    ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
-    "no-console": [
-      true,
-      "log",
-      "time",
-      "timeEnd",
-      "trace"
+      "always"
     ]
   }
 }

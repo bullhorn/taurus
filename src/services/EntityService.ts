@@ -1,12 +1,10 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { BullhornEntityResponse, BullhornMetaResponse, BullhornSavedEntityResponse, Field } from '../types';
+import { BullhornEntityResponse } from '../types';
 import { Staffing } from './Staffing';
 import { MetaService } from './MetaService';
 
 /**
  * A Class that defines the base Entity Model
- * @class Entity
- * @extends Model
  * @example
  * ```
  * //Most methods on the entity are fluent (chainable)
@@ -15,14 +13,14 @@ import { MetaService } from './MetaService';
  * job.title = 'My New Job';
  * job.save();
  * ```
-*/
+ */
 export class EntityService<T> {
     // The relative url where this entity lives
     protected endpoint: string;
     protected http: AxiosInstance;
     protected parameters: any;
     // Fields associated with this Entity
-    protected _fields: Array<string> = [];
+    protected _fields: string[] = [];
     // Name of Entity
     public type: string;
     // The MetaService associated
@@ -30,8 +28,7 @@ export class EntityService<T> {
 
     /**
      * constructor
-     * @param  {Object} state data to inflate object with
-     * @return {[type]}       [description]
+     * @param  state data to inflate object with
      */
     constructor(type: string) {
         this.type = type;
@@ -44,16 +41,12 @@ export class EntityService<T> {
     }
 
     /**
-    * Define the fields to set or retrieve for the given entity. Getter and Setter methods will automagically
-	* be set up on the entity once the fields are defined.
-    * @name fields
-	* @memberOf Entity#
-	* @param {args} args - fields can either be sent as a list of arguments or as an Array
-    * @return {this}
-    */
+     * Define the fields to set or retrieve for the given entity. Getter and Setter methods will automagically be set up on the entity once the fields are defined.
+     * @param args - fields can either be sent as a list of arguments or as an Array
+     */
     fields(...args: any[]) {
-        let requested = Array.isArray(args[0]) ? args[0] : args;
-        for (let field of requested) {
+        const requested = Array.isArray(args[0]) ? args[0] : args;
+        for (const field of requested) {
             if (!this._fields.includes(field)) {
                 this._fields.push(field);
             }
@@ -66,88 +59,73 @@ export class EntityService<T> {
     }
 
     /**
-    * Will merge object into the entity's parameter to be sent in any http request.
-    * @name params
-	* @memberOf Entity#
-	* @param {Object} object - all additional parameters
-    * @return {this}
-    */
+     * Will merge object into the entity's parameter to be sent in any http request.
+     * @param object - all additional parameters
+     */
     params(object: any) {
-        this.parameters = Object.assign(this.parameters, object);
+        this.parameters = { ...this.parameters, ...object };
         return this;
-    }
-    /**
-    * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
-    * @name get
-	* @memberOf Entity#
-	* @param {Number} id - Id of the Model to retrieve
-    * @return {Promise}
-    */
-    async get(id: number): Promise<BullhornEntityResponse<T>> {
-        return Promise.all([
-            this.http.get(this.endpoint + id, { params: this.parameters }),
-            this.meta.getFull(this.parameters.fields, this.parameters.layout)
-        ])
-            .then(([response, meta]) => [response.data, meta])
-            .then(([result, meta]: [BullhornEntityResponse<T>, BullhornMetaResponse]) => {
-                result.meta = meta;
-                return result;
-            });
     }
 
     /**
-    * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
-    * @name many
-	* @memberOf Entity#
-	* @param {string} property - The TO_MANY Association field
-    * @param {Array} fields - Additional fields to retrieve on the TO_MANY field
-    * @return {Promise}
-    */
-    // many(property: string, fields: Array<string>): Promise<AxiosResponse> {
-    //     return this.http.get(`${this.endpoint}${this.value.id}/${property}`, {
-    //         params: {
-    //             fields: fields,
-    //             showTotalMatched: true
+     * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
+     * @param id - Id of the Model to retrieve
+     */
+    async get(id: number): Promise<BullhornEntityResponse<T>> {
+        const [response, meta] = await Promise.all([
+            this.http.get(`${this.endpoint}${id}`, { params: this.parameters }),
+            this.meta.getFull(this.parameters.fields, this.parameters.layout)
+        ]);
+        const result: BullhornEntityResponse<T> = response.data;
+        result.meta = meta;
+        return result;
+    }
+
+    // /**
+    //  * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
+    //  * @param property - The TO_MANY Association field
+    //  * @param fields - Additional fields to retrieve on the TO_MANY field
+    //  */
+    // Many(property: string, fields: Array<string>): Promise<AxiosResponse> {
+    //     Return this.http.get(`${this.endpoint}${this.value.id}/${property}`, {
+    //         Params: {
+    //             Fields: fields,
+    //             ShowTotalMatched: true
     //         }
     //     }).then((response: AxiosResponse) => {
-    //         if (!this.value.hasOwnProperty(property)) {
+    //         If (!this.value.hasOwnProperty(property)) {
     //             Object.defineProperty(this, property, {
-    //                 get: function getter() {
-    //                     return this.value[property];
+    //                 Get: function getter() {
+    //                     Return this.value[property];
     //                 },
-    //                 set: function setter(value) {
-    //                     this.value[property] = value;
+    //                 Set: function setter(value) {
+    //                     This.value[property] = value;
     //                 },
-    //                 configurable: true,
-    //                 enumerable: true
+    //                 Configurable: true,
+    //                 Enumerable: true
     //             });
     //         }
 
-    //         this.value[property] = response.data;
-    //         return response;
+    //         This.value[property] = response.data;
+    //         Return response;
     //     });
     // }
+
     /**
-    * Create or Updates the entity based on the presence of an 'id' property
-    * @name save
-	* @memberOf Entity#
-	* @return {Promise}
-    */
-    save(value: any): Promise<AxiosResponse> {
+     * Create or Updates the entity based on the presence of an 'id' property
+     */
+    async save(value: any): Promise<AxiosResponse> {
         // Update
         if (value && value.id) {
-            return this.http.post(this.endpoint + value.id, value);
+            return this.http.post(`${this.endpoint}${value.id}`, value);
         }
         // Create
         return this.http.put(this.endpoint, value);
     }
     /**
-    * Sends a request to delete the entity
-    * @name remove
-	* @memberOf Entity#
-	* @return {Promise}
-    */
+     * Sends a request to delete the entity
+     */
     async delete(id?: number): Promise<AxiosResponse> {
-        return this.http.delete(this.endpoint + id);
+        return this.http.delete(`${this.endpoint}${id}`);
     }
 }

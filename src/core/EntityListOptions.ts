@@ -1,13 +1,10 @@
 import { Observable } from 'rxjs/Observable';
 import { of as observableOf } from 'rxjs/observable/of';
-import { Operator } from 'rxjs/Operator';
 import { Observer } from 'rxjs/Observer';
 import { combineLatest } from 'rxjs/operator/combineLatest';
-import { merge } from 'rxjs/operator/merge';
-import { map } from 'rxjs/operator/map';
 import { auditTime } from 'rxjs/operator/auditTime';
-import { Primitive, getOrCreateObservable } from './EntityOptions';
-import { is, can } from '../utils';
+import { getOrCreateObservable } from './EntityOptions';
+import { is } from '../utils';
 
 export interface SerializedListOptions {
     [key: string]: any;
@@ -33,6 +30,7 @@ export interface EntityListOptions {
     params?: Object | Observable<Object>;
 }
 
+// tslint:disable-next-line:only-arrow-functions
 export function observeListOptions(options: EntityListOptions, audit: boolean = true): Observable<SerializedListOptions | null> {
     if (!is(options).defined) {
         return observableOf(null);
@@ -54,8 +52,7 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
         }
         combined
             .subscribe(([fields, layout, meta, orderBy, startAt, limitTo, filter, params]: [string[], string, string, string, number, number, Object, Object]) => {
-
-                let serializedOptions: SerializedListOptions = {};
+                const serializedOptions: SerializedListOptions = {};
 
                 if (fields !== undefined) {
                     serializedOptions.fields = fields;

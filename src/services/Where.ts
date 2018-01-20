@@ -1,7 +1,8 @@
 /**
  * A base class for making where clauses
- * @class Where
  */
+// tslint:disable-next-line:no-stateless-class
+// tslint:disable-next-line:no-unnecessary-class
 export class Where {
     constructor() {
         throw new TypeError('Cannot invoke the constructor function of a static class.');
@@ -9,13 +10,13 @@ export class Where {
 
     /**
      * convert an Object to Lucene Query Syntax
-     * @param  {Object} data the object that contains query string name value pairs
-     * @return {string}      resulting querystring
+     * @param   data the object that contains query string name value pairs
+     * @return  resulting querystring
      */
     static toSearchSyntax(data: any) {
-        let queries: Array<string> = [];
-        for (let key in data) {
-            let value = data[key];
+        const queries: string[] = [];
+        for (const key of Object.keys(data)) {
+            const value = data[key];
             if (key === 'or') {
                 queries.push(`(${Where.toSearchSyntax(value).replace(' AND ', ' OR ')})`);
             } else {
@@ -28,12 +29,12 @@ export class Where {
 
     /**
      * parses part of the query value recursively into Lucene query syntax
-     * @param  {string}  key         name of the field
-     * @param  {any}  value       value of the field
-     * @return {string}              part of the querystring to be returned
+     * @param   key         name of the field
+     * @param   value       value of the field
+     * @return              part of the querystring to be returned
      */
     static parseSearchValue(key: string, value: any) {
-        let clauses: Array<string> = [];
+        const clauses: string[] = [];
         if (Array.isArray(value)) {
             clauses.push(`${key}:${Where.writeLuceneValues(value)}`);
         } else if (value instanceof Object) {
@@ -41,11 +42,11 @@ export class Where {
                 clauses.push(`${key}:[${Where.writeLuceneValue(value.min || '*')} TO ${Where.writeLuceneValue(value.max || '*')}]`);
             }
             if (value.any && Array.isArray(value.any)) {
-                let terms = value.any.map(t => ~(`${t}`).trim().indexOf(' ') ? `"${t}"` : t);
+                const terms = value.any.map(t => ~(`${t}`).trim().indexOf(' ') ? `"${t}"` : t);
                 clauses.push(`${key}:(${terms.join(' ')})`);
             }
             if (value.all && Array.isArray(value.all)) {
-                let terms = value.all.map(t => ~(`${t}`).trim().indexOf(' ') ? `"${t}"` : t);
+                const terms = value.all.map(t => ~(`${t}`).trim().indexOf(' ') ? `"${t}"` : t);
                 clauses.push(`${key}:(${terms.join(' AND ')})`);
             }
             if (value.not) {
@@ -64,23 +65,20 @@ export class Where {
                 clauses.push(`-${key}.id:"[0 TO *]"`);
             }
             if (value.or) {
-                let obj = {};
+                const obj = {};
                 obj[key] = value.or;
                 clauses.push(`(${Where.toSearchSyntax(obj)})`.replace(' AND ', ' OR '));
             }
-            for (let subkey in value) {
+            for (const subkey of Object.keys(value)) {
                 if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without'].indexOf(subkey) < 0) {
-                    let subvalue = value[subkey];
+                    const subvalue = value[subkey];
                     clauses.push(Where.parseSearchValue(`${key}.${subkey}`, subvalue));
                 }
             }
+        } else if (value.indexOf && ~value.indexOf('*')) {
+            clauses.push(`${key}:(${value})`);
         } else {
-            //TODO: Fuzzy Logic
-            if (value.indexOf && ~value.indexOf('*')) {
-                clauses.push(`${key}:(${value})`);
-            } else {
-                clauses.push(`${key}:${Where.writeLuceneValue(value)}`);
-            }
+            clauses.push(`${key}:${Where.writeLuceneValue(value)}`);
         }
 
         return clauses.join(' AND ');
@@ -89,33 +87,34 @@ export class Where {
     static writeLuceneValue(value) {
         if (value instanceof Date) {
             return value.toISOString().split('.')[0].replace(/[-:T]/gi, '');
-        } else if (typeof value === 'number' || typeof value === 'boolean') {
-            return `${value}`;
-        } else if (value === '*') {
-            return `${value}`;
-        } else {
-            return `"${value}"`;
         }
+        if (typeof value === 'number' || typeof value === 'boolean') {
+            return `${value}`;
+        }
+        if (value === '*') {
+            return `${value}`;
+        }
+
+        return `"${value}"`;
     }
 
     static writeLuceneValues(values) {
         if (typeof values[0] === 'number' || typeof values[0] === 'boolean') {
             return `(${values.join(' ')})`;
-        } else {
-            return `("${values.join('" "')}")`;
         }
-    }
 
+        return `("${values.join('" "')}")`;
+    }
 
     /**
      * convert an Object to Database Query Syntax
-     * @param  {Object} data the object that contains query string name value pairs
-     * @return {string}      resulting querystring
+     * @param  data the object that contains query string name value pairs
+     * @return      resulting querystring
      */
     static toQuerySyntax(data: any) {
-        let queries: Array<string> = [];
-        for (let key in data) {
-            let value = data[key];
+        const queries: string[] = [];
+        for (const key of Object.keys(data)) {
+            const value = data[key];
             if (key === 'or') {
                 queries.push(`(${Where.toQuerySyntax(value).replace(' AND ', ' OR ')})`);
             } else {
@@ -128,17 +127,17 @@ export class Where {
 
     /**
      * parses a query value recursively into a Database query
-     * @param  {string}  key         name of the field
-     * @param  {*}  value       value of the field
-     * @param  {Boolean} isNot defaults to false, the reverses the logic to be parsed
-     * @return {string}              part of the querystring to be returned
+     * @param key         name of the field
+     * @param value       value of the field
+     * @param isNot       defaults to false, the reverses the logic to be parsed
+     * @return            part of the querystring to be returned
      */
     static parseQueryValue(key: string, value: any, isNot: boolean = false) {
-        let clauses: Array<string> = [],
-            IN = isNot ? ' NOT IN ' : ' IN ',
-            EQ = isNot ? '<>' : '=',
-            GT = isNot ? '<' : '>=',
-            LT = isNot ? '>=' : '<';
+        const clauses: string[] = [];
+        const IN = isNot ? ' NOT IN ' : ' IN ';
+        const EQ = isNot ? '<>' : '=';
+        const GT = isNot ? '<' : '>=';
+        const LT = isNot ? '>=' : '<';
         if (Array.isArray(value)) {
             clauses.push(`${key}${IN}(${Where.writeQueryValues(value)})`);
         } else if (value instanceof Object) {
@@ -149,11 +148,11 @@ export class Where {
                 clauses.push(`${key}${LT}${Where.writeQueryValue(value.max)}`);
             }
             if (value.any && Array.isArray(value.any)) {
-                //TODO: THIS COULD BE MEMBEROF
+                // TODO: THIS COULD BE MEMBEROF
                 clauses.push(`${key}${IN}(${Where.writeQueryValues(value.any)})`);
             }
             if (value.all && Array.isArray(value.all)) {
-                //TODO: THIS COULD BE MEMBEROF
+                // TODO: THIS COULD BE MEMBEROF
                 clauses.push(`${key}${IN}(${Where.writeQueryValues(value.all)})`);
             }
             if (value.not) {
@@ -163,7 +162,7 @@ export class Where {
                 clauses.push(`${key} like '%${value.like}%'`);
             }
             if (value.lookup) {
-                let obj = {};
+                const obj = {};
                 obj[key] = value.lookup;
                 clauses.push(Where.toQuerySyntax(obj));
             }
@@ -174,18 +173,18 @@ export class Where {
                 clauses.push(`${key} IS EMPTY`);
             }
             if (value.or) {
-                let obj = {};
+                const obj = {};
                 obj[key] = value.or;
                 clauses.push(Where.toQuerySyntax(obj).replace('AND', 'OR'));
             }
-            for (let subkey in value) {
+            for (const subkey of Object.keys(value)) {
                 if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without'].indexOf(subkey) < 0) {
-                    let subvalue = value[subkey];
+                    const subvalue = value[subkey];
                     clauses.push(Where.parseQueryValue(`${key}.${subkey}`, subvalue));
                 }
             }
         } else {
-            //TODO: Fuzzy Logic
+            // TODO: Fuzzy Logic
             clauses.push(`${key}${EQ}${Where.writeQueryValue(value)}`);
         }
 
@@ -195,17 +194,18 @@ export class Where {
     static writeQueryValue(value) {
         if (value instanceof Date) {
             return value.getTime();
-        } else if (typeof value === 'number' || typeof value === 'boolean') {
-            return `${value}`;
-        } else {
-            return `'${value.replace(/\*/g, '')}'`;
         }
+        if (typeof value === 'number' || typeof value === 'boolean') {
+            return `${value}`;
+        }
+
+        return `'${value.replace(/\*/g, '')}'`;
     }
     static writeQueryValues(values) {
         if (typeof values[0] === 'number' || typeof values[0] === 'boolean') {
             return `${values.join(',')}`;
-        } else {
-            return `'${values.join('\',\'')}'`;
         }
+
+        return `'${values.join('\',\'')}'`;
     }
 }

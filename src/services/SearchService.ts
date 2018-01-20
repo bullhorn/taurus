@@ -1,14 +1,12 @@
 import { QueryService } from './QueryService';
 import { Where } from './Where';
 /**
-* A class for making Search calls via Rest
-* @class SearchService
-* @extends QueryService
-*/
+ * A class for making Search calls via Rest
+ */
 export class SearchService<T> extends QueryService<T> {
     /**
      * constructor description
-     * @param {string} endpoint - Base Url for all relative http calls eg. 'search/JobOrder'
+     * @param endpoint - Base Url for all relative http calls eg. 'search/JobOrder'
      */
     constructor(entity) {
         super(entity);
@@ -32,7 +30,6 @@ export class SearchService<T> extends QueryService<T> {
     }
 
     where(value: any) {
-        this._where = value;
         return this.query(Where.toSearchSyntax(value));
     }
 

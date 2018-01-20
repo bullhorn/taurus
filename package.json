@@ -6,15 +6,15 @@
     "ta",
     "bullhorn"
   ],
-  "homepage": "http://bullhorn.github.io/symphony",
+  "homepage": "http://bullhorn.github.io/taurus",
   "bugs": {
-    "url": "https://github.com/bullhorn/symphony/issues"
+    "url": "https://github.com/bullhorn/taurus/issues"
   },
   "license": "MIT",
   "author": "Brian Kimball <bkimball@bullhorn.com>",
   "repository": {
     "type": "git",
-    "url": "http://github.com/bullhorn/symphony"
+    "url": "http://github.com/bullhorn/taurus"
   },
   "publishConfig": {
     "registry": "http://hydrogen.bh-bos2.bullhorn.com/artifactory/api/npm/npm-dev"
@@ -57,12 +57,11 @@
     "ts-node": "~4.1.0",
     "tslib": "^1.9.0",
     "tslint": "~5.9.0",
+    "tslint-xo": "^0.5.0",
     "typescript": "~2.6.x"
   },
   "scripts": {
-    "build": "rollup -c",
-    "build:es2015": "tsc --module es2015 --outDir lib/es2015 --declaration --declarationDir lib/typings",
-    "build:rollup": "rollup -c",
+    "build": "npm run clean && rollup -c",
     "clean": "rm -rf lib",
     "lint": "tslint --project tsconfig.json --format stylish",
     "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
@@ -71,7 +70,7 @@
     "preversion": "npm run build && npm test",
     "postversion": "git push && git push --tags",
     "prepare": "npm run build",
-    "publish:docs": "easystatic deploy docs --repo bullhorn/symphony",
+    "publish:docs": "easystatic deploy docs --repo bullhorn/taurus",
     "docs": "typedoc src/index.ts --excludePrivate --theme node_modules/typedoc-clarity-theme/bin --mode file --out docs && opn docs/index.html",
     "docs:json": "typedoc --mode file --json build/docs/typedoc.json src/index.ts"
   }

@@ -26,13 +26,13 @@ export interface BullhornListResponse<T> {
     count: string;
     data: T[];
     messages?: BullhornMessage[];
-    meta?: BullhornMetaResponse
+    meta?: BullhornMetaResponse;
 }
 
 export interface BullhornEntityResponse<T> {
     data: T[];
     messages?: BullhornMessage[];
-    meta?: BullhornMetaResponse
+    meta?: BullhornMetaResponse;
 }
 
 export interface BullhornSavedEntityResponse<T> {

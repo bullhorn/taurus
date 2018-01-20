@@ -1,18 +1,6 @@
 /**
-* Enumeration of different field types associated with Bullhorn Data.
-* @static
-* @property {string} TO_ONE
-* @property {string} TO_MANY
-* @property {string} SCALAR
-* @property {string} STRING
-* @property {string} NUMBER
-* @property {string} INTEGER
-* @property {string} DOUBLE
-* @property {string} TIMESTAMP
-* @property {string} DATETIME
-* @property {string} DATE
-* @property {string} TIME
-*/
+ * Enumeration of different field types associated with Bullhorn Data.
+ */
 export enum FieldType {
     ID,
     COMPOSITE,
@@ -41,12 +29,12 @@ export interface Field {
     inputType?: string;
     optionsType?: string;
     optionsUrl?: string;
-    options?: Array<FieldOptions>;
+    options?: FieldOptions[];
     hideFromSearch?: boolean;
     sortOrder?: number;
     hint?: string;
     description?: string;
     associatedEntity?: any;
     value?: any;
-    interactions?: Array<any>;
+    interactions?: any[];
 }

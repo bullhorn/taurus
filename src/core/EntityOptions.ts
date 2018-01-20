@@ -1,10 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { of as observableOf } from 'rxjs/observable/of';
-import { Operator } from 'rxjs/Operator';
 import { Observer } from 'rxjs/Observer';
 import { combineLatest } from 'rxjs/operator/combineLatest';
-import { merge } from 'rxjs/operator/merge';
-import { map } from 'rxjs/operator/map';
 import { auditTime } from 'rxjs/operator/auditTime';
 import { is, can } from '../utils';
 
@@ -34,6 +31,7 @@ export interface EntityOptions {
     params?: Object | Observable<Object>;
 }
 
+// tslint:disable-next-line:only-arrow-functions
 export function observeOptions(options: EntityOptions, audit: boolean = true): Observable<SerializedOptions | null> {
     if (!is(options).defined) {
         return observableOf(null);
@@ -55,8 +53,7 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
         }
         combined
             .subscribe(([id, fields, layout, meta, editable, readOnly, triggers, params]: [number, string[], string, string, boolean, boolean, boolean, Object]) => {
-
-                let serializedOptions: SerializedOptions = {};
+                const serializedOptions: SerializedOptions = {};
 
                 if (id !== undefined) {
                     serializedOptions.id = id;
@@ -95,17 +92,17 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
     });
 }
 
-
+// tslint:disable-next-line:only-arrow-functions
 export function getOrCreateObservable(key: string, options: EntityOptions): Observable<Primitive> {
     if (options[key] instanceof Observable) {
         return options[key];
-    } else if (can(options).have(key)) {
+    }
+    if (can(options).have(key)) {
         return new Observable<Primitive>(subscriber => {
             subscriber.next(options[key]);
         });
-    } else {
-        return new Observable<Primitive>(subscriber => {
-            subscriber.next(undefined);
-        });
     }
+    return new Observable<Primitive>(subscriber => {
+        subscriber.next(undefined);
+    });
 }

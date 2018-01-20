@@ -1,12 +1,11 @@
 /**
-* A utility class to manage Query String paramaters, handles encoding and arrays
-* @class
-* @param {string} url - url to append parameters to
-* @param {Object} params - parameter to append to url
-*/
+ * A utility class to manage Query String paramaters, handles encoding and arrays
+ * @param url - url to append parameters to
+ * @param params - parameter to append to url
+ */
 export class QueryString {
     url: string;
-    parts: Array<string> = [];
+    parts: string[] = [];
 
     constructor(url: string, params: Object = {}) {
         this.url = url;
@@ -14,9 +13,10 @@ export class QueryString {
     }
 
     static destruct(location: any): Object {
-        let url = location.protocol + '//' + location.host + location.pathname,
-            params = {};
-        location.search.replace(new RegExp('([^?=&]+)(=([^&]*))?', 'g'), function ($0, $1, $2, $3) {
+        const url = `${location.protocol }//${location.host}${location.pathname}`;
+        const params = {};
+        // tslint:disable-next-line:no-unused
+        location.search.replace(new RegExp('([^?=&]+)(=([^&]*))?', 'g'), ($0, $1, $2, $3) => {
             params[decodeURIComponent($1)] = decodeURIComponent($3);
         });
 
@@ -24,32 +24,32 @@ export class QueryString {
     }
 
     static encodeParams(params) {
-        let parts: string[] = [];
+        const parts: string[] = [];
         if (params) {
-            for (let key in params) {
-                let value = params[key];
+            for (const key of Object.keys(params)) {
+                const value = params[key];
                 if (Array.isArray(value)) {
-                    parts.push(key + '=' + encodeURIComponent(value.join(',')));
+                    parts.push(`${key}=${encodeURIComponent(value.join(','))}`);
                 } else {
-                    parts.push(key + '=' + encodeURIComponent(value));
+                    parts.push(`${key}=${encodeURIComponent(value)}`);
                 }
             }
         }
+
         return parts;
     }
 
     static stringify(params: any): string {
-        let parts: string[] = this.encodeParams(params);
+        const parts: string[] = QueryString.encodeParams(params);
+
         return parts.join('&');
     }
 
     /**
-    * Convert to string
-    * @returns {string}
-    */
+     * Convert to string
+     */
     toString(): string {
         return this.url + ((this.url.indexOf('?') === -1) ? '?' : '&') + this.parts.join('&');
     }
-
 
 }

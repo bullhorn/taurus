@@ -1,8 +1,7 @@
 export class Is {
-    private reference: any = {};
+    private readonly reference: any = {};
 
     constructor(ref: any) {
-        //init
         this.reference = ref;
     }
 
@@ -90,35 +89,35 @@ export class Is {
 
     a(T) {
         let result = false;
-        const TRefName = this.reference.constructor.name;
+        const className = this.reference.constructor.name;
 
         switch (T) {
             case undefined:
-                result = TRefName === 'Undefined';
+                result = className === 'Undefined';
                 break;
 
             case null:
-                result = TRefName === 'Null';
+                result = className === 'Null';
                 break;
 
             case Array:
-                result = TRefName === 'Array';
+                result = className === 'Array';
                 break;
 
             case Boolean:
-                result = TRefName === 'Boolean';
+                result = className === 'Boolean';
                 break;
 
             case Date:
-                result = TRefName === 'Date';
+                result = className === 'Date';
                 break;
 
             case Error:
-                result = TRefName === 'Error';
+                result = className === 'Error';
                 break;
 
             case HTMLDocument:
-                result = TRefName === 'HTMLDocument' || TRefName === 'Document';
+                result = className === 'HTMLDocument' || className === 'Document';
                 break;
 
             case HTMLElement:
@@ -127,61 +126,64 @@ export class Is {
                 break;
 
             case Function:
-                result = TRefName === 'Function';
+                result = className === 'Function';
                 break;
 
             case NodeList:
-                result = TRefName === 'NodeList';
+                result = className === 'NodeList';
                 break;
 
             case Number:
-                result = TRefName === 'Number' && !isNaN(this.reference);
+                result = className === 'Number' && !isNaN(this.reference);
                 break;
 
             case RegExp:
-                result = TRefName === 'RegExp';
+                result = className === 'RegExp';
                 break;
 
             case String:
-                result = TRefName === 'String';
+                result = className === 'String';
                 break;
 
             case Window:
-                result = TRefName === 'Window' || TRefName === 'global';
+                result = className === 'Window' || className === 'global';
                 break;
 
             case Object:
-                result = TRefName === 'Object' || TRefName === 'Arguments';
+                result = className === 'Object' || className === 'Arguments';
                 break;
 
             default:
-                const TName = T.constructor.name;
+                const templateClassName = T.constructor.name;
 
-                if (TName === 'Number' && isNaN(T))
-                    result = TRefName === 'Number' && isNaN(this.reference);
-                else
+                if (templateClassName === 'Number' && isNaN(T)) {
+                    result = className === 'Number' && isNaN(this.reference);
+                } else {
                     result = this.reference instanceof T;
-
-                break;
+                }
         }
 
         return result;
     }
 
-    aTypeOf(T) {
+    aTypeOf(type) {
         let result = false;
 
-        if (typeof T === 'function' && !(result = (T === this.reference)) && !(result = T.isPrototypeOf(this.reference))) {
+        // tslint:disable-next-line:no-conditional-assignment
+        if (typeof type === 'function' && !(result = (type === this.reference)) && !(result = type.isPrototypeOf(this.reference))) {
             let proto = this.reference;
 
             while (typeof proto === 'function') {
-                if ((result = proto === T) || proto === Object)
+                // tslint:disable-next-line:no-conditional-assignment
+                if ((result = proto === type) || proto === Object) {
                     break;
+                }
 
-                if (typeof proto.prototype === 'object' && Object.getPrototypeOf(proto).constructor === Function)
+                if (typeof proto.prototype === 'object' && Object.getPrototypeOf(proto).constructor === Function) {
                     proto = (Object.getPrototypeOf(proto.prototype) || {}).constructor;
-                else
+                } else {
                     proto = Object.getPrototypeOf(proto);
+                }
             }
         }
 
@@ -192,6 +194,7 @@ export class Is {
 
 }
 
+// tslint:disable-next-line:only-arrow-functions
 export function is(ref) {
     return new Is(ref);
 }

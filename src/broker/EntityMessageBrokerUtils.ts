@@ -1,5 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 /**
@@ -14,34 +12,33 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 export class EndlessReplaySubject<T> extends ReplaySubject<T> {
     /**
      * Dummy method override to prevent execution and Rx.Observable completion
-     * @return {void}
      */
-    complete() {}
+    complete() {
+        // Do something?
+    }
 
     /**
      * Override of error method that prevents stopping that Rx.Observer
-     * @param  {Error} error  - Error to be dispatched
-     * @return {void}
+     * @param error  - Error to be dispatched
      */
     error(error: any) {
-        // store error
+        // Store error
         this.error = error;
-        // dispatch to all observers
+        // Dispatch to all observers
         this.observers.forEach(os => {
-            // dispatch
+            // Dispatch
             os.error(error);
-            // mark observer as not stopped
+            // Mark observer as not stopped
             os.closed = false;
-            //os.isStopped = false;
+            // Os.isStopped = false;
         });
     }
 }
 
 /**
  * Converts topic to search regex
- * @param  {String} topic   Topic name
- * @return {Regex}          Search regex
- * @private
+ * @param  topic   Topic name
+ * @return         Search regex
  */
 export const topicToRegex = (topic: string) => `^${topic.split('.')
 .reduce((result, segment, index, arr) => {
@@ -61,36 +58,33 @@ export const topicToRegex = (topic: string) => `^${topic.split('.')
 
 /**
  * Compares given topic with existing topic
- * @param  {String}  topic         Topic name
- * @param  {String}  existingTopic Topic name to compare to
- * @return {Boolean}               Whether topic is included in existingTopic
+ * @param  topic         Topic name
+ * @param  existingTopic Topic name to compare to
+ * @return Whether topic is included in existingTopic
  * @example
  * should(compareTopics('test.one.two', 'test.#')).equal(true);
- * @private
  */
 export const compareTopics = (topic: string, existingTopic: string) => {
-    // if no # or * found, do plain string matching
+    // If no # or * found, do plain string matching
     if (existingTopic.indexOf('#') === -1 && existingTopic.indexOf('*') === -1) {
         return topic === existingTopic;
     }
-    // otherwise do regex matching
+    // Otherwise do regex matching
     const pattern = topicToRegex(existingTopic);
     const rgx = new RegExp(pattern);
-    const result = rgx.test(topic);
-    return result;
+    return rgx.test(topic);
 };
-
 
 /**
  * Find a specific subject by given name
- * @param  {Array}                  subjects    Array of subjects to search in
- * @param  {String}                 name        Name to search for
- * @return {(EndlessSubject|void)}              Found subject or void
+ * @param  subjects    Array of subjects to search in
+ * @param  name        Name to search for
+ * @return Found subject or void
  */
 export const findSubjectByName = (subjects: any[], name: string) => {
     const res = subjects.filter(s => s.name === name);
     if (!res || res.length < 1) {
-        return undefined;
+        return;
     }
 
     return res[0];

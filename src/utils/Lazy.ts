@@ -5,16 +5,19 @@ export interface LazyPromise<T> extends Promise<T> {
     __then<TResult1, TResult2>(onfulfilled: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2>;
 }
 
+// tslint:disable-next-line:no-stateless-class
+// tslint:disable-next-line:no-unnecessary-class
 export class Lazy {
     static from(fn): LazyPromise<any> {
         let resolver;
         let rejecter;
+        // tslint:disable-next-line:promise-must-complete
         const promise: any = new Promise((resolve, reject) => {
             resolver = resolve;
             rejecter = reject;
         });
         promise.__then = promise.then;
-        promise.then = function factory(success: Function, failure: Function) {
+        promise.then = function (success: Function, failure: Function) {
             setImmediate(() => {
                 fn(resolver, rejecter);
             });
@@ -23,38 +26,36 @@ export class Lazy {
 
         return promise;
     }
-    
-    static series(promises: Array < Promise < any >>, threads: number = 1): Promise < any > {
-        let results: Array<any>;
-        promises = promises.slice();
+
+    static async series(promises: Promise<any>[], threads: number = 1): Promise<any> {
+        let results: any[];
+        const copy: Promise<any>[] = promises.slice();
+
+        // tslint:disable-next-line:promise-must-complete
         return new Promise((resolve, reject) => {
             /**
              * [next description]
-             * @param  {[type]}   result [description]
-             * @return {Function}        [description]
+             * @param result [description]
+             * @return       [description]
              */
-            function next(result?: any) {
+            const next = (result?: any) => {
                 if (!results) {
                     results = [];
                 } else {
                     results = results.concat(result);
                 }
 
-                if (promises.length) {
-                    let concurrent = promises.splice(0, threads);
-                    Promise
-                        .all(concurrent)
-                        .then(next)
-                        .catch(reject);
-                } else {
-                    resolve(results);
+                if (!copy.length) {
+                    return resolve(results);
                 }
-            }
+                const concurrent = copy.splice(0, threads);
+                Promise
+                    .all(concurrent)
+                    .then(next)
+                    .catch(reject);
+            };
 
             next();
         });
     }
 }
-
-
-   

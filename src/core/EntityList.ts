@@ -1,11 +1,10 @@
 import { BullhornListResponse } from './../types/Responses';
-import { Observable } from 'rxjs/Observable';
 import { StatefulSubject } from './StatefulSubject';
 import { Entity } from './Entity';
 import { QueryService, SearchService } from '../services';
-import { EntityListOptions, observeListOptions } from './EntityListOptions'
-import { EntityMessageBroker } from '../broker'
-import { is, can } from '../utils';
+import { EntityListOptions, observeListOptions } from './EntityListOptions';
+import { EntityMessageBroker } from '../broker';
+import { is } from '../utils';
 
 export type EntityListReference<T> = SearchService<T> | QueryService<T>;
 export type EntityOperation = number | Entity<any>;
@@ -18,24 +17,23 @@ export interface ListResults {
 }
 
 export class EntityList<T> extends StatefulSubject<T[]> {
-
     static useSearch: boolean = false;
     // Name of Entity
     public type: string;
     public descriptor: any;
     private $latest: BullhornListResponse<T>;
-    private $ref: Entity<T>;
-    private $list: EntityListReference<T>;
-    protected broker: EntityMessageBroker = EntityMessageBroker.getInstance()
+    private readonly $ref: Entity<T>;
+    private readonly $list: EntityListReference<T>;
+    protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
 
     constructor(type: string, options: EntityListOptions = {}, state?: T[]) {
         super(state);
         this.type = type;
         this.$ref = new Entity<T>(this.type, {} as T);
         this.$list = this.getSearcher(this.type);
-        observeListOptions(options).subscribe((params) => {
+        observeListOptions(options).subscribe(params => {
             if (params) {
-                for (let key of Object.keys(params)) {
+                for (const key of Object.keys(params)) {
                     switch (key) {
                         case 'fields':
                             this.$list.fields(params.fields);
@@ -61,9 +59,12 @@ export class EntityList<T> extends StatefulSubject<T[]> {
                         case 'params':
                             this.$list.params(params.params);
                             break;
+                        default:
+                            console.warn(`Unknown key in params: ${key}`);
                     }
                 }
             }
+            // tslint:disable-next-line:no-floating-promises
             this.$list.then((results: BullhornListResponse<T>) => {
                 this.descriptor = results.meta;
                 this.$latest = results;
@@ -71,7 +72,6 @@ export class EntityList<T> extends StatefulSubject<T[]> {
             });
         });
         this._setUpObservable();
-
     }
 
     protected getSearcher(type: string): EntityListReference<T> {
@@ -91,60 +91,62 @@ export class EntityList<T> extends StatefulSubject<T[]> {
             messages: this.$latest.messages,
             start: this.$latest.start,
             count: this.$latest.count,
-        }
+        };
     }
-    
+
     find(pk: number): Entity<T> {
-        let found: any = this.getValue().find((item: any) => item.id === pk);
+        const found: any = this.getValue().find((item: any) => item.id === pk);
         if (found) {
             return found;
         }
         return new Entity<T>(this.type, { id: pk });
     }
 
-    push(item: T): Promise<any> {
+    async push(item: T): Promise<any> {
         return this.$ref.set(item).save().then(this._eventHook('child_added'));
     }
 
-    update(item: EntityOperation, value: T): Promise<any> {
+    async update(item: EntityOperation, value: T): Promise<any> {
         return this._checkOperationCases(item, {
-            keyCase: () => this.find(<number>item).patch(value).save(),
-            entityCase: () => (<Entity<any>>item).patch(value).save()
+            keyCase: async () => this.find(item as number).patch(value).save(),
+            entityCase: async () => (item as Entity<any>).patch(value).save()
         }).then(this._eventHook('child_updated'));
     }
 
-    remove(item: EntityOperation): Promise<any> {
+    async remove(item: EntityOperation): Promise<any> {
         return this._checkOperationCases(item, {
-            keyCase: () => this.find(<number>item).remove(),
-            entityCase: () => (<Entity<any>>item).remove()
+            keyCase: async () => this.find(item as number).remove(),
+            entityCase: async () => (item as Entity<any>).remove()
         }).then(this._eventHook('child_removed'));
     }
 
     private _setUpObservable() {
-        const refresh = (value) => {
+        const refresh = () => {
+            // tslint:disable-next-line:no-floating-promises
             this.$list.then((results: BullhornListResponse<T>) => {
                 this.descriptor = results.meta;
                 this.next(results.data);
             });
-        }
+        };
         this.broker.on(`${this.type}:*`).subscribe(refresh);
-        // this.broker.on(`${this.type}:child_added`).subscribe(refresh);
-        // this.broker.on(`${this.type}:child_removed`).subscribe(refresh);
-        // this.broker.on(`${this.type}:child_updated`).subscribe(refresh);
+        // This.broker.on(`${this.type}:child_added`).subscribe(refresh);
+        // This.broker.on(`${this.type}:child_removed`).subscribe(refresh);
+        // This.broker.on(`${this.type}:child_updated`).subscribe(refresh);
     }
 
     private _eventHook(eventType: string) {
-        return (result) => {
+        return result => {
             this.broker.emit(`${this.type}:${result.changedEntityId}:value`, result.data);
             this.broker.emit(`${this.type}:${eventType}`, result.data);
             return result;
-        }
+        };
     }
 
-    private _checkOperationCases(item: EntityOperation, cases: any): Promise<void> {
+    private async _checkOperationCases(item: EntityOperation, cases: any): Promise<any> {
         if (is(item).aNumber) {
             return cases.keyCase();
-        } else if (is(item).aTypeOf(Entity)) {
+        }
+        if (is(item).aTypeOf(Entity)) {
             return cases.entityCase();
         }
         throw new Error(`Method requires a key or reference. Got: ${typeof item}`);
