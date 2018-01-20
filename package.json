@@ -69,6 +69,6 @@
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "prepare": "npm run build",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && opn docs/index.html"
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html"
   }
 }
