@@ -3,13 +3,16 @@
 > The official client library for connecting to Bullhorn REST API
 
 ---
-
-[![Build Status: Linux](https://travis-ci.org/bullhorn/taurus.svg?branch=master)](https://travis-ci.org/bullhorn/taurus) [![Dependency Status](https://dependencyci.com/github/bullhorn/taurus/badge)](https://dependencyci.com/github/bullhorn/taurus) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) 
+ 
+ [![Build Status](https://travis-ci.org/bullhorn/taurus.svg?branch=master)](https://travis-ci.org/bullhorn/taurus)
+ [![Dependency Status](https://dependencyci.com/github/bullhorn/taurus/badge)](https://dependencyci.com/github/bullhorn/taurus) 
+ [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) 
  [![npm version](https://badge.fury.io/js/%40bullhorn%2Ftaurus.svg)](https://badge.fury.io/js/%40bullhorn%2Ftaurus)
+ [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 ---
 
-[Website](http://bullhorn.github.io) • [Docs](http://bullhorn.github.io) • [Blog](https://medium.com/bullhorn-dev) 
+[Website](http://bullhorn.github.io) • [Docs](http://bullhorn.github.io/taurus) • [Blog](https://medium.com/bullhorn-dev) 
 
 ## What can Taurus do?
 
@@ -168,7 +171,7 @@ Let's recap. To add a page to your app:
 
 With its strong focus on developer experience, Taurus can enable you to not only create amazing applications, but also enjoy the process. We've designed it with simple conventions in mind so you don't need to waste time with tons of configuration or write boilerplate code just to satisfy a stubborn or restrictive framework.
 
-If you need more help, check out the [Documentation](../docs) and [Api Reference](../api)
+If you need more help, check out the [Documentation](http://bullhorn.github.io/taurus) and [Api Reference](http://bullhorn.github.io/taurus)
 
 ---
 

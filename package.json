@@ -1,9 +1,9 @@
 {
   "name": "@bullhorn/taurus",
   "version": "0.0.0",
-  "description": "A simple, restful, api layer for Bullhorn",
+  "description": "A simple client library for Bullhorn",
   "keywords": [
-    "ta",
+    "taurus",
     "bullhorn"
   ],
   "homepage": "http://bullhorn.github.io/taurus",
@@ -15,9 +15,6 @@
   "repository": {
     "type": "git",
     "url": "http://github.com/bullhorn/taurus"
-  },
-  "publishConfig": {
-    "registry": "http://hydrogen.bh-bos2.bullhorn.com/artifactory/api/npm/npm-dev"
   },
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
@@ -51,6 +48,7 @@
     "rollup-plugin-sourcemaps": "^0.4.0",
     "rollup-plugin-typescript2": "^0.10.0",
     "rollup-plugin-uglify": "^2.0.0",
+    "semantic-release": "^12.2.2",
     "sinon": "^4.1.0",
     "temp-dir": "^1.0.0",
     "ts-jest": "^22.0.0",
@@ -69,6 +67,7 @@
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "prepare": "npm run build",
+    "semantic-release": "semantic-release",
     "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html"
   }
 }

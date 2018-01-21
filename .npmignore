@@ -1,0 +1,5 @@
+coverage
+test
+src
+*.ts
+!*.d.ts
