@@ -16,6 +16,9 @@
     "type": "git",
     "url": "https://github.com/bullhorn/taurus"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "browser": "lib/index.umd.js",
@@ -67,7 +70,6 @@
     "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
-    "prepare": "npm run build",
     "semantic-release": "semantic-release",
     "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
     "travis-deploy-once": "travis-deploy-once"
