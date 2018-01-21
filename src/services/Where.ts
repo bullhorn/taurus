@@ -1,7 +1,6 @@
 /**
  * A base class for making where clauses
  */
-// tslint:disable-next-line:no-stateless-class
 // tslint:disable-next-line:no-unnecessary-class
 export class Where {
     constructor() {
@@ -9,16 +8,16 @@ export class Where {
     }
 
     /**
-     * convert an Object to Lucene Query Syntax
-     * @param   data the object that contains query string name value pairs
-     * @return  resulting querystring
+     * Convert an Object to Lucene Query Syntax
+     * @param data The object that contains query string name value pairs
+     * @return      resulting querystring
      */
     static toSearchSyntax(data: any) {
         const queries: string[] = [];
         for (const key of Object.keys(data)) {
             const value = data[key];
             if (key === 'or') {
-                queries.push(`(${Where.toSearchSyntax(value).replace(' AND ', ' OR ')})`);
+                queries.push(`(${Where.toSearchSyntax(value).replace(/ AND /g, ' OR ')})`);
             } else {
                 queries.push(Where.parseSearchValue(key, value));
             }
@@ -29,9 +28,9 @@ export class Where {
 
     /**
      * parses part of the query value recursively into Lucene query syntax
-     * @param   key         name of the field
-     * @param   value       value of the field
-     * @return              part of the querystring to be returned
+     * @param  key         name of the field
+     * @param  value       value of the field
+     * @return             part of the querystring to be returned
      */
     static parseSearchValue(key: string, value: any) {
         const clauses: string[] = [];
@@ -69,8 +68,11 @@ export class Where {
                 obj[key] = value.or;
                 clauses.push(`(${Where.toSearchSyntax(obj)})`.replace(' AND ', ' OR '));
             }
+            if (value.memberOf !== null && value.memberOf !== undefined && Array.isArray(value.memberOf)) {
+                clauses.push(`${key}.id: (${value.memberOf.join(' ')})`);
+            }
             for (const subkey of Object.keys(value)) {
-                if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without'].indexOf(subkey) < 0) {
+                if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without', 'isNull', 'memberOf'].indexOf(subkey) < 0) {
                     const subvalue = value[subkey];
                     clauses.push(Where.parseSearchValue(`${key}.${subkey}`, subvalue));
                 }
@@ -94,7 +96,6 @@ export class Where {
         if (value === '*') {
             return `${value}`;
         }
-
         return `"${value}"`;
     }
 
@@ -102,21 +103,20 @@ export class Where {
         if (typeof values[0] === 'number' || typeof values[0] === 'boolean') {
             return `(${values.join(' ')})`;
         }
-
         return `("${values.join('" "')}")`;
     }
 
     /**
-     * convert an Object to Database Query Syntax
+     * Convert an Object to Database Query Syntax
      * @param  data the object that contains query string name value pairs
-     * @return      resulting querystring
+     * @return  resulting querystring
      */
     static toQuerySyntax(data: any) {
         const queries: string[] = [];
         for (const key of Object.keys(data)) {
             const value = data[key];
             if (key === 'or') {
-                queries.push(`(${Where.toQuerySyntax(value).replace(' AND ', ' OR ')})`);
+                queries.push(`(${Where.toQuerySyntax(value).replace(/ AND /g, ' OR ')})`);
             } else {
                 queries.push(Where.parseQueryValue(key, value));
             }
@@ -127,10 +127,10 @@ export class Where {
 
     /**
      * parses a query value recursively into a Database query
-     * @param key         name of the field
-     * @param value       value of the field
-     * @param isNot       defaults to false, the reverses the logic to be parsed
-     * @return            part of the querystring to be returned
+     * @param  key         name of the field
+     * @param  value       value of the field
+     * @param  isNot       defaults to false, the reverses the logic to be parsed
+     * @return             part of the querystring to be returned
      */
     static parseQueryValue(key: string, value: any, isNot: boolean = false) {
         const clauses: string[] = [];
@@ -141,10 +141,14 @@ export class Where {
         if (Array.isArray(value)) {
             clauses.push(`${key}${IN}(${Where.writeQueryValues(value)})`);
         } else if (value instanceof Object) {
-            if (value.min) {
+            if (typeof value.isNull === 'boolean') {
+                const query: string = value.isNull ? 'IS NULL' : 'IS NOT NULL';
+                clauses.push(`${key} ${query}`);
+            }
+            if (value.min !== null && value.min !== undefined) {
                 clauses.push(`${key}${GT}${Where.writeQueryValue(value.min)}`);
             }
-            if (value.max) {
+            if (value.max !== null && value.max !== undefined) {
                 clauses.push(`${key}${LT}${Where.writeQueryValue(value.max)}`);
             }
             if (value.any && Array.isArray(value.any)) {
@@ -155,30 +159,37 @@ export class Where {
                 // TODO: THIS COULD BE MEMBEROF
                 clauses.push(`${key}${IN}(${Where.writeQueryValues(value.all)})`);
             }
-            if (value.not) {
+            if (value.not !== null && value.not !== undefined) {
                 clauses.push(Where.parseQueryValue(key, value.not, true));
             }
-            if (value.like) {
+            if (value.like !== null && value.like !== undefined) {
                 clauses.push(`${key} like '%${value.like}%'`);
             }
-            if (value.lookup) {
+            if (value.lookup !== null && value.lookup !== undefined) {
                 const obj = {};
                 obj[key] = value.lookup;
                 clauses.push(Where.toQuerySyntax(obj));
             }
-            if (value.with) {
+            if (value.with !== null && value.with !== undefined) {
                 clauses.push(`${key} IS NOT EMPTY`);
             }
-            if (value.without) {
+            if (value.without !== null && value.without !== undefined) {
                 clauses.push(`${key} IS EMPTY`);
             }
-            if (value.or) {
+            if (value.or !== null && value.or !== undefined) {
                 const obj = {};
                 obj[key] = value.or;
                 clauses.push(Where.toQuerySyntax(obj).replace('AND', 'OR'));
             }
+            if (value.memberOf !== null && value.memberOf !== undefined && Array.isArray(value.memberOf)) {
+                const values: any[] = [];
+                for (const val of value.memberOf) {
+                    isNot ? values.push(`${val} NOT MEMBER OF ${key}`) : values.push(`${val} MEMBER OF ${key}`);
+                }
+                isNot ? clauses.push(`(${values.join(' AND ')})`) : clauses.push(`(${values.join(' OR ')})`);
+            }
             for (const subkey of Object.keys(value)) {
-                if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without'].indexOf(subkey) < 0) {
+                if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without', 'isNull', 'memberOf'].indexOf(subkey) < 0) {
                     const subvalue = value[subkey];
                     clauses.push(Where.parseQueryValue(`${key}.${subkey}`, subvalue));
                 }
@@ -201,6 +212,7 @@ export class Where {
 
         return `'${value.replace(/\*/g, '')}'`;
     }
+
     static writeQueryValues(values) {
         if (typeof values[0] === 'number' || typeof values[0] === 'boolean') {
             return `${values.join(',')}`;
