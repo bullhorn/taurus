@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
@@ -14,7 +14,7 @@
   "author": "Brian Kimball <bkimball@bullhorn.com>",
   "repository": {
     "type": "git",
-    "url": "http://github.com/bullhorn/taurus"
+    "url": "https://github.com/bullhorn/taurus"
   },
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
@@ -57,7 +57,8 @@
     "tslint": "~5.9.0",
     "tslint-xo": "^0.5.0",
     "typedoc": "^0.9.0",
-    "typescript": "~2.6.x"
+    "typescript": "~2.6.x",
+    "travis-deploy-once": "^4.3.2"
   },
   "scripts": {
     "build": "npm run clean && rollup -c",
@@ -68,6 +69,7 @@
     "posttest": "npm run lint",
     "prepare": "npm run build",
     "semantic-release": "semantic-release",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html"
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
+    "travis-deploy-once": "travis-deploy-once"
   }
 }
