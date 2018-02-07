@@ -94,7 +94,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
         };
     }
 
-    find(pk: number): Entity<T> {
+    findById(pk: number): Entity<T> {
         const found: any = this.getValue().find((item: any) => item.id === pk);
         if (found) {
             return found;
@@ -108,14 +108,14 @@ export class EntityList<T> extends StatefulSubject<T[]> {
 
     async update(item: EntityOperation, value: T): Promise<any> {
         return this._checkOperationCases(item, {
-            keyCase: async () => this.find(item as number).patch(value).save(),
+            keyCase: async () => this.findById(item as number).patch(value).save(),
             entityCase: async () => (item as Entity<any>).patch(value).save()
         }).then(this._eventHook('child_updated'));
     }
 
     async remove(item: EntityOperation): Promise<any> {
         return this._checkOperationCases(item, {
-            keyCase: async () => this.find(item as number).remove(),
+            keyCase: async () => this.findById(item as number).remove(),
             entityCase: async () => (item as Entity<any>).remove()
         }).then(this._eventHook('child_removed'));
     }
