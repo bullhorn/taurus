@@ -85,9 +85,9 @@ export class Staffing {
      * Retrieves the HttpService created to connect to the Bullhorn RestApi
      */
     static http(): AxiosInstance {
-        const cookie = getCookie('UL_identity');
+        const cookie = getCookie('UlEncodedIdentity');
         if (cookie && cookie.length) {
-            const identity = JSON.parse(JSON.parse(cookie));
+            const identity = JSON.parse(decodeURIComponent(cookie));
             const endpoints = identity.sessions.reduce((obj, session) => {
                 obj[session.name] = session.value.endpoint;
                 return obj;
