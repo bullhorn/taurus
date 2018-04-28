@@ -1,9 +1,5 @@
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Observable';
-import { ObjectUnsubscribedError } from 'rxjs/util/ObjectUnsubscribedError';
-import 'rxjs/add/operator/skip';
-import 'rxjs/add/operator/take';
+import { Observable, Subject, Subscription, ObjectUnsubscribedError } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 export const EMPTY: Symbol = Symbol('EMPTY');
 
@@ -21,6 +17,7 @@ export class StatefulSubject<T> extends Subject<T> {
         return this.getValue();
     }
     _subscribe(subscriber) {
+        // tslint:disable-next-line
         const subscription: Subscription = super._subscribe(subscriber);
         // BehaviorSubject would call next to dispatch initial state of subject
         if (subscription && !subscription.closed && this.hasValue()) {
@@ -50,6 +47,6 @@ export class StatefulSubject<T> extends Subject<T> {
         super.next(this._value = value);
     }
     once(): Observable<T> {
-        return this.take(1);
+        return this.pipe(take(1));
     }
 }

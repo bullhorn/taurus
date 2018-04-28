@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';

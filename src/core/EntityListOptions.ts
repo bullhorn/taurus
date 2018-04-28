@@ -1,8 +1,5 @@
-import { Observable } from 'rxjs/Observable';
-import { of as observableOf } from 'rxjs/observable/of';
-import { Observer } from 'rxjs/Observer';
-import { combineLatest } from 'rxjs/operator/combineLatest';
-import { auditTime } from 'rxjs/operator/auditTime';
+import { Observable, Observer, of, combineLatest } from 'rxjs';
+import { auditTime } from 'rxjs/operators';
 import { getOrCreateObservable } from './EntityOptions';
 import { is } from '../utils';
 
@@ -33,11 +30,11 @@ export interface EntityListOptions {
 // tslint:disable-next-line:only-arrow-functions
 export function observeListOptions(options: EntityListOptions, audit: boolean = true): Observable<SerializedListOptions | null> {
     if (!is(options).defined) {
-        return observableOf(null);
+        return of(null);
     }
 
     return Observable.create((observer: Observer<SerializedListOptions>) => {
-        let combined = combineLatest.call(
+        let combined = combineLatest(
             getOrCreateObservable('fields', options),
             getOrCreateObservable('layout', options),
             getOrCreateObservable('meta', options),
@@ -48,7 +45,7 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
             getOrCreateObservable('params', options)
         );
         if (audit) {
-            combined = auditTime.call(combined, 0);
+            combined = combined.pipe(auditTime(0));
         }
         combined
             .subscribe(([fields, layout, meta, orderBy, startAt, limitTo, filter, params]: [string[], string, string, string, number, number, Object, Object]) => {

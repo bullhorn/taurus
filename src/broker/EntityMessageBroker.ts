@@ -1,8 +1,5 @@
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/share';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/mergeAll';
+import { Observable, Subject } from 'rxjs';
+import { filter, mergeAll, share } from 'rxjs/operators';
 import { EndlessReplaySubject, findSubjectByName, compareTopics } from './EntityMessageBrokerUtils';
 
 export class EntityMessageBroker {
@@ -15,7 +12,7 @@ export class EntityMessageBroker {
     /**
      * Permanent message bus stream as Observable
      */
-    private readonly messageStream: Observable<any> = this.messageBus.share();
+    private readonly messageStream: Observable<any> = this.messageBus.pipe(share());
 
     constructor() {
         if (EntityMessageBroker._instance) {
@@ -76,7 +73,7 @@ export class EntityMessageBroker {
             return this.subject(name);
         }
         // Return stream
-        return this.messageStream.filter(obs => compareTopics(obs.name, name)).mergeAll();
+        return this.messageStream.pipe(filter(obs => compareTopics(obs.name, name)), mergeAll());
     }
 
 }

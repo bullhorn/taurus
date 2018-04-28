@@ -1,8 +1,6 @@
 import { AxiosResponse } from 'axios';
 // RXJS
 import { StatefulSubject } from './StatefulSubject';
-import 'rxjs/add/operator/skip';
-import 'rxjs/add/operator/take';
 // Lib
 import { BullhornEntityResponse, BullhornSavedEntityResponse } from '../types';
 import { EntityService } from '../services';
