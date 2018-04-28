@@ -69,18 +69,22 @@ export class Cache {
      * @returns value - if the cache contains the key
      */
     static has(key: string) {
-        const expiration = Date.now() - 86400000;
-        const tmp = storageReference.getItem(key);
-        if (tmp !== undefined && tmp && tmp !== {} && tmp !== '') {
-            const val = JSON.parse(tmp);
-            if (val.dateCached) {
-                return val.dateCached > expiration;
+        try {
+            const expiration = Date.now() - 86400000;
+            const tmp = storageReference.getItem(key);
+            if (tmp !== undefined && tmp && tmp !== '') {
+                const val = JSON.parse(tmp);
+                if (val.dateCached) {
+                    return val.dateCached > expiration;
+                }
+
+                return true;
             }
-
-            return true;
+            return false;
+        } catch (err) {
+            console.warn(`An error occurred while looking for ${key} in Cache`, err);
+            return false;
         }
-
-        return false;
     }
     /**
      * Removes a key from the cache
