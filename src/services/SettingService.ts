@@ -13,20 +13,18 @@ export class SettingService {
   }
 
   async getSettings(settings: string[]): Promise<{ [key: string]: any }> {
-    let response: AxiosResponse = await this.http.get(`settings/${settings.join()}`);
-    let result: { [key: string]: any } = response.data;
-    return result;
+    const response: AxiosResponse = await this.http.get(`settings/${settings.join()}`);
+    return response.data;
   }
 
   async getEntitlements(entity: string): Promise<string[]> {
-    let response: AxiosResponse = await this.http.get(`entitlements/${entity}`);
-    let entitlements: string[] = response.data;
-    return entitlements;
+    const response: AxiosResponse = await this.http.get(`entitlements/${entity}`);
+    return response.data;
   }
 
   async getAllSettingsAndEntitlements(): Promise<BullhornAllSettingsAndEntitlementsResponse> {
-    let response: AxiosResponse = await this.http.get('services/Settings/allEntitlementsAndSettings');
-    let result: BullhornAllSettingsAndEntitlementsResponse = response.data;
+    const response: AxiosResponse = await this.http.get('services/Settings/allEntitlementsAndSettings');
+    const result: BullhornAllSettingsAndEntitlementsResponse = response.data;
     if (result && result.dashboardEntitlements && result.entitlements) {
       result.entitlements.DASHBOARD = result.dashboardEntitlements;
     }
