@@ -19,7 +19,7 @@ export class MetaService {
     fields: Field[] = [];
     parameters: any = {
         fields: '*',
-        meta: 'full'
+        meta: 'full',
     };
 
     constructor(public entity: string) {
@@ -63,7 +63,7 @@ export class MetaService {
             const result: BullhornMetaResponse = response.data;
             this.parse(result);
             this.label = result.label;
-            return this.extract([...result.fields.map(x => x.name)]);
+            return this.extract([...result.fields.map((x) => x.name)]);
         }
         return this.extract(requested);
     }
@@ -73,6 +73,15 @@ export class MetaService {
         const full: BullhornMetaResponse = Cache.get(this.endpoint);
         full.fields = fields;
         return full;
+    }
+
+    async getByLayout(layout: string): Promise<Field[]> {
+        this.parameters.layout = layout;
+        delete this.parameters.fields;
+        const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
+        const result: BullhornMetaResponse = response.data;
+        this.label = result.label;
+        return result.fields;
     }
 
     parse(result: any): void {
@@ -91,7 +100,7 @@ export class MetaService {
                         this.memory[field.name] = value;
                     },
                     configurable: true,
-                    enumerable: true
+                    enumerable: true,
                 });
             }
             // Let md:Field = field; // TODO: new MetaData(field);
@@ -132,7 +141,10 @@ export class MetaService {
     }
 
     _clean(name): string {
-        return name.split('.')[0].split('[')[0].split('(')[0];
+        return name
+            .split('.')[0]
+            .split('[')[0]
+            .split('(')[0];
     }
 
     /**
