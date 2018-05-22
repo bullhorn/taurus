@@ -1,4 +1,5 @@
 import { Observable, Observer, of, combineLatest } from 'rxjs';
+import { isObservable } from 'rxjs/internal/util/isObservable';
 import { auditTime } from 'rxjs/operators';
 import { is, can } from '../utils';
 
@@ -91,7 +92,7 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
 
 // tslint:disable-next-line:only-arrow-functions
 export function getOrCreateObservable(key: string, options: EntityOptions): Observable<Primitive> {
-    if (options[key] instanceof Observable) {
+    if (isObservable(options[key])) {
         return options[key];
     }
     if (can(options).have(key)) {
