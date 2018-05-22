@@ -45,7 +45,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
         super(state);
         this.type = type;
         this.$entity = new EntityService<T>(this.type);
-        observeOptions(options).subscribe(params => {
+        observeOptions(options).subscribe((params) => {
             if (!params) {
                 return;
             }
@@ -72,14 +72,13 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
                     case 'params':
                         this.$entity.params(params.params);
                         break;
+                    case 'id':
+                        this.get(params.id);
+                        break;
                     default:
                         console.warn(`Unknown key in params: ${key}`);
                 }
             }
-            if (params.id) {
-                this.get(params.id);
-            }
-
         });
         if (this.hasValue()) {
             this.fields(Object.keys(this.value));
@@ -114,7 +113,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
                 subject.next(value);
             },
             configurable: true,
-            enumerable: true
+            enumerable: true,
         });
     }
 
@@ -222,7 +221,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
         if (!state || !state.id) {
             return;
         }
-        this.broker.on(`${this.type}:${state.id}:value`).subscribe(value => {
+        this.broker.on(`${this.type}:${state.id}:value`).subscribe((value) => {
             this.patch(value, true);
         });
     }
