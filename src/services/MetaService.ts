@@ -77,7 +77,7 @@ export class MetaService {
 
     async getByLayout(layout: string): Promise<Field[]> {
         this.parameters.layout = layout;
-        delete this.parameters.fields;
+        this.parameters.fields = '*';
         const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
         const result: BullhornMetaResponse = response.data;
         this.label = result.label;
