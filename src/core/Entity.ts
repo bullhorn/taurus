@@ -169,34 +169,30 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
         });
         return this;
     }
-    // /**
-    // * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
-    // * @param property - The TO_MANY Association field
-    // * @param fields - Additional fields to retrieve on the TO_MANY field
-    // */
-    // Many(property: string, fields: Array<string>): Promise<AxiosResponse> {
-    //     Return this.http.get(`${this.endpoint}${this.value.id}/${property}`, {
-    //         Params: {
-    //             Fields: fields,
-    //             ShowTotalMatched: true
-    //         }
-    //     }).then((response: AxiosResponse) => {
-    //         If (!this.value.hasOwnProperty(property)) {
-    //             Object.defineProperty(this, property, {
-    //                 Get: function getter() {
-    //                     Return this.value[property];
-    //                 },
-    //                 Set: function setter(value) {
-    //                     This.value[property] = value;
-    //                 },
-    //                 Configurable: true,
-    //                 Enumerable: true
-    //             });
-    //         }
-    //         This.value[property] = response.data;
-    //         Return response;
-    //     });
-    // }
+    /**
+    * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
+    * @param property - The TO_MANY Association field
+    * @param fields - Additional fields to retrieve on the TO_MANY field
+    */
+    many(property: string, fields: Array<string>): Entity<T> {
+        this.$entity.many(property, fields, this.value).then((response: AxiosResponse) => {
+            if (!this.value.hasOwnProperty(property)) {
+                Object.defineProperty(this, property, {
+                    get: function getter() {
+                        return this.value[property];
+                    },
+                    set: function setter(value) {
+                        this.value[property] = value;
+                    },
+                    configurable: true,
+                    enumerable: true
+                });
+            }
+            this.value[property] = response.data;
+            return response;
+        });
+        return this;
+    }
 
     /**
      * Create or Updates the entity based on the presence of an 'id' property
