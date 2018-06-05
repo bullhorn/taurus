@@ -70,14 +70,13 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
                     case 'params':
                         this.$entity.params(params.params);
                         break;
+                    case 'id':
+                        this.get(params.id);
+                        break;
                     default:
                         console.warn(`Unknown key in params: ${key}`);
                 }
             }
-            if (params.id) {
-                this.get(params.id);
-            }
-
         });
         if (this.hasValue()) {
             this.fields(Object.keys(this.value));
@@ -112,7 +111,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
                 subject.next(value);
             },
             configurable: true,
-            enumerable: true
+            enumerable: true,
         });
     }
 

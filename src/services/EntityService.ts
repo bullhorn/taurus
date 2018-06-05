@@ -32,11 +32,11 @@ export class EntityService<T> {
      */
     constructor(type: string) {
         this.type = type;
-        this.endpoint = `entity/${this.type}/`;
+        this.endpoint = `entity/${this.type}`;
         this.http = Staffing.http();
         this.meta = new MetaService(this.type);
         this.parameters = {
-            fields: this._fields || ['id']
+            fields: this._fields || ['id'],
         };
     }
 
@@ -72,10 +72,7 @@ export class EntityService<T> {
      * @param id - Id of the Model to retrieve
      */
     async get(id: number): Promise<BullhornEntityResponse<T>> {
-        const [response, meta] = await Promise.all([
-            this.http.get(`${this.endpoint}${id}`, { params: this.parameters }),
-            this.meta.getFull(this.parameters.fields, this.parameters.layout)
-        ]);
+        const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
         const result: BullhornEntityResponse<T> = response.data;
         result.meta = meta;
         return result;
@@ -117,7 +114,7 @@ export class EntityService<T> {
     async save(value: any): Promise<AxiosResponse> {
         // Update
         if (value && value.id) {
-            return this.http.post(`${this.endpoint}${value.id}`, value);
+            return this.http.post(`${this.endpoint}/${value.id}`, value);
         }
         // Create
         return this.http.put(this.endpoint, value);
