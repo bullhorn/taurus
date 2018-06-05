@@ -63,7 +63,8 @@ export class MetaService {
             const result: BullhornMetaResponse = response.data;
             this.parse(result);
             this.label = result.label;
-            return this.extract([...result.fields.map(x => x.name)]);
+            // Return this.extract([...result.fields.map(x => x.name)]);
+            return this.extract(requested);
         }
         return this.extract(requested);
     }
