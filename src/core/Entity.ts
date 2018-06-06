@@ -170,25 +170,20 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
         return this;
     }
     /**
-    * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
-    * @param property - The TO_MANY Association field
-    * @param fields - Additional fields to retrieve on the TO_MANY field
-    */
-    many(property: string, fields: Array<string>): Entity<T> {
+     * Make http request to get entity's many relationship. Response will update the value of the entity object.
+     * @param property - The TO_MANY Association field
+     * @param fields - Additional fields to retrieve on the TO_MANY field
+     */
+    many(property: string, fields: string[]): Entity<T> {
+        // tslint:disable-next-line:no-floating-promises
         this.$entity.many(property, fields, this.value).then((response: AxiosResponse) => {
-            if (!this.value.hasOwnProperty(property)) {
-                Object.defineProperty(this, property, {
-                    get: function getter() {
-                        return this.value[property];
-                    },
-                    set: function setter(value) {
-                        this.value[property] = value;
-                    },
-                    configurable: true,
-                    enumerable: true
-                });
+            if (!this._fields.includes(property)) {
+                this._proxy(property);
+                this._fields.push(property);
             }
-            this.value[property] = response.data;
+            this.value[property] = response;
+            this.patch({ property: response });
+            this._setUpObservable(this.getValue());
             return response;
         });
         return this;
