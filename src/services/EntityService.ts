@@ -72,6 +72,7 @@ export class EntityService<T> {
      * @param id - Id of the Model to retrieve
      */
     async get(id: number): Promise<BullhornEntityResponse<T>> {
+        console.log('test', this.parameters);
         const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
         const result: BullhornEntityResponse<T> = response.data;
         result.meta = meta;
