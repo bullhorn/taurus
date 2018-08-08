@@ -88,7 +88,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
      * Define the fields to set or retrieve for the given entity. Getter and Setter methods will automagically be set up on the entity once the fields are defined.
      * @param args - Fields can either be sent as a list of arguments or as an Array.
      */
-    public fields(...args) {
+    public fields(...args): Entity<T> {
         const requested = Array.isArray(args[0]) ? args[0] : args;
         for (const field of requested) {
             if (!this._fields.includes(field)) {
@@ -119,7 +119,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
      * Will merge object into the entity's parameter to be sent in any http request.
      * @param object - all additional parameters
      */
-    params(object) {
+    params(object): Entity<T> {
         if (object.hasOwnProperty('fields')) {
             this.fields(object.fields);
             delete object.fields;

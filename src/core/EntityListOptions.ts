@@ -20,7 +20,7 @@ export interface EntityListOptions {
     fields?: string[] | Observable<string[]>;
     layout?: string | Observable<string>;
     meta?: string | Observable<string>;
-    orderBy?: string | Observable<string>;
+    orderBy?: string | Observable<string> | any;
     startAt?: number | Observable<number>;
     limitTo?: number | Observable<number>;
     filter?: Object | Observable<Object>;
