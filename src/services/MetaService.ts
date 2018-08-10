@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { Cache } from '../utils';
-import { BullhornMetaResponse, Field, Layout } from '../types';
+import { BullhornMetaResponse, Field, Layout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
 
 /**
@@ -18,6 +18,9 @@ export class MetaService {
     memory: any = {};
     fields: Field[] = [];
     layouts: Layout[] = [];
+    tracks: BullhornTrack[] = [];
+    sectionHeaders: BullhornSectionHeader[] = [];
+    trackTrigger: string;
     parameters: any = {
         fields: '*',
         meta: 'full',
@@ -150,8 +153,18 @@ export class MetaService {
                 }
             }
         }
+        if (result && result.trackTrigger) {
+            this.trackTrigger = result.trackTrigger;
+            this.tracks = result.tracks;
+        }
+        if (result && result.sectionHeaders) {
+            this.sectionHeaders = result.sectionHeaders;
+        }
         result.fields = this.fields;
         result.layouts = this.layouts;
+        result.trackTrigger = this.trackTrigger;
+        result.tracks = this.tracks;
+        result.sectionHeaders = this.sectionHeaders;
         Cache.put(this.endpoint, result);
     }
 
