@@ -38,3 +38,10 @@ export interface Field {
     value?: any;
     interactions?: any[];
 }
+
+export interface Layout {
+    name: string;
+    label: string;
+    enabled: boolean;
+    fields: string[];
+}
