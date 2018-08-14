@@ -9,7 +9,7 @@ notifications:
 node_js:
   - 8
 before_install:
-  - sudo apt-get install update
+  - sudo apt-get update
   - sudo apt-get install expect
   - sudo apt-get install libnotify-bin
 install:
