@@ -36,7 +36,7 @@ export class EntityService<T> {
         this.http = Staffing.http();
         this.meta = new MetaService(this.type);
         this.parameters = {
-            fields: this._fields || ['id'],
+            fields: this._fields || ['id']
         };
     }
 
@@ -72,41 +72,39 @@ export class EntityService<T> {
      * @param id - Id of the Model to retrieve
      */
     async get(id: number): Promise<BullhornEntityResponse<T>> {
+        console.log('test', this.parameters);
         const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
         const result: BullhornEntityResponse<T> = response.data;
         result.meta = meta;
         return result;
     }
 
-    // /**
-    //  * Make http request to get entity. Objects 'data' property will be set to response, then promise will be resolved.
-    //  * @param property - The TO_MANY Association field
-    //  * @param fields - Additional fields to retrieve on the TO_MANY field
-    //  */
-    // Many(property: string, fields: Array<string>): Promise<AxiosResponse> {
-    //     Return this.http.get(`${this.endpoint}${this.value.id}/${property}`, {
-    //         Params: {
-    //             Fields: fields,
-    //             ShowTotalMatched: true
-    //         }
-    //     }).then((response: AxiosResponse) => {
-    //         If (!this.value.hasOwnProperty(property)) {
-    //             Object.defineProperty(this, property, {
-    //                 Get: function getter() {
-    //                     Return this.value[property];
-    //                 },
-    //                 Set: function setter(value) {
-    //                     This.value[property] = value;
-    //                 },
-    //                 Configurable: true,
-    //                 Enumerable: true
-    //             });
-    //         }
+    /**
+     * Make http request to get entity with recordedit layout. Objects 'data' property will be set to response, then promise will be resolved.
+     * @param id - Id of the Model to retrieve
+     */
+    async edit(id: number): Promise<BullhornEntityResponse<T>> {
+        const layout = 'RecordEdit';
+        const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: { layout } }), this.meta.getFull(this.parameters.fields, layout)]);
+        const result: BullhornEntityResponse<T> = response.data;
+        result.meta = meta;
+        return result;
+    }
 
-    //         This.value[property] = response.data;
-    //         Return response;
-    //     });
-    // }
+    /**
+     * Make http request to get entity's full toMany relationship for a property.
+     * @param property - The TO_MANY Association field
+     * @param fields - Additional fields to retrieve on the TO_MANY field
+     */
+    async many(property: string, fields: string[], value: any): Promise<AxiosResponse> {
+        const toManyData = await this.http.get(`${this.endpoint}/${value.id}/${property}`, {
+            params: {
+                fields,
+                showTotalMatched: true
+            }
+        });
+        return toManyData.data;
+    }
 
     /**
      * Create or Updates the entity based on the presence of an 'id' property

@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { Cache } from '../utils';
-import { BullhornMetaResponse, Field } from '../types';
+import { BullhornMetaResponse, Field, Layout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
 
 /**
@@ -17,6 +17,10 @@ export class MetaService {
     http: AxiosInstance;
     memory: any = {};
     fields: Field[] = [];
+    layouts: Layout[] = [];
+    tracks: BullhornTrack[] = [];
+    sectionHeaders: BullhornSectionHeader[] = [];
+    trackTrigger: string;
     parameters: any = {
         fields: '*',
         meta: 'full',
@@ -24,7 +28,7 @@ export class MetaService {
 
     constructor(public entity: string) {
         this.http = Staffing.http();
-        this.parse(Cache.get(this.endpoint) || { fields: [] });
+        this.parse(Cache.get(this.endpoint) || { fields: [], layouts: [] });
     }
 
     get endpoint(): string {
@@ -68,60 +72,99 @@ export class MetaService {
         return this.extract(requested);
     }
 
+    async getAllLayouts(): Promise<any[]> {
+        const response: AxiosResponse = await this.http.get(this.endpoint, { params: { meta: 'full', includeLayoutFields: true } });
+        this.parse(response.data);
+        return response.data.layouts;
+    }
+
     async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
-        const fields: Field[] = await this.get(requested, layout);
+        const fields: Field[] = await this.get(requested);
+        const layoutFields: Field[] = layout ? await this.getByLayout(layout) : [];
         const full: BullhornMetaResponse = Cache.get(this.endpoint);
-        full.fields = fields;
+        full.fields = [...fields, ...layoutFields];
         return full;
     }
 
     async getByLayout(layout: string): Promise<Field[]> {
-        this.parameters.layout = layout;
-        delete this.parameters.fields;
-        const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
-        const result: BullhornMetaResponse = response.data;
-        this.label = result.label;
-        return result.fields;
+        const exists = this.layouts.find((l: any) => l.name === layout);
+        if (!exists) {
+            this.parameters.layout = layout;
+            delete this.parameters.fields;
+            const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
+            const result: BullhornMetaResponse = response.data;
+            this.label = result.label;
+            this.layouts.push({
+                name: layout,
+                label: layout,
+                enabled: true,
+                fields: result.fields.map(f => f.name)
+            });
+            return Promise.resolve(result.fields);
+        }
+        return this.get(exists.fields);
     }
 
     parse(result: any): void {
         if (!result) {
             return;
         }
-
-        for (const field of result.fields) {
-            // Console.log('Parsing', field);
-            if (!this.memory.hasOwnProperty(field.name)) {
-                Object.defineProperty(this, field.name, {
-                    get() {
-                        return this.memory[field.name];
-                    },
-                    set(value) {
-                        this.memory[field.name] = value;
-                    },
-                    configurable: true,
-                    enumerable: true,
-                });
+        if (result && result.fields) {
+            for (const field of result.fields) {
+                // Console.log('Parsing', field);
+                if (!this.memory.hasOwnProperty(field.name)) {
+                    Object.defineProperty(this, field.name, {
+                        get() {
+                            return this.memory[field.name];
+                        },
+                        set(value) {
+                            this.memory[field.name] = value;
+                        },
+                        configurable: true,
+                        enumerable: true,
+                    });
+                }
+                // Let md:Field = field; // TODO: new MetaData(field);
+                const exists = this.fields.find((f: any) => f.name === field.name);
+                if (!exists) {
+                    this.fields.push(field);
+                }
+                this.memory[field.name] = field;
             }
-            // Let md:Field = field; // TODO: new MetaData(field);
-            const exists = this.fields.find((f: any) => f.name === field.name);
-            if (!exists) {
-                this.fields.push(field);
-            }
-            this.memory[field.name] = field;
+            this.fields.sort((a, b) => {
+                const aa = a.sortOrder ? a.sortOrder : a.name;
+                const bb = b.sortOrder ? b.sortOrder : b.name;
+                if (aa > bb) {
+                    return 1;
+                }
+                if (bb > aa) {
+                    return -1;
+                }
+                return 0;
+            });
         }
-        this.fields.sort((a, b) => {
-            const aa = a.sortOrder ? a.sortOrder : a.name;
-            const bb = b.sortOrder ? b.sortOrder : b.name;
-            if (aa > bb) {
-                return 1;
+        if (result && result.layouts) {
+            for (const layout of result.layouts) {
+                const exists = this.layouts.find((l: any) => l.name === layout.name);
+                if (!exists) {
+                    this.layouts.push(layout);
+                } else if (layout.fields) {
+                    exists.fields = layout.fields;
+                }
             }
-            if (bb > aa) {
-                return -1;
-            }
-            return 0;
-        });
+        }
+        if (result && result.trackTrigger) {
+            this.trackTrigger = result.trackTrigger;
+            this.tracks = result.tracks;
+        }
+        if (result && result.sectionHeaders) {
+            this.sectionHeaders = result.sectionHeaders;
+        }
         result.fields = this.fields;
+        result.layouts = this.layouts;
+        result.trackTrigger = this.trackTrigger;
+        result.tracks = this.tracks;
+        result.sectionHeaders = this.sectionHeaders;
         Cache.put(this.endpoint, result);
     }
 
@@ -170,7 +213,7 @@ export class MetaService {
     static async validate(): Promise<boolean> {
         const response: AxiosResponse = await Staffing.http().get('/meta');
         const result: any[] = response.data;
-        if (result && result) {
+        if (result) {
             for (const meta of result) {
                 if (meta.dateLastModified) {
                     const item = Cache.get(`meta/${meta.entity}`);
@@ -183,5 +226,13 @@ export class MetaService {
             }
         }
         return true;
+    }
+
+    static async preload(entity: string) {
+        const meta: MetaService = new MetaService(entity);
+        return Promise.all([
+            meta.get(['*']),
+            meta.getAllLayouts()
+        ]);
     }
 }

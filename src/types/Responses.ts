@@ -1,5 +1,4 @@
-import { Field } from './Field';
-import { Option } from './Option';
+import { Field, Layout } from './Field';
 
 export interface BullhornAllSettingsAndEntitlementsResponse {
   settings: { [key: string]: any };
@@ -36,6 +35,24 @@ export interface BullhornAllSettingsAndEntitlementsResponse {
   };
 }
 
+export interface BullhornLayout {
+  enabled: boolean;
+  fields: string[];
+  label: string;
+  name: string;
+}
+
+export interface BullhornSectionHeader {
+  label: string;
+  name: string;
+  sortOrder: number;
+  enabled: boolean;
+}
+export interface BullhornTrack {
+  name: string;
+  values: string[];
+}
+
 export interface BullhornMessage {
   detailMessage: string;
   severity: string;
@@ -54,6 +71,10 @@ export interface BullhornMetaResponse {
   label: string;
   dateLastModified: number;
   fields: Field[];
+  layouts: Layout[];
+  trackTrigger: string;
+  tracks: BullhornTrack[];
+  sectionHeaders: BullhornSectionHeader[];
 }
 
 export interface BullhornListResponse<T> {
