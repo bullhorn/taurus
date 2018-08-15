@@ -1,4 +1,3 @@
 export * from './Responses';
-export * from './Field';
-export * from './Option';
+export * from './FieldMap';
 export * from './StaffingConfiguration';

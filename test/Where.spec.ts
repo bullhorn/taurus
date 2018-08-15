@@ -10,13 +10,13 @@ describe('Where', () => {
         };
 
         it('should create a simple lucene query', () => {
-            let where = Where.toSearchSyntax(SIMPLE_QUERY);
+            const where = Where.toSearchSyntax(SIMPLE_QUERY);
             expect(where).toEqual('id:101 AND status:"New Lead" AND categories:(101 102) AND dateAdded:1426709667357');
         });
 
         it('should create a simple database query', () => {
-            let where = Where.toQuerySyntax(SIMPLE_QUERY);
-            expect(where).toEqual(`id=101 AND status='New Lead' AND categories IN (101,102) AND dateAdded=1426709667357`);
+            const where = Where.toQuerySyntax(SIMPLE_QUERY);
+            expect(where).toEqual('id=101 AND status=\'New Lead\' AND categories IN (101,102) AND dateAdded=1426709667357');
         });
 
         it('should create a simple lucene query with isNull true', () => {
@@ -31,8 +31,8 @@ describe('Where', () => {
                     }
                 }
             };
-            let where = Where.toQuerySyntax(SIMPLE_QUERY);
-            expect(where).toEqual(`id=101 AND status='New Lead' AND categories IN (101,102) AND dateAdded=1426709667357 AND owner.name IS NULL`);
+            const where = Where.toQuerySyntax(SIMPLE_QUERY);
+            expect(where).toEqual('id=101 AND status=\'New Lead\' AND categories IN (101,102) AND dateAdded=1426709667357 AND owner.name IS NULL');
         });
 
         it('should create a simple lucene query with isNull false', () => {
@@ -47,14 +47,14 @@ describe('Where', () => {
                     }
                 }
             };
-            let where = Where.toQuerySyntax(SIMPLE_QUERY);
-            expect(where).toEqual(`id=101 AND status='New Lead' AND categories IN (101,102) AND dateAdded=1426709667357 AND owner.name IS NOT NULL`);
+            const where = Where.toQuerySyntax(SIMPLE_QUERY);
+            expect(where).toEqual('id=101 AND status=\'New Lead\' AND categories IN (101,102) AND dateAdded=1426709667357 AND owner.name IS NOT NULL');
         });
     });
 
     describe('with negative queries', () => {
         it('should create a valid lucene query', () => {
-            let where = Where.toSearchSyntax({
+            const where = Where.toSearchSyntax({
                 id: 101,
                 status: { not: 'Archived' },
                 categories: { not: { any: [103, 104] } }
@@ -64,16 +64,16 @@ describe('Where', () => {
         });
 
         it('should create a valid database query', () => {
-            let where = Where.toQuerySyntax({
+            const where = Where.toQuerySyntax({
                 id: 101,
                 status: { not: 'Archived' },
                 categories: { not: { any: [103, 104] } }
             });
 
-            expect(where).toEqual(`id=101 AND status<>'Archived' AND categories NOT IN (103,104)`);
+            expect(where).toEqual('id=101 AND status<>\'Archived\' AND categories NOT IN (103,104)');
         });
     });
-    
+
     describe('with or queries', () => {
         it('should create a valid OR query', () => {
             const where = Where.toSearchSyntax({

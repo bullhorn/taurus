@@ -9,12 +9,12 @@ export enum FieldType {
     SCALAR
 }
 
-export interface FieldOptions {
+export interface FieldMapOption {
     value?: any;
     label?: string;
 }
 
-export interface Field {
+export interface FieldMap {
     name: string;
     type?: string;
     dataType?: FieldType;
@@ -29,7 +29,7 @@ export interface Field {
     inputType?: string;
     optionsType?: string;
     optionsUrl?: string;
-    options?: FieldOptions[];
+    options?: FieldMapOption[];
     hideFromSearch?: boolean;
     sortOrder?: number;
     hint?: string;
@@ -39,7 +39,7 @@ export interface Field {
     interactions?: any[];
 }
 
-export interface Layout {
+export interface FieldLayout {
     name: string;
     label: string;
     enabled: boolean;

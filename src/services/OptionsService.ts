@@ -1,7 +1,6 @@
-import { AxiosInstance, AxiosResponse } from 'axios';
-import { BullhornListResponse, Option } from '../types';
+import { AxiosInstance } from 'axios';
+import { BullhornListResponse, FieldMapOption } from '../types';
 import { Staffing } from './Staffing';
-import { Where } from './Where';
 
 /**
  * A base class for making Options calls via Rest
@@ -16,7 +15,7 @@ export class OptionsService {
     };
     protected _page: number = 0;
     protected _endpoint: string;
-    protected _lastResponse: BullhornListResponse<Option>;
+    protected _lastResponse: BullhornListResponse<FieldMapOption>;
     /**
      * constructor description
      * @param endpoint - Base Url for all relative http calls eg. 'options/JobOrder'
@@ -31,7 +30,7 @@ export class OptionsService {
         this._endpoint = value;
     }
 
-    get snapshot(): BullhornListResponse<Option> {
+    get snapshot(): BullhornListResponse<FieldMapOption> {
         return this._lastResponse;
     }
 
@@ -48,20 +47,20 @@ export class OptionsService {
         this.parameters.start = this.parameters.count * value;
         return this;
     }
-    async nextpage(): Promise<BullhornListResponse<Option>> {
+    async nextpage(): Promise<BullhornListResponse<FieldMapOption>> {
         return this.page(++this._page).run(true);
     }
     params(object) {
         this.parameters = { ...this.parameters, ...object };
         return this;
     }
-    async get(add): Promise<BullhornListResponse<Option>> {
+    async get(add): Promise<BullhornListResponse<FieldMapOption>> {
         return this.run(add);
     }
-    async run(add): Promise<BullhornListResponse<Option>> {
+    async run(add): Promise<BullhornListResponse<FieldMapOption>> {
        return this.http.get(this.endpoint, { params: this.parameters })
             .then(response => response.data)
-            .then((result: BullhornListResponse<Option>) => {
+            .then((result: BullhornListResponse<FieldMapOption>) => {
                 this._lastResponse = result;
                 const records = result.data;
                 if (add) {

@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { Cache } from '../utils';
-import { BullhornMetaResponse, Field, Layout, BullhornTrack, BullhornSectionHeader } from '../types';
+import { BullhornMetaResponse, FieldMap, FieldLayout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
 
 /**
@@ -16,8 +16,8 @@ export class MetaService {
     label: string;
     http: AxiosInstance;
     memory: any = {};
-    fields: Field[] = [];
-    layouts: Layout[] = [];
+    fields: FieldMap[] = [];
+    layouts: FieldLayout[] = [];
     tracks: BullhornTrack[] = [];
     sectionHeaders: BullhornSectionHeader[] = [];
     trackTrigger: string;
@@ -55,7 +55,7 @@ export class MetaService {
     /**
      * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
      */
-    async get(requested: string[], layout?: string): Promise<Field[]> {
+    async get(requested: string[], layout?: string): Promise<FieldMap[]> {
         const missing = this.missing(requested);
         if (missing.length || layout) {
             // Console.log('Fields', requested);
@@ -79,14 +79,14 @@ export class MetaService {
     }
 
     async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
-        const fields: Field[] = await this.get(requested);
-        const layoutFields: Field[] = layout ? await this.getByLayout(layout) : [];
+        const fields: FieldMap[] = await this.get(requested);
+        const layoutFields: FieldMap[] = layout ? await this.getByLayout(layout) : [];
         const full: BullhornMetaResponse = Cache.get(this.endpoint);
         full.fields = [...fields, ...layoutFields];
         return full;
     }
 
-    async getByLayout(layout: string): Promise<Field[]> {
+    async getByLayout(layout: string): Promise<FieldMap[]> {
         const exists = this.layouts.find((l: any) => l.name === layout);
         if (!exists) {
             this.parameters.layout = layout;
@@ -193,14 +193,14 @@ export class MetaService {
     /**
      * Get specific meta data properties
      */
-    extract(fields: string[]): Field[] {
+    extract(fields: string[]): FieldMap[] {
         if (!this.memory) {
             return [];
         }
-        const result: Field[] = [];
+        const result: FieldMap[] = [];
         for (const field of fields) {
             const cleaned: string = this._clean(field);
-            const meta: Field = this.memory[cleaned];
+            const meta: FieldMap = this.memory[cleaned];
             if (meta && meta.name === 'id') {
                 result.unshift(meta);
             } else {

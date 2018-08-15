@@ -19,7 +19,7 @@ export interface Identity {
  * job.save();
  * ```
  */
-export class EntitySubscription<T extends Identity> {
+export class EntitySubscription {
     http: AxiosInstance;
     // Subscription Type
     public readonly subscriptionType: string = 'entity';
@@ -27,14 +27,15 @@ export class EntitySubscription<T extends Identity> {
     public readonly eventTypes: string[] = ['INSERTED', 'UPDATED', 'DELETED'];
     // EntityBroker
     protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
-    private _lastRequestId: number;
+    public _lastRequestId: number = 0;
     /**
      * constructor
      * @param  subscriptionId name of the subscription
      * @param  types List of Entity events to listen to
      */
-    constructor(private subscriptionId: string, public types: string[] = [], private options: EntityOptions = {}) {
+    constructor(private readonly subscriptionId: string, public types: string[] = []) {
         this.http = Staffing.http();
+        this._setUpObservable().catch(() => console.error('Error in Subscription'));
     }
 
     get endpoint(): string {
