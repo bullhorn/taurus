@@ -44,7 +44,7 @@ const getCookie = (cname: string) => {
 export class Staffing {
     public static unauthorized: Subject<any> = new Subject();
     private static readonly _http: AxiosInstance = axios.create({
-        paramsSerializer: (params) => {
+        paramsSerializer: (params: any) => {
             return QueryString.stringify(params);
         },
     });
@@ -119,7 +119,7 @@ export class Staffing {
             Staffing._http.interceptors.response.use(
                 (response: AxiosResponse) => {
                     // Tracking
-                    let timing: { start: number; url: string } = (response.config as any)._timing || undefined;
+                    const timing: { start: number; url: string } = (response.config as any)._timing || undefined;
                     if (Staffing.trackingCallback && timing) {
                         Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
                     }
@@ -127,8 +127,8 @@ export class Staffing {
                 },
                 async (error: AxiosError) => {
                     // Tracking
-                    let errorResponse: AxiosResponse = error.response;
-                    let timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
+                    const errorResponse: AxiosResponse = error.response;
+                    const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
                     if (Staffing.trackingCallback && timing) {
                         Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
                     }
