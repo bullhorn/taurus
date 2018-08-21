@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import { Subject } from 'rxjs/Subject';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 import { StaffingConfiguration } from '../types';
@@ -34,17 +34,25 @@ const getCookie = (cname: string) => {
  *      BhRestToken: '~BULLHORN_REST_TOKEN~',
  *      restUrl: '~BULLHORN_REST_ENDPOING~',
  * });
+ *
+ * // Tracking request timings
+ * Staffing.timingCallback = (url: string, time: number) {
+ *   // do some tracking
+ * }
  * ```
  */
 export class Staffing {
     public static unauthorized: Subject<any> = new Subject();
     private static readonly _http: AxiosInstance = axios.create({
-        paramsSerializer: params => {
+        paramsSerializer: (params) => {
             return QueryString.stringify(params);
-        }
+        },
     });
     public useCookies: boolean = false;
     public accessToken: string;
+    public static httpInitialized: boolean = false;
+    // Setup tracking by providing this callback, example above
+    public static trackingCallback: Function;
 
     public config: StaffingConfiguration = {
         client_id: 'UNDEFINED',
@@ -54,7 +62,7 @@ export class Staffing {
         login_url: 'https://rest.bullhornstaffing.com/rest-services/login',
         redirect_url: 'https://localhost:3000',
         apiVersion: '*',
-        useCookies: false
+        useCookies: false,
     };
 
     constructor(private readonly options: StaffingConfiguration = {}) {
@@ -104,14 +112,43 @@ export class Staffing {
                 Staffing._http.defaults.withCredentials = false;
             }
         }
-        // Add a response interceptor
-        Staffing._http.interceptors.response.use((response: AxiosResponse) => response, async (error: any) => {
-            // Check if Unauthorized Error
-            if (error.response.status === 401) {
-                Staffing.unauthorized.next(error);
-            }
-            return Promise.reject(error);
-        });
+
+        if (!Staffing.httpInitialized) {
+            Staffing.httpInitialized = true;
+            // Add a response interceptor
+            Staffing._http.interceptors.response.use(
+                (response: AxiosResponse) => {
+                    // Tracking
+                    let timing: { start: number; url: string } = (response.config as any)._timing || undefined;
+                    if (Staffing.trackingCallback && timing) {
+                        Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+                    }
+                    return response;
+                },
+                async (error: AxiosError) => {
+                    // Tracking
+                    let errorResponse: AxiosResponse = error.response;
+                    let timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
+                    if (Staffing.trackingCallback && timing) {
+                        Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+                    }
+                    // Check if Unauthorized Error
+                    if (error.response.status === 401) {
+                        Staffing.unauthorized.next(error);
+                    }
+                    return Promise.reject(error);
+                },
+            );
+            // Add a request interceptor
+            Staffing._http.interceptors.request.use((config: AxiosRequestConfig) => {
+                // Set a timing config so that we can track request times
+                (config as any)._timing = {
+                    start: new Date().getTime(),
+                    url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
+                };
+                return config;
+            });
+        }
 
         return Staffing._http;
     }
