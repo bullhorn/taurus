@@ -94,6 +94,7 @@ export class MetaService {
             const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
             const result: BullhornMetaResponse = response.data;
             this.label = result.label;
+            this.parse(result);
             this.layouts.push({
                 name: layout,
                 label: layout,
