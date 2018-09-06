@@ -98,7 +98,7 @@ export class MetaService {
                 name: layout,
                 label: layout,
                 enabled: true,
-                fields: result.fields.map((f) => f.name),
+                fields: result.fields.map((f: any) => f.name),
             });
             return Promise.resolve(result.fields);
         }
