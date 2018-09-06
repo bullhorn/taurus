@@ -93,19 +93,19 @@ export class MetaService {
             const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
             const result: BullhornMetaResponse = response.data;
             this.label = result.label;
-            this.parse(result);
+            this.parse(result, true);
             this.layouts.push({
                 name: layout,
                 label: layout,
                 enabled: true,
-                fields: result.fields.map(f => f.name)
+                fields: result.fields.map((f: any) => f.name),
             });
             return Promise.resolve(result.fields);
         }
         return this.get(exists.fields);
     }
 
-    parse(result: any): void {
+    parse(result: any, keepFieldsFromLayout: boolean = false): void {
         if (!result) {
             return;
         }
@@ -160,7 +160,7 @@ export class MetaService {
         if (result && result.sectionHeaders) {
             this.sectionHeaders = result.sectionHeaders;
         }
-        result.fields = this.fields;
+        result.fields = keepFieldsFromLayout ? result.fields : this.fields;
         result.layouts = this.layouts;
         result.trackTrigger = this.trackTrigger;
         result.tracks = this.tracks;
@@ -230,9 +230,6 @@ export class MetaService {
 
     static async preload(entity: string) {
         const meta: MetaService = new MetaService(entity);
-        return Promise.all([
-            meta.get(['*']),
-            meta.getAllLayouts()
-        ]);
+        return Promise.all([meta.get(['*']), meta.getAllLayouts()]);
     }
 }
