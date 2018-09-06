@@ -58,7 +58,6 @@ export class MetaService {
     async get(requested: string[], layout?: string): Promise<Field[]> {
         const missing = this.missing(requested);
         if (missing.length || layout) {
-            // Console.log('Fields', requested);
             this.parameters.fields = missing.join(',');
             if (layout) {
                 this.parameters.layout = layout;
