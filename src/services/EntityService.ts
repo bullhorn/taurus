@@ -96,12 +96,12 @@ export class EntityService<T> {
      * @param property - The TO_MANY Association field
      * @param fields - Additional fields to retrieve on the TO_MANY field
      */
-    async many(property: string, fields: string[], value: any, count: number = 15): Promise<AxiosResponse> {
+    async many(property: string, fields: string[], value: any, params: any = {}): Promise<AxiosResponse> {
         const toManyData = await this.http.get(`${this.endpoint}/${value.id}/${property}`, {
             params: {
                 fields,
-                count,
                 showTotalMatched: true,
+                ...params,
             },
         });
         return toManyData.data;
