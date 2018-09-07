@@ -35,7 +35,7 @@ First, in the _src_ folder create an _app.js_ file. Then, you will need setup yo
 ```typescript
 import { Staffing, StaffingCredentialsAuthProvider } from '@bullhorn/taurus';
 
-const provider = new StaffingCredentialsAuthProvider('docsamson', '_bu11h0rn_');
+const provider = new StaffingCredentialsAuthProvider('docsamson', 'secrets');
 const staffing:Staffing = new Staffing({
 	restUrl: 'https://login.bullhorn.com',
 	BhRestToken: '~BULLHORN_REST_TOKEN~'
