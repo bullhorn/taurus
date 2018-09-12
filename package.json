@@ -1,80 +1,80 @@
 {
-  "name": "@bullhorn/taurus",
-  "version": "0.0.0-development",
-  "description": "A simple client library for Bullhorn",
-  "keywords": [
-    "taurus",
-    "bullhorn"
-  ],
-  "homepage": "http://bullhorn.github.io/taurus",
-  "bugs": {
-    "url": "https://github.com/bullhorn/taurus/issues"
-  },
-  "license": "MIT",
-  "author": "Brian Kimball <bkimball@bullhorn.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bullhorn/taurus.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "browser": "lib/index.umd.js",
-  "typings": "lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
-  "engines": {
-    "node": ">= 6.2.1",
-    "npm": ">= 5"
-  },
-  "peerDependencies": {
-    "@bullhorn/bullhorn-types": "^0.3.0"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "rxjs": "^6.2.1"
-  },
-  "devDependencies": {
-    "@bullhorn/bullhorn-types": "^0.3.0",
-    "@types/jest": "^22.2.0",
-    "@types/node": "^8.10.10",
-    "jest": "^22.4.3",
-    "opn-cli": "^3.1.0",
-    "rollup": "^0.58.0",
-    "rollup-plugin-commonjs": "^9.0.0",
-    "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-license": "^0.6.0",
-    "rollup-plugin-node-builtins": "^2.1.0",
-    "rollup-plugin-node-globals": "^1.2.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-sourcemaps": "^0.4.0",
-    "rollup-plugin-typescript2": "^0.13.0",
-    "rollup-plugin-uglify": "^3.0.0",
-    "semantic-release": "^15.1.0",
-    "sinon": "^4.5.0",
-    "temp-dir": "^1.0.0",
-    "travis-deploy-once": "^4.3.2",
-    "ts-jest": "^22.4.0",
-    "ts-node": "^6.0.0",
-    "tslib": "^1.9.0",
-    "tslint": "^5.9.0",
-    "tslint-xo": "^0.7.0",
-    "typedoc": "^0.11.0",
-    "typescript": "~2.8.x"
-  },
-  "scripts": {
-    "build": "npm run clean && rollup -c",
-    "clean": "rm -rf lib",
-    "lint": "tslint --project tsconfig.json --format stylish",
-    "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
-    "test:watch": "jest --config jest.config.json --watch",
-    "posttest": "npm run lint",
-    "semantic-release": "semantic-release",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
-    "travis-deploy-once": "travis-deploy-once"
-  }
+    "name": "@bullhorn/taurus",
+    "version": "0.0.0-development",
+    "description": "A simple client library for Bullhorn",
+    "keywords": [
+        "taurus",
+        "bullhorn"
+    ],
+    "homepage": "http://bullhorn.github.io/taurus",
+    "bugs": {
+        "url": "https://github.com/bullhorn/taurus/issues"
+    },
+    "license": "MIT",
+    "author": "Brian Kimball <bkimball@bullhorn.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bullhorn/taurus.git"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "main": "lib/index.cjs.js",
+    "module": "lib/index.esm.js",
+    "browser": "lib/index.umd.js",
+    "typings": "lib/index.d.ts",
+    "files": [
+        "lib"
+    ],
+    "engines": {
+        "node": ">= 6.2.1",
+        "npm": ">= 5"
+    },
+    "peerDependencies": {
+        "@bullhorn/bullhorn-types": "^0.3.0",
+        "rxjs": "^6.0.0"
+    },
+    "dependencies": {
+        "axios": "^0.18.0"
+    },
+    "devDependencies": {
+        "@bullhorn/bullhorn-types": "^0.3.0",
+        "@types/jest": "^22.2.0",
+        "@types/node": "^8.10.10",
+        "jest": "^22.4.3",
+        "opn-cli": "^3.1.0",
+        "rollup": "^0.58.0",
+        "rollup-plugin-commonjs": "^9.0.0",
+        "rollup-plugin-json": "^2.3.0",
+        "rollup-plugin-license": "^0.6.0",
+        "rollup-plugin-node-builtins": "^2.1.0",
+        "rollup-plugin-node-globals": "^1.2.0",
+        "rollup-plugin-node-resolve": "^3.3.0",
+        "rollup-plugin-replace": "^2.0.0",
+        "rollup-plugin-sourcemaps": "^0.4.0",
+        "rollup-plugin-typescript2": "^0.13.0",
+        "rollup-plugin-uglify": "^3.0.0",
+        "semantic-release": "^15.1.0",
+        "sinon": "^4.5.0",
+        "temp-dir": "^1.0.0",
+        "travis-deploy-once": "^4.3.2",
+        "ts-jest": "^22.4.0",
+        "ts-node": "^6.0.0",
+        "tslib": "^1.9.0",
+        "tslint": "^5.9.0",
+        "tslint-xo": "^0.7.0",
+        "typedoc": "^0.11.0",
+        "typescript": "~2.8.x"
+    },
+    "scripts": {
+        "build": "npm run clean && rollup -c",
+        "clean": "rm -rf lib",
+        "lint": "tslint --project tsconfig.json --format stylish",
+        "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
+        "test:watch": "jest --config jest.config.json --watch",
+        "posttest": "npm run lint",
+        "semantic-release": "semantic-release",
+        "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
+        "travis-deploy-once": "travis-deploy-once"
+    }
 }

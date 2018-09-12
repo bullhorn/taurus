@@ -10,29 +10,29 @@ import { ReplaySubject } from 'rxjs';
  * does not closes observers on errors (thus allowing to continuously dispatch them).
  */
 export class EndlessReplaySubject<T> extends ReplaySubject<T> {
-    /**
-     * Dummy method override to prevent execution and Rx.Observable completion
-     */
-    complete() {
-        // Do something?
-    }
+  /**
+   * Dummy method override to prevent execution and Rx.Observable completion
+   */
+  complete() {
+    // Do something?
+  }
 
-    /**
-     * Override of error method that prevents stopping that Rx.Observer
-     * @param error  - Error to be dispatched
-     */
-    error(error: any) {
-        // Store error
-        this.error = error;
-        // Dispatch to all observers
-        this.observers.forEach(os => {
-            // Dispatch
-            os.error(error);
-            // Mark observer as not stopped
-            os.closed = false;
-            // Os.isStopped = false;
-        });
-    }
+  /**
+   * Override of error method that prevents stopping that Rx.Observer
+   * @param error  - Error to be dispatched
+   */
+  error(error: any) {
+    // Store error
+    this.error = error;
+    // Dispatch to all observers
+    this.observers.forEach((os) => {
+      // Dispatch
+      os.error(error);
+      // Mark observer as not stopped
+      os.closed = false;
+      // Os.isStopped = false;
+    });
+  }
 }
 
 /**
@@ -40,21 +40,21 @@ export class EndlessReplaySubject<T> extends ReplaySubject<T> {
  * @param  topic   Topic name
  * @return         Search regex
  */
-export const topicToRegex = (topic: string) => `^${topic.split('.')
-.reduce((result, segment, index, arr) => {
+export const topicToRegex = (topic: string) =>
+  `^${topic.split('.').reduce((result, segment, index, arr) => {
     let res = '';
     if (arr[index - 1]) {
-        res = arr[index - 1] !== '#' ? '\\.\\b' : '\\b';
+      res = arr[index - 1] !== '#' ? '\\.\\b' : '\\b';
     }
     if (segment === '#') {
-        res += '[\\s\\S]*';
+      res += '[\\s\\S]*';
     } else if (segment === '*') {
-        res += '[^.]+';
+      res += '[^.]+';
     } else {
-        res += segment;
+      res += segment;
     }
     return result + res;
-}, '')}`;
+  }, '')}`;
 
 /**
  * Compares given topic with existing topic
@@ -65,14 +65,14 @@ export const topicToRegex = (topic: string) => `^${topic.split('.')
  * should(compareTopics('test.one.two', 'test.#')).equal(true);
  */
 export const compareTopics = (topic: string, existingTopic: string) => {
-    // If no # or * found, do plain string matching
-    if (existingTopic.indexOf('#') === -1 && existingTopic.indexOf('*') === -1) {
-        return topic === existingTopic;
-    }
-    // Otherwise do regex matching
-    const pattern = topicToRegex(existingTopic);
-    const rgx = new RegExp(pattern);
-    return rgx.test(topic);
+  // If no # or * found, do plain string matching
+  if (existingTopic.indexOf('#') === -1 && existingTopic.indexOf('*') === -1) {
+    return topic === existingTopic;
+  }
+  // Otherwise do regex matching
+  const pattern = topicToRegex(existingTopic);
+  const rgx = new RegExp(pattern);
+  return rgx.test(topic);
 };
 
 /**
@@ -82,10 +82,10 @@ export const compareTopics = (topic: string, existingTopic: string) => {
  * @return Found subject or void
  */
 export const findSubjectByName = (subjects: any[], name: string) => {
-    const res = subjects.filter(s => s.name === name);
-    if (!res || res.length < 1) {
-        return;
-    }
+  const res = subjects.filter((s) => s.name === name);
+  if (!res || res.length < 1) {
+    return;
+  }
 
-    return res[0];
+  return res[0];
 };

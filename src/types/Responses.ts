@@ -105,23 +105,23 @@ export interface BullhornSavedEntityResponse<T> {
   data: T;
 }
 
-export interface BullhornSubscriptionEvent{
-    eventId: string;
-    eventType: 'ENTITY' | 'FIELDMAPCHANGE' | 'JOBMATCHSEARCH';
-    entityName: string;
-    eventMetadata: any;
-    updatedProperties: string[];
-    entityEventType: 'INSERTED' | 'UPDATED' | 'DELETED';
-    eventTimestamp: number;
-    entityId: number;
+export interface BullhornSubscriptionEvent {
+  eventId: string;
+  eventType: 'ENTITY' | 'FIELDMAPCHANGE' | 'JOBMATCHSEARCH';
+  entityName: string;
+  eventMetadata: any;
+  updatedProperties: string[];
+  entityEventType: 'INSERTED' | 'UPDATED' | 'DELETED';
+  eventTimestamp: number;
+  entityId: number;
 }
 
 export interface BullhornSubscriptionResponse {
-    result?: any;
-    requestId?: number;
-    lastRequestId?: number;
-    subscriptionId?: string;
-    createdOn?: number;
-    events?: BullhornSubscriptionEvent[];
-    jmsSelector?: string;
+  result?: any;
+  requestId?: number;
+  lastRequestId?: number;
+  subscriptionId?: string;
+  createdOn?: number;
+  events?: BullhornSubscriptionEvent[];
+  jmsSelector?: string;
 }
