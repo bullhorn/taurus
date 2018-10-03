@@ -116,22 +116,22 @@ export class Is {
                 result = className === 'Error';
                 break;
 
-            case HTMLDocument:
-                result = className === 'HTMLDocument' || className === 'Document';
-                break;
-
-            case HTMLElement:
-                const windowedHTMLElement = (((this.reference || {}).ownerDocument || {}).defaultView || {}).HTMLElement;
-                result = !!windowedHTMLElement && this.reference instanceof windowedHTMLElement;
-                break;
+            // case HTMLDocument:
+            //     result = className === 'HTMLDocument' || className === 'Document';
+            //     break;
+            //
+            // case HTMLElement:
+            //     const windowedHTMLElement = (((this.reference || {}).ownerDocument || {}).defaultView || {}).HTMLElement;
+            //     result = !!windowedHTMLElement && this.reference instanceof windowedHTMLElement;
+            //     break;
 
             case Function:
                 result = className === 'Function';
                 break;
 
-            case NodeList:
-                result = className === 'NodeList';
-                break;
+            // case NodeList:
+            //     result = className === 'NodeList';
+            //     break;
 
             case Number:
                 result = className === 'Number' && !isNaN(this.reference);
@@ -145,9 +145,9 @@ export class Is {
                 result = className === 'String';
                 break;
 
-            case Window:
-                result = className === 'Window' || className === 'global';
-                break;
+            // case Window:
+            //     result = className === 'Window' || className === 'global';
+            //     break;
 
             case Object:
                 result = className === 'Object' || className === 'Arguments';
