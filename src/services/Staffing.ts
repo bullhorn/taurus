@@ -5,22 +5,17 @@ import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 
 const getCookie = (cname: string) => {
-    try {
-        if (document) {
-            const name = `${cname}=`;
-            const ca = document.cookie.split(';');
-            for (let c of ca) {
-                while (c.charAt(0) === ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) === 0) {
-                    return c.substring(name.length, c.length);
-                }
+    if (typeof document !== 'undefined') {
+        const name = `${cname}=`;
+        const ca = document.cookie.split(';');
+        for (let c of ca) {
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
             }
         }
-    } catch (err) {
-        // Swallow as `document` is not available in Node.js
-        console.warn('Document not supported.');
     }
 
     return false;
