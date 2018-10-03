@@ -20,6 +20,7 @@ const getCookie = (cname: string) => {
         }
     } catch (err) {
         // Swallow as `document` is not available in Node.js
+        console.warn('Document not supported.');
     }
 
     return false;
