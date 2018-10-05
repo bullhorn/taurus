@@ -5,7 +5,8 @@ import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 
 const getCookie = (cname: string) => {
-    if (document) {
+    // tslint:disable-next-line:no-typeof-undefined
+    if (typeof document !== 'undefined') {
         const name = `${cname}=`;
         const ca = document.cookie.split(';');
         for (let c of ca) {
@@ -17,6 +18,7 @@ const getCookie = (cname: string) => {
             }
         }
     }
+
     return false;
 };
 
