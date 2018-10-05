@@ -114,9 +114,9 @@ If you've followed along this far, you now have all the libraries, build configu
 	<link rel="stylesheet" type="text/css" href="//cdn.bullhorn.com/bullhorncss/1.0/bullhorn.css">
 	<script src="//unpkg.com/@reactivex/rxjs@5.0.0-beta.12/dist/global/Rx.js"></script>
 	<script src="//unpkg.com/axios/dist/axios.min.js"></script>
-	<script src="//unpkg.com/@bullhorn/taurus@0.0.1/lib/index.umd.js"></script>
+	<script src="//unpkg.com/@bullhorn/taurus@1.5.1/lib/index.umd.js"></script>
 	<script>
-        var provider = new taurus.StaffingCredentialsAuthProvider('docsamson', '_bu11h0rn_');
+        var provider = new taurus.StaffingCredentialsAuthProvider('docsamson', 'secretpassword');
         var staffing = new taurus.Staffing({
             useCookies: false,
             client_id: '~~YOUR-BULLHORN-CLIENT-ID~~',

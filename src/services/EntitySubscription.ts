@@ -4,10 +4,6 @@ import { Staffing } from './Staffing';
 import { BullhornSubscriptionResponse, BullhornSubscriptionEvent } from '../types';
 import { EntityMessageBroker } from '../broker';
 
-export interface Identity {
-    id?: number;
-}
-
 /**
  * A Class that defines the base Entity Model
  * @example
