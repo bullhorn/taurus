@@ -221,6 +221,6 @@ export class Where {
       return `${values.join(',')}`;
     }
 
-    return `'${values.join("','")}'`;
+    return `'${values.join("','")}'`; // tslint:disable-line
   }
 }
