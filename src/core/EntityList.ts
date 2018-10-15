@@ -69,7 +69,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
                 this.descriptor = results.meta;
                 this.$latest = results;
                 this.next(results.data);
-            }, (error) => {
+            }, error => {
                 this.error(error);
             });
         });
