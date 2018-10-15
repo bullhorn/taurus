@@ -69,6 +69,8 @@ export class EntityList<T> extends StatefulSubject<T[]> {
                 this.descriptor = results.meta;
                 this.$latest = results;
                 this.next(results.data);
+            }, (error) => {
+                this.error(error);
             });
         });
         this._setUpObservable();

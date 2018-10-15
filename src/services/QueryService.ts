@@ -100,8 +100,6 @@ export class QueryService<T> {
                 }
                 result.meta = metadata;
                 return result;
-            }).catch(message => {
-                return message;
             });
     }
     async then(done: any, fail?: any): Promise<any> {
