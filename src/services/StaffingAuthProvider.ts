@@ -20,7 +20,8 @@ export class StaffingOAuthBaseProvider {
             });
     }
     protected async restLogin(accessToken): Promise<RestCredentials> {
-        return axios.post(`${this.config.login_url}?version=*&access_token=${accessToken}`)
+        const ttl = this.config.ttl ? `&ttl=${this.config.ttl}` : '';
+        return axios.post(`${this.config.login_url}?version=*&access_token=${accessToken}${ttl}`)
             .then((response: AxiosResponse) => {
                 return response.data;
             });

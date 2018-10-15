@@ -11,4 +11,5 @@ export interface StaffingConfiguration {
     apiVersion?: string;
     username?: string;
     password?: string;
+    ttl?: number;
 }
