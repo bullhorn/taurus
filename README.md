@@ -4,11 +4,11 @@
 
 ---
 
- [![Build Status](https://travis-ci.org/bullhorn/taurus.svg?branch=master)](https://travis-ci.org/bullhorn/taurus)
- [![Dependency Status](https://dependencyci.com/github/bullhorn/taurus/badge)](https://dependencyci.com/github/bullhorn/taurus)
- [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
- [![npm version](https://badge.fury.io/js/%40bullhorn%2Ftaurus.svg)](https://badge.fury.io/js/%40bullhorn%2Ftaurus)
- [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Build Status](https://travis-ci.org/bullhorn/taurus.svg?branch=master)](https://travis-ci.org/bullhorn/taurus)
+[![Dependency Status](https://dependencyci.com/github/bullhorn/taurus/badge)](https://dependencyci.com/github/bullhorn/taurus)
+[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![npm version](https://badge.fury.io/js/%40bullhorn%2Ftaurus.svg)](https://badge.fury.io/js/%40bullhorn%2Ftaurus)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 ---
 
@@ -32,23 +32,23 @@ First, in the _src_ folder create an _app.js_ file. Then, you will need setup yo
 > Note: Don't have a `clientId`? Partner keys are only available directly from Bullhorn. If you are interested in becoming a partner, send a email message to [partners@bullhorn.com](partners@bullhorn.com) or fill out the form available at the [Bullhorn Marketplace](https://www.bullhorn.com/marketplace/partner-application/).
 
 ### app.js
+
 ```typescript
 import { Staffing, StaffingCredentialsAuthProvider } from '@bullhorn/taurus';
 
 const provider = new StaffingCredentialsAuthProvider('docsamson', 'secrets');
-const staffing:Staffing = new Staffing({
-	restUrl: 'https://login.bullhorn.com',
-	BhRestToken: '~BULLHORN_REST_TOKEN~'
+const staffing: Staffing = new Staffing({
+  restUrl: 'https://login.bullhorn.com',
+  BhRestToken: '~BULLHORN_REST_TOKEN~',
 });
 
 staffing.login(provider).then(() => {
-	console.log('We Are Doing it!');
+  console.log('We Are Doing it!');
 });
 
 // or
 
 const app = Staffing.loginWithPopup('https://login.bullhorn.com');
-
 ```
 
 ## Getting the data
@@ -68,8 +68,8 @@ let record: Entity<Candidate> = new Entity(EntityTypes.Candidate).fields('id', '
 record.get(100);
 // Listen for changes
 record.subscribe((response) => {
-	console.log(record.data);
-	// output: {id: 100, name: 'Theodore'}
+  console.log(record.data);
+  // output: {id: 100, name: 'Theodore'}
 });
 ```
 
@@ -82,19 +82,20 @@ import { EntityTypes, Candidate } from '@bullhorn/bullhorn-types';
 import { EntityList } from '@bullhorn/taurus';
 
 let list: EntityList<Candidate> = new EntityList(EntityTypes.Candidate, {
-	fields: ['id', 'name'],
-	startAt: 0,
-	limitTo: 25,
-	filter: { isDeleted: 0 }
+  fields: ['id', 'name'],
+  startAt: 0,
+  limitTo: 25,
+  filter: { isDeleted: 0 },
 });
 
 list.subscribe((response) => {
-	let total = list.info.total;
-	// TODO: Finish this
+  let total = list.info.total;
+  // TODO: Finish this
 });
 ```
 
 ## Lets Get Started
+
 This tutorial will take you through creating a simple application using Taurus and briefly explain its main concepts. We assume you are familiar with JavaScript, HTML, and CSS. To get a quick overview, we recommend you skip down to the section titled "Setting Up The HTML Page" so you can see how to use Taurus straight away. To view the completed results of this tutorial, please have a look at our [examples project](https://github.com/bullhorn/examples).
 
 ## Configuring Your Environment
@@ -177,5 +178,5 @@ If you need more help, check out the [Documentation](http://bullhorn.github.io/t
 
 <p>
 	<img src="bully.png" align="left" width="32" />
-	<span>&nbsp; built by Bullhorn, copyright (c) forever</span>
+	<span>&nbsp; built by Bullhorn, copyright (c) forever!</span>
 </p>
