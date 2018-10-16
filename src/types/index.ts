@@ -1,3 +1,3 @@
 export * from './Responses';
-export * from './Field';
+export * from './FieldMap';
 export * from './StaffingConfiguration';

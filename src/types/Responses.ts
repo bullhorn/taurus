@@ -1,4 +1,4 @@
-import { Field, Layout } from './Field';
+import { FieldMap, FieldLayout } from './FieldMap';
 
 export interface BullhornAllSettingsAndEntitlementsResponse {
   settings: { [key: string]: any };
@@ -53,6 +53,11 @@ export interface BullhornTrack {
   values: string[];
 }
 
+export interface BullhornLookupItem {
+  searchEntity: string;
+  [key: string]: any;
+}
+
 export interface BullhornMessage {
   detailMessage: string;
   severity: string;
@@ -70,8 +75,8 @@ export interface BullhornMetaResponse {
   entityMetaUrl: string;
   label: string;
   dateLastModified: number;
-  fields: Field[];
-  layouts: Layout[];
+  fields: FieldMap[];
+  layouts: FieldLayout[];
   trackTrigger: string;
   tracks: BullhornTrack[];
   sectionHeaders: BullhornSectionHeader[];
@@ -98,4 +103,25 @@ export interface BullhornSavedEntityResponse<T> {
   changeType: 'INSERT' | 'UPDATE';
   messages: string[];
   data: T;
+}
+
+export interface BullhornSubscriptionEvent {
+  eventId: string;
+  eventType: 'ENTITY' | 'FIELDMAPCHANGE' | 'JOBMATCHSEARCH';
+  entityName: string;
+  eventMetadata: any;
+  updatedProperties: string[];
+  entityEventType: 'INSERTED' | 'UPDATED' | 'DELETED';
+  eventTimestamp: number;
+  entityId: number;
+}
+
+export interface BullhornSubscriptionResponse {
+  result?: any;
+  requestId?: number;
+  lastRequestId?: number;
+  subscriptionId?: string;
+  createdOn?: number;
+  events?: BullhornSubscriptionEvent[];
+  jmsSelector?: string;
 }

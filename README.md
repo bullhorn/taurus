@@ -29,7 +29,7 @@ npm install --save @bullhorn/taurus @bullhorn/bullhorn-types
 
 First, in the _src_ folder create an _app.js_ file. Then, you will need setup your Application with the credentials provided to you by Bullhorn.
 
-> Note: Don't have a `clientId`: Request one [here](missing)
+> Note: Don't have a `clientId`? Partner keys are only available directly from Bullhorn. If you are interested in becoming a partner, send a email message to [partners@bullhorn.com](partners@bullhorn.com) or fill out the form available at the [Bullhorn Marketplace](https://www.bullhorn.com/marketplace/partner-application/).
 
 ### app.js
 ```typescript
