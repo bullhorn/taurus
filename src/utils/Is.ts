@@ -5,16 +5,14 @@ export class Is {
     this.reference = ref;
   }
 
+  //#region Properties
+
   get aBoolean() {
     return this.a(Boolean);
   }
 
   get aDate() {
     return this.a(Date);
-  }
-
-  get aDocument() {
-    return this.a(HTMLDocument);
   }
 
   get aFunction() {
@@ -25,20 +23,12 @@ export class Is {
     return this.a(Array);
   }
 
-  get anElement() {
-    return this.a(HTMLElement);
-  }
-
   get anError() {
     return this.a(Error);
   }
 
   get anObject() {
     return this.a(Object);
-  }
-
-  get aNodeList() {
-    return this.a(NodeList);
   }
 
   get aNonEmptyArray() {
@@ -61,10 +51,6 @@ export class Is {
     return this.a(String);
   }
 
-  get aWindow() {
-    return this.a(Window);
-  }
-
   get defined() {
     return !this.undefined && !this.null && !this.nan;
   }
@@ -80,6 +66,10 @@ export class Is {
   get undefined() {
     return this.a(undefined);
   }
+
+  //#endregion
+
+  //#region Methods
 
   a(T) {
     let result = false;
@@ -110,21 +100,8 @@ export class Is {
         result = className === 'Error';
         break;
 
-      case HTMLDocument:
-        result = className === 'HTMLDocument' || className === 'Document';
-        break;
-
-      case HTMLElement:
-        const windowedHTMLElement = (((this.reference || {}).ownerDocument || {}).defaultView || {}).HTMLElement;
-        result = !!windowedHTMLElement && this.reference instanceof windowedHTMLElement;
-        break;
-
       case Function:
         result = className === 'Function';
-        break;
-
-      case NodeList:
-        result = className === 'NodeList';
         break;
 
       case Number:
@@ -137,10 +114,6 @@ export class Is {
 
       case String:
         result = className === 'String';
-        break;
-
-      case Window:
-        result = className === 'Window' || className === 'global';
         break;
 
       case Object:
@@ -183,6 +156,8 @@ export class Is {
 
     return result;
   }
+
+  //#endregion
 }
 
 // tslint:disable-next-line:only-arrow-functions

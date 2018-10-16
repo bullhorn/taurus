@@ -9,4 +9,6 @@ export interface StaffingConfiguration {
   redirect_url?: string;
   useCookies?: boolean;
   apiVersion?: string;
+  username?: string;
+  password?: string;
 }
