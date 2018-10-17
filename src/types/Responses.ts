@@ -92,7 +92,7 @@ export interface BullhornListResponse<T> {
 }
 
 export interface BullhornEntityResponse<T> {
-  data: T[];
+  data: T | T[];
   messages?: BullhornMessage[];
   meta?: BullhornMetaResponse;
 }
