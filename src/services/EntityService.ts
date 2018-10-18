@@ -96,7 +96,7 @@ export class EntityService<T> {
    * @param property - The TO_MANY Association field
    * @param fields - Additional fields to retrieve on the TO_MANY field
    */
-  async many(property: string, fields: string[], value: any, params: any = {}): Promise<AxiosResponse> {
+  async many(property: string, fields: string[], value: any, params: any = {}): Promise<BullhornListResponse<any>> {
     const toManyData = await this.http.get(`${this.endpoint}/${value.id}/${property}`, {
       params: {
         fields,
