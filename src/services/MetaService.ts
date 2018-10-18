@@ -197,6 +197,9 @@ export class MetaService {
     if (!this.memory) {
       return [];
     }
+    if (fields && fields[0] === '*') {
+      return Object.values(this.memory);
+    }
     const result: FieldMap[] = [];
     for (const field of fields) {
       const cleaned: string = this._clean(field);

@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 // RXJS
 import { StatefulSubject } from './StatefulSubject';
 // Lib
-import { BullhornEntityResponse, BullhornSavedEntityResponse } from '../types';
+import { BullhornEntityResponse, BullhornSavedEntityResponse, BullhornListResponse } from '../types';
 import { EntityService } from '../services';
 import { EntityMessageBroker } from '../broker';
 import { EntityOptions, observeOptions } from './EntityOptions';
@@ -174,7 +174,7 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
    */
   many(property: string, fields: string[]): Entity<T> {
     // tslint:disable-next-line:no-floating-promises
-    this.$entity.many(property, fields, this.value).then((response: AxiosResponse) => {
+    this.$entity.many(property, fields, this.value).then((response: BullhornListResponse<any>) => {
       if (!this._fields.includes(property)) {
         this._proxy(property);
         this._fields.push(property);
