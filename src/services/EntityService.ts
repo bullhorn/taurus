@@ -85,7 +85,9 @@ export class EntityService<T> {
    */
   async edit(id: number): Promise<BullhornEntityResponse<T>> {
     const layout = 'RecordEdit';
-    const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: { layout } }), this.meta.getFull(this.parameters.fields, layout)]);
+    const params = { ...this.parameters, layout };
+    delete params.fields;
+    const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params }), this.meta.getFull(this.parameters.fields, layout)]);
     const result: BullhornEntityResponse<T> = response.data;
     result.meta = meta;
     return result;
