@@ -21,6 +21,7 @@ export class MetaService {
   tracks: BullhornTrack[] = [];
   sectionHeaders: BullhornSectionHeader[] = [];
   trackTrigger: string;
+  allFieldsLoaded: boolean = false;
   parameters: any = {
     fields: '*',
     meta: 'full',
@@ -57,6 +58,7 @@ export class MetaService {
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
     const missing = this.missing(requested);
+    console.log('missing', this.entity, missing, requested, layout);
     if (missing.length || layout) {
       this.parameters.fields = missing.join(',');
       if (layout) {
@@ -64,6 +66,7 @@ export class MetaService {
       }
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
+      this.allFieldsLoaded = requested[0] === '*';
       this.parse(result);
       this.label = result.label;
       return this.extract(requested);
@@ -72,6 +75,9 @@ export class MetaService {
   }
 
   async getAllLayouts(): Promise<any[]> {
+    if (this.allFieldsLoaded) {
+      return this.layouts;
+    }
     const response: AxiosResponse = await this.http.get(this.endpoint, { params: { meta: 'full', includeLayoutFields: true } });
     this.parse(response.data);
     return response.data.layouts;
@@ -109,6 +115,7 @@ export class MetaService {
     if (!result) {
       return;
     }
+    console.log('Parsing', this.entity);
     if (result && result.fields) {
       for (const field of result.fields) {
         // Console.log('Parsing', field);
@@ -165,12 +172,19 @@ export class MetaService {
     result.trackTrigger = this.trackTrigger;
     result.tracks = this.tracks;
     result.sectionHeaders = this.sectionHeaders;
+    console.log('parsed', result.allFieldsLoaded, this.allFieldsLoaded);
+    result.allFieldsLoaded = result.allFieldsLoaded || this.allFieldsLoaded;
+    this.allFieldsLoaded = result.allFieldsLoaded;
     Cache.put(this.endpoint, result);
   }
 
   missing(fields): string[] {
+    console.log('missing', this.memory, fields, this.allFieldsLoaded);
     if (!this.memory) {
       return fields;
+    }
+    if (fields && fields[0] === '*' && this.allFieldsLoaded) {
+      return [];
     }
     const result: string[] = [];
     for (const field of fields) {
