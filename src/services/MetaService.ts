@@ -58,7 +58,7 @@ export class MetaService {
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
     const missing = this.missing(requested);
-    console.log('missing', this.entity, missing, requested, layout);
+
     if (missing.length || layout) {
       this.parameters.fields = missing.join(',');
       if (layout) {
@@ -115,7 +115,6 @@ export class MetaService {
     if (!result) {
       return;
     }
-    console.log('Parsing', this.entity);
     if (result && result.fields) {
       for (const field of result.fields) {
         // Console.log('Parsing', field);
@@ -172,14 +171,13 @@ export class MetaService {
     result.trackTrigger = this.trackTrigger;
     result.tracks = this.tracks;
     result.sectionHeaders = this.sectionHeaders;
-    console.log('parsed', result.allFieldsLoaded, this.allFieldsLoaded);
+
     result.allFieldsLoaded = result.allFieldsLoaded || this.allFieldsLoaded;
     this.allFieldsLoaded = result.allFieldsLoaded;
     Cache.put(this.endpoint, result);
   }
 
   missing(fields): string[] {
-    console.log('missing', this.memory, fields, this.allFieldsLoaded);
     if (!this.memory) {
       return fields;
     }
