@@ -5,3 +5,4 @@ export * from './Deferred';
 export * from './Lazy';
 export * from './Memory';
 export * from './QueryString';
+export * from './Persist';

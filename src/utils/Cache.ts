@@ -2,7 +2,7 @@ import { Memory } from './Memory';
 
 let storageReference: Storage = new Memory();
 try {
-  if (window.localStorage) {
+  if (window && window.localStorage) {
     storageReference = window.localStorage;
   }
 } catch (err) {
@@ -57,8 +57,13 @@ export class Cache {
    */
   static get(key: string) {
     const value = storageReference.getItem(key);
-    if (value) {
-      return JSON.parse(value);
+    try {
+      if (value) {
+        return JSON.parse(value);
+      }
+    // tslint:disable-next-line:no-unused
+    } catch (err) {
+      return null;
     }
 
     return null;

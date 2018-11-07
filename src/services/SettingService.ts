@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { BullhornAllSettingsAndEntitlementsResponse } from '../types';
 import { Staffing } from './Staffing';
-
+import { Persist, PersistType } from '../utils';
 /**
  * A Class that defines a service to grab settings from Bullhorn
  */
@@ -22,6 +22,7 @@ export class SettingService {
     return response.data;
   }
 
+  @Persist({ type: PersistType.SESSION })
   async getAllSettingsAndEntitlements(): Promise<BullhornAllSettingsAndEntitlementsResponse> {
     const response: AxiosResponse = await this.http.get('services/Settings/allEntitlementsAndSettings');
     const result: BullhornAllSettingsAndEntitlementsResponse = response.data;

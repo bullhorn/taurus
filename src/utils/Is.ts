@@ -51,6 +51,10 @@ export class Is {
     return this.a(String);
   }
 
+  get aPromise() {
+    return this.a(Promise);
+  }
+
   get defined() {
     return !this.undefined && !this.null && !this.nan;
   }
@@ -118,6 +122,10 @@ export class Is {
 
       case Object:
         result = className === 'Object' || className === 'Arguments';
+        break;
+
+      case Promise:
+        result = className === 'Promise';
         break;
 
       default:

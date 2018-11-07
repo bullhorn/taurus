@@ -6,7 +6,7 @@ import { candidateMetaResponse, candidateListResponse } from './_Helpers';
 describe('EntityList', () => {
   let server;
   beforeEach(() => {
-    server = sinon.fakeServer.create();
+    server = sinon.createFakeServer();
     server.autoRespond = true;
   });
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('EntityList', () => {
   it('should get list data', (done) => {
     server.respondWith('GET', /search\/Candidate/, candidateListResponse());
     server.respondWith('GET', /meta\/Candidate/, candidateMetaResponse());
-    let candidates: EntityList<Candidate> = new EntityList(EntityTypes.Candidate, {
+    const candidates: EntityList<Candidate> = new EntityList(EntityTypes.Candidate, {
       fields: ['id', 'name', 'phone'],
       limitTo: 20,
     });
