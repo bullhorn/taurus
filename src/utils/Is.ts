@@ -77,7 +77,7 @@ export class Is {
 
   a(T) {
     let result = false;
-    const className = this.reference.constructor.name;
+    const className = this.reference ? this.reference.constructor.name : 'Undefined';
 
     switch (T) {
       case undefined:
