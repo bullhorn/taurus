@@ -12,19 +12,20 @@ export interface StaffingAuthProvider {
 }
 
 export class StaffingOAuthBaseProvider {
-  config: StaffingConfiguration;
-  protected async validateCode(authCode): Promise<any> {
-    return axios
-      .post(`${this.config.token_url}?grant_type=authorization_code&code=${authCode}&client_id=${this.config.client_id}&client_secret=${this.config.client_secret}`)
-      .then((response: AxiosResponse) => {
-        return response.data;
-      });
-  }
-  protected async restLogin(accessToken): Promise<RestCredentials> {
-    return axios.post(`${this.config.login_url}?version=*&access_token=${accessToken}`).then((response: AxiosResponse) => {
-      return response.data;
-    });
-  }
+    config: StaffingConfiguration;
+    protected async validateCode(authCode): Promise<any> {
+        return axios.post(`${this.config.token_url}?grant_type=authorization_code&code=${authCode}&client_id=${this.config.client_id}&client_secret=${this.config.client_secret}`)
+            .then((response: AxiosResponse) => {
+                return response.data;
+            });
+    }
+    protected async restLogin(accessToken): Promise<RestCredentials> {
+        const ttl = this.config.ttl ? `&ttl=${this.config.ttl}` : '';
+        return axios.post(`${this.config.login_url}?version=*&access_token=${accessToken}${ttl}`)
+            .then((response: AxiosResponse) => {
+                return response.data;
+            });
+    }
 }
 
 export class StaffingCredentialsAuthProvider implements StaffingAuthProvider {
