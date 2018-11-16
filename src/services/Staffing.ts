@@ -5,18 +5,23 @@ import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 
 const getCookie = (cname: string) => {
-  // tslint:disable-next-line:no-typeof-undefined
-  if (typeof document !== 'undefined') {
-    const name = `${cname}=`;
-    const ca = document.cookie.split(';');
-    for (let c of ca) {
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) === 0) {
-        return c.substring(name.length, c.length);
+  try {
+    // tslint:disable-next-line:no-typeof-undefined
+    if (typeof document !== 'undefined') {
+      const name = `${cname}=`;
+      const ca = document.cookie.split(';');
+      for (let c of ca) {
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+          return JSON.parse(decodeURIComponent(c.substring(name.length, c.length)));
+        }
       }
     }
+  } catch (err) {
+    console.warn('Error parsing identity cookie', err.message);
+    return false;
   }
   return false;
 };
@@ -96,7 +101,7 @@ export class Staffing {
   static http(): AxiosInstance {
     const cookie = getCookie('UlEncodedIdentity');
     if (cookie && cookie.length) {
-      const identity = JSON.parse(decodeURIComponent(cookie));
+      const identity = cookie;
       const endpoints = identity.sessions.reduce((obj, session) => {
         obj[session.name] = session.value.endpoint;
         return obj;

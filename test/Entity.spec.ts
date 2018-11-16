@@ -59,10 +59,10 @@ describe('Entity', () => {
 
   describe('with API calls', () => {
     let server;
-    beforeEach(function() {
-      server = sinon.fakeServer.create();
+    beforeEach(() => {
+      server = sinon.createFakeServer();
     });
-    afterEach(function() {
+    afterEach(() => {
       server.restore();
     });
 
