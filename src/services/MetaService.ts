@@ -91,7 +91,7 @@ export class MetaService {
     return full;
   }
 
-  async getByLayout(layout: string): Promise<FieldMap[]> {
+  async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
     const exists = this.layouts.find((l: any) => l.name === layout);
     if (!exists) {
       this.parameters.layout = layout;
@@ -99,7 +99,7 @@ export class MetaService {
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
       this.label = result.label;
-      this.parse(result, true);
+      this.parse(result, keepFieldsFromLayout);
       this.layouts.push({
         name: layout,
         label: layout,
