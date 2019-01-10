@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { BullhornEntityResponse } from '../types';
+import { BullhornEntityResponse, BullhornListResponse } from '../types';
 import { Staffing } from './Staffing';
 import { MetaService } from './MetaService';
 
