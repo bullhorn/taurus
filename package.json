@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "0.0.0-development",
+  "version": "2.2.0",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
@@ -55,7 +55,7 @@
     "rollup-plugin-typescript2": "^0.13.0",
     "rollup-plugin-uglify": "^3.0.0",
     "rxjs": "^6.0.0",
-    "semantic-release": "^15.1.0",
+    "semantic-release": "^15.13.2",
     "sinon": "^4.5.0",
     "temp-dir": "^1.0.0",
     "travis-deploy-once": "^4.3.2",
