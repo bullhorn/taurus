@@ -20,6 +20,7 @@ script:
   - npm test
 after_success:
   - npm run travis-deploy-once "npm run semantic-release"
+  - test $TRAVIS_PULL_REQUEST == "false" && npm run snapshot-publish
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
