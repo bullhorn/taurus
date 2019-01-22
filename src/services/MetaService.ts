@@ -93,19 +93,32 @@ export class MetaService {
 
   async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
     const exists = this.layouts.find((l: any) => l.name === layout);
-    if (!exists) {
+    if (!exists || !exists.hasOwnProperty('fields')) {
       this.parameters.layout = layout;
       delete this.parameters.fields;
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
+      const foundLayoutIndex: number = result.layouts.findIndex((l: FieldLayout) => l.name === layout);
+      if (foundLayoutIndex > -1) {
+        result.layouts[foundLayoutIndex].fields = result.fields.map((field: FieldLayout) => field.name);
+      }
       this.label = result.label;
       this.parse(result, keepFieldsFromLayout);
-      this.layouts.push({
-        name: layout,
-        label: layout,
-        enabled: true,
-        fields: result.fields.map((f: any) => f.name),
-      });
+      if (foundLayoutIndex > -1) {
+        this.layouts.splice(foundLayoutIndex, 1, {
+          name: layout,
+          label: layout,
+          enabled: true,
+          fields: result.layouts[foundLayoutIndex].fields,
+        });
+      } else {
+        this.layouts.push({
+          name: layout,
+          label: layout,
+          enabled: true,
+          fields: result.fields.map((field: FieldLayout) => field.name),
+        });
+      }
       return Promise.resolve(result.fields);
     }
     return this.get(exists.fields);
