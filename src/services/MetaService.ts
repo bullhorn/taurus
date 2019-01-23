@@ -36,6 +36,14 @@ export class MetaService {
     return `meta/${this.entity}`;
   }
 
+  private setFieldsOnLayout(meta: BullhornMetaResponse, targetLayout: string): number {
+    const foundLayoutIndex: number = meta.layouts.findIndex((layout: FieldLayout) => layout.name === targetLayout);
+    if (foundLayoutIndex > -1) {
+      meta.layouts[foundLayoutIndex].fields = meta.fields.map((field: FieldLayout) => field.name);
+    }
+    return foundLayoutIndex;
+  }
+
   /**
    * Define how much meta data to return
    */
@@ -98,10 +106,7 @@ export class MetaService {
       delete this.parameters.fields;
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
-      const foundLayoutIndex: number = result.layouts.findIndex((l: FieldLayout) => l.name === layout);
-      if (foundLayoutIndex > -1) {
-        result.layouts[foundLayoutIndex].fields = result.fields.map((field: FieldLayout) => field.name);
-      }
+      const foundLayoutIndex: number = this.setFieldsOnLayout(result, layout);
       this.label = result.label;
       this.parse(result, keepFieldsFromLayout);
       if (foundLayoutIndex > -1) {
