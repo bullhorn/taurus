@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "2.2.0",
+  "version": "2.1.6",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
@@ -11,7 +11,6 @@
     "url": "https://github.com/bullhorn/taurus/issues"
   },
   "license": "MIT",
-  "author": "Brian Kimball <bkimball@bullhorn.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/bullhorn/taurus.git"
