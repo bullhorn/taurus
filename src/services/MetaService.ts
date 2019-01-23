@@ -36,6 +36,14 @@ export class MetaService {
     return `meta/${this.entity}`;
   }
 
+  private setFieldsOnLayout(meta: BullhornMetaResponse, targetLayout: string): number {
+    const foundLayoutIndex: number = meta.layouts.findIndex((layout: FieldLayout) => layout.name === targetLayout);
+    if (foundLayoutIndex > -1) {
+      meta.layouts[foundLayoutIndex].fields = meta.fields.map((field: FieldLayout) => field.name);
+    }
+    return foundLayoutIndex;
+  }
+
   /**
    * Define how much meta data to return
    */
@@ -93,19 +101,29 @@ export class MetaService {
 
   async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
     const exists = this.layouts.find((l: any) => l.name === layout);
-    if (!exists) {
+    if (!exists || !exists.hasOwnProperty('fields')) {
       this.parameters.layout = layout;
       delete this.parameters.fields;
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
+      const foundLayoutIndex: number = this.setFieldsOnLayout(result, layout);
       this.label = result.label;
       this.parse(result, keepFieldsFromLayout);
-      this.layouts.push({
-        name: layout,
-        label: layout,
-        enabled: true,
-        fields: result.fields.map((f: any) => f.name),
-      });
+      if (foundLayoutIndex > -1) {
+        this.layouts.splice(foundLayoutIndex, 1, {
+          name: layout,
+          label: layout,
+          enabled: true,
+          fields: result.layouts[foundLayoutIndex].fields,
+        });
+      } else {
+        this.layouts.push({
+          name: layout,
+          label: layout,
+          enabled: true,
+          fields: result.fields.map((field: FieldLayout) => field.name),
+        });
+      }
       return Promise.resolve(result.fields);
     }
     return this.get(exists.fields);
