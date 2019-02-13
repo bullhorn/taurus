@@ -37,6 +37,7 @@ export interface FieldMap {
   associatedEntity?: any;
   value?: any;
   interactions?: any[];
+  defaultValue?: string;
 }
 
 export interface FieldLayout {
