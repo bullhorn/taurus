@@ -135,7 +135,6 @@ export class MetaService {
     }
     if (result && result.fields) {
       for (const field of result.fields) {
-        // Console.log('Parsing', field);
         if (!this.memory.hasOwnProperty(field.name)) {
           Object.defineProperty(this, field.name, {
             get() {
