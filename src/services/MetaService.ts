@@ -37,11 +37,14 @@ export class MetaService {
   }
 
   private setFieldsOnLayout(meta: BullhornMetaResponse, targetLayout: string): number {
-    const foundLayoutIndex: number = meta.layouts.findIndex((layout: FieldLayout) => layout.name === targetLayout);
-    if (foundLayoutIndex > -1) {
-      meta.layouts[foundLayoutIndex].fields = meta.fields.map((field: FieldLayout) => field.name);
+    if (meta && meta.layouts) {
+      const foundLayoutIndex: number = meta.layouts.findIndex((layout: FieldLayout) => layout.name === targetLayout);
+      if (foundLayoutIndex > -1) {
+        meta.layouts[foundLayoutIndex].fields = meta.fields.map((field: FieldLayout) => field.name);
+      }
+      return foundLayoutIndex;
     }
-    return foundLayoutIndex;
+    return -1;
   }
 
   /**
