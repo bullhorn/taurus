@@ -12,6 +12,7 @@ export enum FieldType {
 export interface FieldMapOption {
   value?: any;
   label?: string;
+  readOnly?: boolean;
 }
 
 export interface FieldMap {
