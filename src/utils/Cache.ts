@@ -1,6 +1,8 @@
 import { Memory } from './Memory';
+import { Browser } from './Browser';
 
 let storageReference: Storage = new Memory();
+let browserReference: Browser = new Browser();
 try {
   if (window.localStorage) {
     storageReference = window.localStorage;
@@ -36,6 +38,26 @@ export class Cache {
       }
     }
   }
+
+  static exceedsStorageLimit(key: string, value: any): boolean {
+    const totalPossible = browserReference.getStorageSize();
+    const currentStorageSize = Cache.getLocalStorageSize();
+    const newStorage = (key && key.length + value && value.length) * 2;
+    return (currentStorageSize + newStorage >= totalPossible);
+  }
+
+  static getLocalStorageSize(): number {
+    let _lsTotal = 0, _xLen, _x;
+    for (_x in storageReference) {
+      if (!storageReference.hasOwnProperty(_x)) {
+        continue;
+      }
+      _xLen = ((localStorage[_x].length + _x.length) * 2);
+      _lsTotal += _xLen;
+    };
+    return _lsTotal;
+  }
+
   /**
    * Adds value to cache with the key as the identifier
    * @param key - The key used to store the cached value
@@ -43,11 +65,16 @@ export class Cache {
    * @returns value - the value stored
    */
   static put(key: string, value: any) {
-    if (value !== null && typeof value === 'object') {
-      value.dateCached = new Date().getTime();
+    if (!Cache.exceedsStorageLimit(key,value)) {
+      if (value !== null && typeof value === 'object') {
+        value.dateCached = new Date().getTime();
+      }
+      try {
+        storageReference.setItem(key, JSON.stringify(value));
+      } catch(error) {
+        console.error(error);
+      }
     }
-    storageReference.setItem(key, JSON.stringify(value));
-
     return value;
   }
   /**
