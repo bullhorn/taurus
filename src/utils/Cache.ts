@@ -2,7 +2,7 @@ import { Memory } from './Memory';
 import { Browser } from './Browser';
 
 let storageReference: Storage = new Memory();
-let browserReference: Browser = new Browser();
+const browserReference: Browser = new Browser();
 try {
   if (window.localStorage) {
     storageReference = window.localStorage;
@@ -42,19 +42,23 @@ export class Cache {
   static exceedsStorageLimit(key: string, value: any): boolean {
     const totalPossible = browserReference.getStorageSize();
     const currentStorageSize = Cache.getLocalStorageSize();
-    const newStorage = (key && key.length + value && value.length) * 2;
+    const keyLength: number = key ? key.length : 0;
+    const valueLength: number = value ? value.length : 0;
+    const newStorage = (keyLength + valueLength) * 2;
     return (currentStorageSize + newStorage >= totalPossible);
   }
 
   static getLocalStorageSize(): number {
-    let _lsTotal = 0, _xLen, _x;
-    for (_x in storageReference) {
+    let _lsTotal = 0;
+    let _xLen;
+    for (const _x of Object.keys(storageReference)) {
       if (!storageReference.hasOwnProperty(_x)) {
         continue;
       }
-      _xLen = ((localStorage[_x].length + _x.length) * 2);
+      const itemLength: number = localStorage[_x].length;
+      _xLen = ((itemLength + _x.length) * 2);
       _lsTotal += _xLen;
-    };
+    }
     return _lsTotal;
   }
 
@@ -65,13 +69,13 @@ export class Cache {
    * @returns value - the value stored
    */
   static put(key: string, value: any) {
-    if (!Cache.exceedsStorageLimit(key,value)) {
+    if (!Cache.exceedsStorageLimit(key, value)) {
       if (value !== null && typeof value === 'object') {
         value.dateCached = new Date().getTime();
       }
       try {
         storageReference.setItem(key, JSON.stringify(value));
-      } catch(error) {
+      } catch (error) {
         console.error(error);
       }
     }
