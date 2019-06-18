@@ -20,14 +20,21 @@ export class QueryService<T> {
   protected _page: number = 0;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<T>;
+  private readonly initialized: Promise<unknown>;
+
   /**
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
    */
   constructor(public entity: string) {
-    this.http = Staffing.http();
+    this.initialized = this.initialize();
     this.meta = new MetaService(entity);
   }
+
+  async initialize() {
+    this.http = await Staffing.http();
+  }
+
   get endpoint(): string {
     return this._endpoint || `query/${this.entity}`;
   }
@@ -36,15 +43,19 @@ export class QueryService<T> {
   }
 
   get total(): Promise<number> {
-    if (this._lastResponse && this._lastResponse.total) {
-      return Promise.resolve(this._lastResponse.total);
-    }
-    return this.http
-      .get(this.endpoint, { params: { fields: 'id', count: 0, ...this.parameters } })
-      .then((response: AxiosResponse) => response.data)
-      .then((result: BullhornListResponse<T>) => {
-        return result.total || 0;
-      });
+    // tslint:disable-next-line:promise-function-async
+    return (async () => {
+      await this.initialized;
+      if (this._lastResponse && this._lastResponse.total) {
+        return Promise.resolve(this._lastResponse.total);
+      }
+      return this.http
+        .get(this.endpoint, { params: { fields: 'id', count: 0, ...this.parameters } })
+        .then((response: AxiosResponse) => response.data)
+        .then((result: BullhornListResponse<T>) => {
+          return result.total || 0;
+        });
+    })();
   }
 
   get snapshot(): BullhornListResponse<T> {
@@ -86,6 +97,7 @@ export class QueryService<T> {
     return this.run(add);
   }
   async run(add): Promise<BullhornListResponse<T>> {
+    await this.initialized;
     return Promise.all([this.http.get(this.endpoint, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)])
       .then(([response, metadata]) => [response.data, metadata])
       .then(([result, metadata]: [BullhornListResponse<T>, BullhornMetaResponse]) => {

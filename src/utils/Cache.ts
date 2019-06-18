@@ -1,15 +1,28 @@
 import { Memory } from './Memory';
 import { Browser } from './Browser';
+import localforage from 'localforage';
 
 let storageReference: Storage = new Memory();
 const browserReference: Browser = new Browser();
+const STORAGE_RANKINGS_KEY: string = 'storageRankings';
+const OBJECTSTORENAME: string = 'keyval';
+const DBNAME: string = 'keyval-store';
+
+// tslint:disable-next-line:no-floating-promises
 try {
+  overrideLocalForageSupport();
+  localforage.config({
+    driver: [localforage.INDEXEDDB,
+            localforage.LOCALSTORAGE],
+    name: DBNAME,
+    storeName: OBJECTSTORENAME
+  });
   if (window.localStorage) {
     storageReference = window.localStorage;
   }
 } catch (err) {
   // Swallow
-  console.warn('Unable to setup localstorage cache.', err.message);
+  console.warn('Unable to setup localforage cache.', err.message);
 }
 
 /**
@@ -30,7 +43,15 @@ export class Cache {
   /**
    * Logs all values in storage
    */
-  static list(): void {
+  static async list() {
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.iterate((value, key) => {
+        console.debug(`${key} --> ${value}`);
+      });
+      return;
+    }
+
     for (let i = 0; i < storageReference.length; i++) {
       const key = storageReference.key(i);
       if (console && key) {
@@ -68,7 +89,13 @@ export class Cache {
    * @param value - The value to be cached
    * @returns value - the value stored
    */
-  static put(key: string, value: any) {
+  static async put(key: string, value: any) {
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.setItem(key, value);
+      return Promise.resolve(value);
+    }
+
     if (!Cache.exceedsStorageLimit(key, value)) {
       if (value !== null && typeof value === 'object') {
         value.dateCached = new Date().getTime();
@@ -79,17 +106,30 @@ export class Cache {
         console.error(error);
       }
     }
-    return value;
+    return Promise.resolve(value);
   }
   /**
    * Retrieves value from the cache stored with the key
    * @param key - The key used to identify the cached value
    * @returns value - the value cached
    */
-  static get(key: string) {
+  static async get(key: string, updateRankings: boolean = true) {
+    if (localforage !== undefined) {
+      await localforage.ready();
+      if (updateRankings) {
+        // tslint:disable-next-line:no-floating-promises
+        setTimeout(async () => Cache.handleStorageRankingUpdate(key), 0);
+      }
+      return localforage.getItem(key);
+    }
+
     const value = storageReference.getItem(key);
     if (value) {
-      return JSON.parse(value);
+      if (updateRankings) {
+        // tslint:disable-next-line:no-floating-promises
+        setTimeout(async () => Cache.handleStorageRankingUpdate(key), 0);
+      }
+      return Promise.resolve(JSON.parse(value));
     }
 
     return null;
@@ -99,29 +139,88 @@ export class Cache {
    * @param key - The key used to identify the cached value
    * @returns value - if the cache contains the key
    */
-  static has(key: string) {
+  static async has(key: string) {
     try {
+      const tmp = await Cache.get(key);
       const expiration = Date.now() - 86400000;
-      const tmp = storageReference.getItem(key);
-      if (tmp !== undefined && tmp && tmp !== '') {
-        const val = JSON.parse(tmp);
-        if (val.dateCached) {
-          return val.dateCached > expiration;
+        if (tmp !== undefined && tmp && tmp !== '') {
+          if (tmp.dateCached) {
+            return tmp.dateCached > expiration;
+          }
+          return Promise.resolve(true);
         }
-
-        return true;
-      }
-      return false;
+        return Promise.resolve(false);
     } catch (err) {
       console.warn(`An error occurred while looking for ${key} in Cache`, err);
-      return false;
+      return Promise.resolve(false);
     }
   }
   /**
    * Removes a key from the cache
    * @param key - The key used to identify the cached value
    */
-  static remove(key: string) {
+  static async remove(key: string) {
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.removeItem(key);
+      return;
+    }
+
     storageReference.removeItem(key);
   }
+
+  /**
+   * Clears out the cache
+   * @param key - The key used to identify the cached value
+   */
+  static async clear() {
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.clear();
+      return;
+    }
+
+    storageReference.clear();
+  }
+
+  static async getStorageRankings() {
+    const value = await Cache.get(STORAGE_RANKINGS_KEY, false);
+    if (value && typeof value === 'string') {
+      return JSON.parse(value);
+    }
+    if (value && typeof value === 'object') {
+      return value;
+    }
+    return {};
+  }
+
+  static async handleStorageRankingUpdate(key: string) {
+    const value = await Cache.getStorageRankings();
+    value[key] = value[key] ? parseInt(value[key], 10) + 1 : 1;
+    // tslint:disable-next-line:no-floating-promises
+    Cache.put(STORAGE_RANKINGS_KEY, value);
+  }
+}
+
+function overrideLocalForageSupport() {
+  // This fixes an existing bug in localForage which checks for fetch to exist to check if Safari version is later than 10.1
+  // Angular patches fetch in Safari and the test to check if fetch is native code returns false
+  // Once LocalForage fixes this bug, we can remove this method
+  // tslint:disable-next-line
+  localforage['originalSupports'] = localforage.supports;
+  localforage.supports = (driver: string) => {
+    try {
+      const isSafari = /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
+            !/Chrome/.test(navigator.userAgent) &&
+            !/BlackBerry/.test(navigator.platform);
+      if (isSafari) {
+        const version = parseInt(navigator.userAgent.split('Version/')[1].split(' ')[0], 10);
+        return version > 10.2;
+      }
+    } catch (e) {
+      console.error('Error in overrideLocalForageSupport', e);
+    }
+    // tslint:disable-next-line
+    return localforage['originalSupports'](driver);
+  };
 }
