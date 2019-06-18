@@ -103,17 +103,26 @@ export class Staffing {
       }, {});
       Staffing._http.defaults.baseURL = endpoints.rest;
       Staffing._http.defaults.withCredentials = true;
-    } else {
-      // tslint:disable-next-line:variable-name
-      const BhRestToken = Cache.get('BhRestToken');
-      const endpoint = Cache.get('restUrl');
-      if (BhRestToken && endpoint) {
+      return Staffing.makeCall();
+    }
+    // tslint:disable-next-line:variable-name
+    Cache.get('BhRestToken').then((BhRestToken) => {
+      Cache.get('restUrl').then((endpoint) => {
+        if (!BhRestToken || !endpoint) {
+          throw new Error('Could not find BhRestToken or restUrl in the cache');
+        }
+
+        console.log('Got credentials', endpoint, BhRestToken);
         Staffing._http.defaults.baseURL = endpoint;
         Staffing._http.defaults.params = { BhRestToken };
         Staffing._http.defaults.withCredentials = false;
-      }
-    }
 
+        return Staffing.makeCall();
+      });
+    });
+  }
+
+  static makeCall(): AxiosInstance {
     if (!Staffing.httpInitialized) {
       Staffing.httpInitialized = true;
       // Add a response interceptor

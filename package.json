@@ -34,7 +34,8 @@
     "rxjs": "^6.0.0"
   },
   "dependencies": {
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "idb": "4.0.3"
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^0.3.0",
