@@ -29,7 +29,12 @@ export class MetaService {
 
   constructor(public entity: string) {
     this.http = Staffing.http();
-    this.parse(Cache.get(this.endpoint) || { fields: [], layouts: [] });
+    Cache.get(this.endpoint).then((item) => {
+      if (item) {
+        this.parse(item);
+      }
+      this.parse({ fields: [], layouts: [] });
+    });
   }
 
   get endpoint(): string {
@@ -68,6 +73,7 @@ export class MetaService {
    * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
+    console.log(`fetching data for ${layout} from endpoint: ${this.endpoint}`);
     const missing = this.missing(requested);
 
     if (missing.length || layout) {
@@ -86,6 +92,7 @@ export class MetaService {
   }
 
   async getAllLayouts(): Promise<any[]> {
+    console.log(`getting all layouts from endpoint: ${this.endpoint}`);
     if (this.allFieldsLoaded) {
       return this.layouts;
     }
@@ -95,14 +102,16 @@ export class MetaService {
   }
 
   async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
+    console.log(`getting full from endpoint: ${this.endpoint}`);
     const fields: FieldMap[] = await this.get(requested);
     const layoutFields: FieldMap[] = layout ? await this.getByLayout(layout) : [];
-    const full: BullhornMetaResponse = Cache.get(this.endpoint);
+    const full: BullhornMetaResponse = await Cache.get(this.endpoint);
     full.fields = [...fields, ...layoutFields];
     return full;
   }
 
   async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
+    console.log(`getting by layout ${layout} from endpoint: ${this.endpoint}`);
     const exists = this.layouts.find((l: any) => l.name === layout);
     if (!exists || !exists.hasOwnProperty('fields')) {
       this.parameters.layout = layout;
@@ -251,7 +260,7 @@ export class MetaService {
     if (result) {
       for (const meta of result) {
         if (meta.dateLastModified) {
-          const item = Cache.get(`meta/${meta.entity}`);
+          const item = await Cache.get(`meta/${meta.entity}`);
           if (item && item.dateLastModified !== meta.dateLastModified) {
             Cache.remove(`meta/${meta.entity}`);
           }

@@ -1,16 +1,32 @@
 import { Memory } from './Memory';
 import { Browser } from './Browser';
+import { openDB } from 'idb';
 
 let storageReference: Storage = new Memory();
 const browserReference: Browser = new Browser();
-try {
-  if (window.localStorage) {
-    storageReference = window.localStorage;
+const STORAGE_RANKINGS_KEY: string = 'storageRankings';
+let dbPromise: any;
+const OBJECTSTORENAME: string = 'keyval';
+const DBNAME: string = 'keyval-store';
+
+(async () => {
+  try {
+    if ('indexedDB' in window) {
+      dbPromise = await openDB(DBNAME, 1, {
+        upgrade(db) {
+          db.createObjectStore(OBJECTSTORENAME);
+        }
+      });
+    }
+
+    if (window.localStorage) {
+      storageReference = window.localStorage;
+    }
+  } catch (err) {
+    // Swallow
+    console.warn('Unable to setup localstorage cache.', err.message);
   }
-} catch (err) {
-  // Swallow
-  console.warn('Unable to setup localstorage cache.', err.message);
-}
+})();
 
 /**
  * A Singleton Class that wraps localStorage calls to simply setting and
@@ -30,7 +46,16 @@ export class Cache {
   /**
    * Logs all values in storage
    */
-  static list(): void {
+  static async list() {
+    if (dbPromise !== undefined) {
+      const keys = (await dbPromise).getAllKeys(OBJECTSTORENAME);
+      keys.array.forEach(async (key) => {
+        console.debug(`${key} --> ${(await Cache.get(key))}`);
+      });
+      return;
+    }
+
+    console.info('Listing from LocalStorage:');
     for (let i = 0; i < storageReference.length; i++) {
       const key = storageReference.key(i);
       if (console && key) {
@@ -68,7 +93,13 @@ export class Cache {
    * @param value - The value to be cached
    * @returns value - the value stored
    */
-  static put(key: string, value: any) {
+  static async put(key: string, value: any) {
+    if (dbPromise !== undefined) {
+      (await dbPromise).put(OBJECTSTORENAME, value, key);
+      return value;
+    }
+
+    console.info(`Putting in LocalStorage: ${key}`);
     if (!Cache.exceedsStorageLimit(key, value)) {
       if (value !== null && typeof value === 'object') {
         value.dateCached = new Date().getTime();
@@ -86,9 +117,15 @@ export class Cache {
    * @param key - The key used to identify the cached value
    * @returns value - the value cached
    */
-  static get(key: string) {
+  static async get(key: string) {
+    if (dbPromise !== undefined) {
+      return (await dbPromise).get(OBJECTSTORENAME, key);
+    }
+
+    console.info(`Getting from LocalStorage: ${key}`);
     const value = storageReference.getItem(key);
     if (value) {
+      Cache.handleStorageRankingUpdate(key);
       return JSON.parse(value);
     }
 
@@ -99,19 +136,17 @@ export class Cache {
    * @param key - The key used to identify the cached value
    * @returns value - if the cache contains the key
    */
-  static has(key: string) {
+  static async has(key: string) {
     try {
+      const tmp = await Cache.get(key);
       const expiration = Date.now() - 86400000;
-      const tmp = storageReference.getItem(key);
-      if (tmp !== undefined && tmp && tmp !== '') {
-        const val = JSON.parse(tmp);
-        if (val.dateCached) {
-          return val.dateCached > expiration;
+        if (tmp !== undefined && tmp && tmp !== '') {
+          if (tmp.dateCached) {
+            return tmp.dateCached > expiration;
+          }
+          return true;
         }
-
-        return true;
-      }
-      return false;
+        return false;
     } catch (err) {
       console.warn(`An error occurred while looking for ${key} in Cache`, err);
       return false;
@@ -121,7 +156,28 @@ export class Cache {
    * Removes a key from the cache
    * @param key - The key used to identify the cached value
    */
-  static remove(key: string) {
+  static async remove(key: string) {
+    if (dbPromise !== undefined) {
+      (await dbPromise).delete(OBJECTSTORENAME, key);
+      return;
+    }
+
+    console.info(`Deleting from LocalStorage: ${key}`);
     storageReference.removeItem(key);
+  }
+
+  static getStorageRankings() {
+    const value = storageReference.getItem(STORAGE_RANKINGS_KEY);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return {};
+  }
+
+  static handleStorageRankingUpdate(key: string) {
+    const value = Cache.getStorageRankings();
+    value[key] = value[key] ? value[key] + 1 : 1;
+    console.log(value);
+    Cache.put(STORAGE_RANKINGS_KEY, value);
   }
 }
