@@ -70,18 +70,22 @@ export class Staffing {
     this.config = { ...this.config, ...this.options };
     this.useCookies = options.useCookies || false;
     if (this.options.BhRestToken) {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('BhRestToken', this.config.BhRestToken);
     } else {
       this.useCookies = true;
     }
     if (this.options.restUrl) {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('restUrl', this.config.restUrl);
     }
   }
 
   async login(provider: StaffingAuthProvider): Promise<RestCredentials> {
     return provider.credential(this.config).then((credentials: RestCredentials) => {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('BhRestToken', credentials.BhRestToken);
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('restUrl', credentials.restUrl);
       return credentials;
     });
@@ -93,7 +97,7 @@ export class Staffing {
   /**
    * Retrieves the HttpService created to connect to the Bullhorn RestApi
    */
-  static http(): AxiosInstance {
+  static async http(): Promise<AxiosInstance> {
     const cookie = getCookie('UlEncodedIdentity');
     if (cookie && cookie.length) {
       const identity = JSON.parse(decodeURIComponent(cookie));
@@ -103,17 +107,23 @@ export class Staffing {
       }, {});
       Staffing._http.defaults.baseURL = endpoints.rest;
       Staffing._http.defaults.withCredentials = true;
-    } else {
-      // tslint:disable-next-line:variable-name
-      const BhRestToken = Cache.get('BhRestToken');
-      const endpoint = Cache.get('restUrl');
-      if (BhRestToken && endpoint) {
-        Staffing._http.defaults.baseURL = endpoint;
-        Staffing._http.defaults.params = { BhRestToken };
-        Staffing._http.defaults.withCredentials = false;
-      }
+      return Staffing.makeCall();
     }
 
+    // tslint:disable-next-line:variable-name
+    const BhRestToken = await Cache.get('BhRestToken');
+    const endpoint = await Cache.get('restUrl');
+
+    if (BhRestToken && endpoint) {
+      Staffing._http.defaults.baseURL = endpoint;
+      Staffing._http.defaults.params = { BhRestToken };
+      Staffing._http.defaults.withCredentials = false;
+    }
+
+    return Staffing.makeCall();
+  }
+
+  static makeCall(): AxiosInstance {
     if (!Staffing.httpInitialized) {
       Staffing.httpInitialized = true;
       // Add a response interceptor
@@ -155,7 +165,7 @@ export class Staffing {
   }
 
   async ping(): Promise<AxiosResponse> {
-    const http = Staffing.http();
+    const http = await Staffing.http();
     return http.get('ping');
   }
 }

@@ -26,10 +26,20 @@ export class MetaService {
     fields: '*',
     meta: 'full',
   };
+  private readonly initialized: Promise<unknown>;
 
   constructor(public entity: string) {
-    this.http = Staffing.http();
-    this.parse(Cache.get(this.endpoint) || { fields: [], layouts: [] });
+    this.initialized = this.initialize();
+  }
+
+  async initialize() {
+    this.http = await Staffing.http();
+    const meta = await Cache.get(this.endpoint);
+    if (meta) {
+      this.parse(meta);
+    } else {
+      this.parse({ fields: [], layouts: [] });
+    }
   }
 
   get endpoint(): string {
@@ -68,6 +78,7 @@ export class MetaService {
    * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
+    await this.initialized;
     const missing = this.missing(requested);
 
     if (missing.length || layout) {
@@ -85,7 +96,32 @@ export class MetaService {
     return this.extract(requested);
   }
 
+  /**
+   * Make http request to get track data. Response data will be parsed, then the Promise will be resolved.
+   */
+  async getTracks(): Promise<BullhornTrack[]> {
+    await this.initialized;
+    if (!this.memory) {
+      await this.get(['*']);
+      return this.tracks;
+    }
+      return this.tracks;
+  }
+
+  /**
+   * Make http request to get track data. Response data will be parsed, then the Promise will be resolved.
+   */
+  async getFields(): Promise<FieldMap[]> {
+    await this.initialized;
+    if (!this.memory) {
+      await this.get(['*']);
+      return this.fields;
+    }
+      return this.fields;
+  }
+
   async getAllLayouts(): Promise<any[]> {
+    await this.initialized;
     if (this.allFieldsLoaded) {
       return this.layouts;
     }
@@ -95,14 +131,16 @@ export class MetaService {
   }
 
   async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
+    await this.initialized;
     const fields: FieldMap[] = await this.get(requested);
     const layoutFields: FieldMap[] = layout ? await this.getByLayout(layout) : [];
-    const full: BullhornMetaResponse = Cache.get(this.endpoint);
+    const full: BullhornMetaResponse = await Cache.get(this.endpoint);
     full.fields = [...fields, ...layoutFields];
     return full;
   }
 
   async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
+    await this.initialized;
     const exists = this.layouts.find((l: any) => l.name === layout);
     if (!exists || !exists.hasOwnProperty('fields')) {
       this.parameters.layout = layout;
@@ -132,7 +170,7 @@ export class MetaService {
     return this.get(exists.fields);
   }
 
-  parse(result: any, keepFieldsFromLayout: boolean = false): void {
+  private parse(result: any, keepFieldsFromLayout: boolean = false): void {
     if (!result) {
       return;
     }
@@ -194,10 +232,11 @@ export class MetaService {
 
     result.allFieldsLoaded = result.allFieldsLoaded || this.allFieldsLoaded;
     this.allFieldsLoaded = result.allFieldsLoaded;
+    // tslint:disable-next-line:no-floating-promises
     Cache.put(this.endpoint, result);
   }
 
-  missing(fields): string[] {
+  private missing(fields): string[] {
     if (!this.memory) {
       return fields;
     }
@@ -225,7 +264,7 @@ export class MetaService {
   /**
    * Get specific meta data properties
    */
-  extract(fields: string[]): FieldMap[] {
+  private extract(fields: string[]): FieldMap[] {
     if (!this.memory) {
       return [];
     }
@@ -246,17 +285,19 @@ export class MetaService {
   }
 
   static async validate(): Promise<boolean> {
-    const response: AxiosResponse = await Staffing.http().get('/meta');
+    const response: AxiosResponse = await (await Staffing.http()).get('/meta');
     const result: any[] = response.data;
     if (result) {
       for (const meta of result) {
         if (meta.dateLastModified) {
-          const item = Cache.get(`meta/${meta.entity}`);
+          const item = await Cache.get(`meta/${meta.entity}`);
           if (item && item.dateLastModified !== meta.dateLastModified) {
+            // tslint:disable-next-line:no-floating-promises
             Cache.remove(`meta/${meta.entity}`);
           }
           continue;
         }
+        // tslint:disable-next-line:no-floating-promises
         Cache.remove(`meta/${meta.entity}`);
       }
     }

@@ -24,14 +24,19 @@ export class EntitySubscription {
   // EntityBroker
   protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
   public _lastRequestId: number = 0;
+  private readonly initialized: Promise<unknown>;
   /**
    * constructor
    * @param  subscriptionId name of the subscription
    * @param  types List of Entity events to listen to
    */
   constructor(private readonly subscriptionId: string, public types: string[] = []) {
-    this.http = Staffing.http();
     this._setUpObservable().catch(() => console.error('Error in Subscription'));
+    this.initialized = this.initialize();
+  }
+
+  async initialize() {
+    this.http = await Staffing.http();
   }
 
   get endpoint(): string {
@@ -39,6 +44,7 @@ export class EntitySubscription {
   }
 
   async subscribe(): Promise<BullhornSubscriptionResponse> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.put(this.endpoint, {
       params: {
         type: this.subscriptionType,
@@ -50,6 +56,7 @@ export class EntitySubscription {
   }
 
   async unsubscribe(): Promise<BullhornSubscriptionResponse> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.delete(this.endpoint);
     return response.data;
   }
@@ -58,6 +65,7 @@ export class EntitySubscription {
    * @param id - Id of the Model to retrieve
    */
   async get(): Promise<BullhornSubscriptionEvent[]> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.get(this.endpoint, {
       params: {
         maxEvents: 100,
