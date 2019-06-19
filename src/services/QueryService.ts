@@ -42,8 +42,8 @@ export class QueryService<T> {
     this._endpoint = value;
   }
 
-  // tslint:disable-next-line:promise-function-async
   get total(): Promise<number> {
+    // tslint:disable-next-line:promise-function-async
     return this.initialized.then(() => {
       if (this._lastResponse && this._lastResponse.total) {
         return Promise.resolve(this._lastResponse.total);
