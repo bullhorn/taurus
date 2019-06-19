@@ -22,14 +22,20 @@ export class LookupService {
     isCountPerEntity: true,
   };
   protected _endpoint: string;
+  private readonly initialized: Promise<unknown>;
   /**
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'options/JobOrder'
    */
   constructor(public types: string[], private readonly options: LookupOptions = {}) {
-    this.http = Staffing.http();
+    this.initialized = this.initialize();
     this.params({ entity: this.types, ...this.options });
   }
+
+  async initialize() {
+    this.http = await Staffing.http();
+  }
+
   get endpoint(): string {
     return this._endpoint || 'lookup/expanded';
   }
@@ -52,6 +58,7 @@ export class LookupService {
     return this.run();
   }
   async run(): Promise<BullhornLookupItem[]> {
+    await this.initialized;
     return this.http
       .get(this.endpoint, { params: this.parameters })
       .then((response) => response.data)

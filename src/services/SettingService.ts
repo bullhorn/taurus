@@ -7,22 +7,30 @@ import { Staffing } from './Staffing';
  */
 export class SettingService {
   http: AxiosInstance;
+  private readonly initialized: Promise<unknown>;
 
   constructor() {
-    this.http = Staffing.http();
+    this.initialized = this.initialize();
+  }
+
+  async initialize() {
+    this.http = await Staffing.http();
   }
 
   async getSettings(settings: string[]): Promise<{ [key: string]: any }> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.get(`settings/${settings.join()}`);
     return response.data;
   }
 
   async getEntitlements(entity: string): Promise<string[]> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.get(`entitlements/${entity}`);
     return response.data;
   }
 
   async getAllSettingsAndEntitlements(): Promise<BullhornAllSettingsAndEntitlementsResponse> {
+    await this.initialized;
     const response: AxiosResponse = await this.http.get('services/Settings/allEntitlementsAndSettings');
     const result: BullhornAllSettingsAndEntitlementsResponse = response.data;
     if (result && result.dashboardEntitlements && result.entitlements) {

@@ -9,6 +9,7 @@ const OBJECTSTORENAME: string = 'keyval';
 const DBNAME: string = 'keyval-store';
 let dbPromise: IDBPDatabase<unknown>;
 
+// tslint:disable-next-line:no-floating-promises
 (async () => {
   try {
     if ('indexedDB' in window) {
@@ -179,8 +180,8 @@ export class Cache {
 
   static handleStorageRankingUpdate(key: string) {
     const value = Cache.getStorageRankings();
-    value[key] = value[key] ? value[key] + 1 : 1;
-    console.log(value);
+    value[key] = value[key] ? parseInt(value[key], 10) + 1 : 1;
+    // tslint:disable-next-line:no-floating-promises
     Cache.put(STORAGE_RANKINGS_KEY, value);
   }
 }
