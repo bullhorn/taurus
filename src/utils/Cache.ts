@@ -55,12 +55,13 @@ export class Cache {
     if (dbPromise !== undefined) {
       const keys = await (await dbPromise).getAllKeys(OBJECTSTORENAME);
       keys.forEach(async (key) => {
-        console.debug(`${key.toString()} --> ${(await Cache.get(key.toString()))}`);
+        if (console && key) {
+          console.debug(`${key.toString()} --> ${JSON.stringify(await Cache.get(key.toString()))}`);
+        }
       });
       return;
     }
 
-    console.info('Listing from LocalStorage:');
     for (let i = 0; i < storageReference.length; i++) {
       const key = storageReference.key(i);
       if (console && key) {
@@ -101,10 +102,9 @@ export class Cache {
   static async put(key: string, value: any) {
     if (dbPromise !== undefined) {
       (await dbPromise).put(OBJECTSTORENAME, value, key);
-      return value;
+      return Promise.resolve(value);
     }
 
-    console.info(`Putting in LocalStorage: ${key}`);
     if (!Cache.exceedsStorageLimit(key, value)) {
       if (value !== null && typeof value === 'object') {
         value.dateCached = new Date().getTime();
@@ -115,7 +115,7 @@ export class Cache {
         console.error(error);
       }
     }
-    return value;
+    return Promise.resolve(value);
   }
   /**
    * Retrieves value from the cache stored with the key
@@ -127,11 +127,10 @@ export class Cache {
       return (await dbPromise).get(OBJECTSTORENAME, key);
     }
 
-    console.info(`Getting from LocalStorage: ${key}`);
     const value = storageReference.getItem(key);
     if (value) {
       Cache.handleStorageRankingUpdate(key);
-      return JSON.parse(value);
+      return Promise.resolve(JSON.parse(value));
     }
 
     return null;
@@ -149,12 +148,12 @@ export class Cache {
           if (tmp.dateCached) {
             return tmp.dateCached > expiration;
           }
-          return true;
+          return Promise.resolve(true);
         }
-        return false;
+        return Promise.resolve(false);
     } catch (err) {
       console.warn(`An error occurred while looking for ${key} in Cache`, err);
-      return false;
+      return Promise.resolve(false);
     }
   }
   /**
@@ -167,7 +166,6 @@ export class Cache {
       return;
     }
 
-    console.info(`Deleting from LocalStorage: ${key}`);
     storageReference.removeItem(key);
   }
 

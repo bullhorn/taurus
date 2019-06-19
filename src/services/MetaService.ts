@@ -79,7 +79,6 @@ export class MetaService {
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
     await this.initialized; // this is ensuring that our initialization is complete
-    console.log(`fetching data for ${layout} from endpoint: ${this.endpoint} since it is now initialized`);
     const missing = this.missing(requested);
 
     if (missing.length || layout) {
