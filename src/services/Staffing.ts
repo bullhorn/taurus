@@ -114,13 +114,11 @@ export class Staffing {
     const BhRestToken = await Cache.get('BhRestToken');
     const endpoint = await Cache.get('restUrl');
 
-    if (!BhRestToken || !endpoint) {
-      throw new Error('Could not find BhRestToken or restUrl in the cache');
+    if (BhRestToken && endpoint) {
+      Staffing._http.defaults.baseURL = endpoint;
+      Staffing._http.defaults.params = { BhRestToken };
+      Staffing._http.defaults.withCredentials = false;
     }
-
-    Staffing._http.defaults.baseURL = endpoint;
-    Staffing._http.defaults.params = { BhRestToken };
-    Staffing._http.defaults.withCredentials = false;
 
     return Staffing.makeCall();
   }
