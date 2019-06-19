@@ -16,13 +16,19 @@ export class OptionsService {
   protected _page: number = 0;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<FieldMapOption>;
+  private readonly initialized: Promise<unknown>;
   /**
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'options/JobOrder'
    */
   constructor(public optionType: string) {
-    this.http = Staffing.http();
+    this.initialized = this.initialize();
   }
+
+  async initialize() {
+    this.http = await Staffing.http();
+  }
+
   get endpoint(): string {
     return this._endpoint || `options/${this.optionType}`;
   }
@@ -58,6 +64,7 @@ export class OptionsService {
     return this.run(add);
   }
   async run(add): Promise<BullhornListResponse<FieldMapOption>> {
+    await this.initialized;
     return this.http
       .get(this.endpoint, { params: this.parameters })
       .then((response) => response.data)

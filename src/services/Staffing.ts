@@ -70,18 +70,22 @@ export class Staffing {
     this.config = { ...this.config, ...this.options };
     this.useCookies = options.useCookies || false;
     if (this.options.BhRestToken) {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('BhRestToken', this.config.BhRestToken);
     } else {
       this.useCookies = true;
     }
     if (this.options.restUrl) {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('restUrl', this.config.restUrl);
     }
   }
 
   async login(provider: StaffingAuthProvider): Promise<RestCredentials> {
     return provider.credential(this.config).then((credentials: RestCredentials) => {
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('BhRestToken', credentials.BhRestToken);
+      // tslint:disable-next-line:no-floating-promises
       Cache.put('restUrl', credentials.restUrl);
       return credentials;
     });
@@ -93,7 +97,7 @@ export class Staffing {
   /**
    * Retrieves the HttpService created to connect to the Bullhorn RestApi
    */
-  static http(): AxiosInstance {
+  static async http(): Promise<AxiosInstance> {
     const cookie = getCookie('UlEncodedIdentity');
     if (cookie && cookie.length) {
       const identity = JSON.parse(decodeURIComponent(cookie));
@@ -105,21 +109,20 @@ export class Staffing {
       Staffing._http.defaults.withCredentials = true;
       return Staffing.makeCall();
     }
+
     // tslint:disable-next-line:variable-name
-    Cache.get('BhRestToken').then((BhRestToken) => {
-      Cache.get('restUrl').then((endpoint) => {
-        if (!BhRestToken || !endpoint) {
-          throw new Error('Could not find BhRestToken or restUrl in the cache');
-        }
+    const BhRestToken = await Cache.get('BhRestToken');
+    const endpoint = await Cache.get('restUrl');
 
-        console.log('Got credentials', endpoint, BhRestToken);
-        Staffing._http.defaults.baseURL = endpoint;
-        Staffing._http.defaults.params = { BhRestToken };
-        Staffing._http.defaults.withCredentials = false;
+    if (!BhRestToken || !endpoint) {
+      throw new Error('Could not find BhRestToken or restUrl in the cache');
+    }
 
-        return Staffing.makeCall();
-      });
-    });
+    Staffing._http.defaults.baseURL = endpoint;
+    Staffing._http.defaults.params = { BhRestToken };
+    Staffing._http.defaults.withCredentials = false;
+
+    return Staffing.makeCall();
   }
 
   static makeCall(): AxiosInstance {
@@ -164,7 +167,7 @@ export class Staffing {
   }
 
   async ping(): Promise<AxiosResponse> {
-    const http = Staffing.http();
+    const http = await Staffing.http();
     return http.get('ping');
   }
 }

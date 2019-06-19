@@ -25,6 +25,7 @@ export class EntityService<T> {
   public type: string;
   // The MetaService associated
   public meta: MetaService;
+  private readonly initialized: Promise<unknown>;
 
   /**
    * constructor
@@ -33,11 +34,15 @@ export class EntityService<T> {
   constructor(type: string) {
     this.type = type;
     this.endpoint = `entity/${this.type}`;
-    this.http = Staffing.http();
     this.meta = new MetaService(this.type);
     this.parameters = {
       fields: this._fields || ['id'],
     };
+    this.initialized = this.initialize();
+  }
+
+  async initialize() {
+    this.http = await Staffing.http();
   }
 
   /**
@@ -72,6 +77,7 @@ export class EntityService<T> {
    * @param id - Id of the Model to retrieve
    */
   async get(id: number): Promise<BullhornEntityResponse<T>> {
+    await this.initialized;
     const [response, meta] = await Promise.all([this.http.get(`${this.endpoint}/${id}`, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
     const result: BullhornEntityResponse<T> = response.data;
     result.meta = meta;
@@ -83,6 +89,7 @@ export class EntityService<T> {
    * @param id - Id of the Model to retrieve
    */
   async edit(id: number): Promise<BullhornEntityResponse<T>> {
+    await this.initialized;
     const layout = 'RecordEdit';
     const params = { ...this.parameters, layout };
     delete params.fields;
@@ -98,6 +105,7 @@ export class EntityService<T> {
    * @param fields - Additional fields to retrieve on the TO_MANY field
    */
   async many(property: string, fields: string[], value: any, params: any = {}): Promise<BullhornListResponse<any>> {
+    await this.initialized;
     const toManyData = await this.http.get(`${this.endpoint}/${value.id}/${property}`, {
       params: {
         fields,
@@ -113,6 +121,7 @@ export class EntityService<T> {
    */
   async save(value: any): Promise<AxiosResponse> {
     // Update
+    await this.initialized;
     if (value && value.id) {
       return this.http.post(`${this.endpoint}/${value.id}`, value);
     }
@@ -123,6 +132,7 @@ export class EntityService<T> {
    * Sends a request to delete the entity
    */
   async delete(id?: number): Promise<AxiosResponse> {
+    await this.initialized;
     return this.http.delete(`${this.endpoint}${id}`);
   }
 }
