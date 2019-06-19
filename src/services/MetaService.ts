@@ -26,15 +26,20 @@ export class MetaService {
     fields: '*',
     meta: 'full',
   };
+  initialized: Promise<unknown>;
 
   constructor(public entity: string) {
     this.http = Staffing.http();
-    Cache.get(this.endpoint).then((item) => {
-      if (item) {
-        this.parse(item);
-      }
+    this.initialized = this.initialize();
+  }
+
+  async initialize() {
+    const meta = await Cache.get(this.endpoint);
+    if (meta) {
+      this.parse(meta);
+    } else {
       this.parse({ fields: [], layouts: [] });
-    });
+    } 
   }
 
   get endpoint(): string {
@@ -73,7 +78,8 @@ export class MetaService {
    * Make http request to get meta data. Response data will be parsed, then the Promise will be resolved.
    */
   async get(requested: string[], layout?: string): Promise<FieldMap[]> {
-    console.log(`fetching data for ${layout} from endpoint: ${this.endpoint}`);
+    await this.initialized; // this is ensuring that our initialization is complete
+    console.log(`fetching data for ${layout} from endpoint: ${this.endpoint} since it is now initialized`);
     const missing = this.missing(requested);
 
     if (missing.length || layout) {
@@ -81,6 +87,7 @@ export class MetaService {
       if (layout) {
         this.parameters.layout = layout;
       }
+      console.log('Making meta call for these fields', requested.toString(), this.endpoint);
       const response: AxiosResponse = await this.http.get(this.endpoint, { params: this.parameters });
       const result: BullhornMetaResponse = response.data;
       this.allFieldsLoaded = requested[0] === '*';
@@ -92,7 +99,7 @@ export class MetaService {
   }
 
   async getAllLayouts(): Promise<any[]> {
-    console.log(`getting all layouts from endpoint: ${this.endpoint}`);
+    await this.initialized; // this is ensuring that our initialization is complete
     if (this.allFieldsLoaded) {
       return this.layouts;
     }
@@ -102,7 +109,7 @@ export class MetaService {
   }
 
   async getFull(requested: string[], layout?: string): Promise<BullhornMetaResponse> {
-    console.log(`getting full from endpoint: ${this.endpoint}`);
+    await this.initialized; // this is ensuring that our initialization is complete
     const fields: FieldMap[] = await this.get(requested);
     const layoutFields: FieldMap[] = layout ? await this.getByLayout(layout) : [];
     const full: BullhornMetaResponse = await Cache.get(this.endpoint);
@@ -111,7 +118,7 @@ export class MetaService {
   }
 
   async getByLayout(layout: string, keepFieldsFromLayout: boolean = true): Promise<FieldMap[]> {
-    console.log(`getting by layout ${layout} from endpoint: ${this.endpoint}`);
+    await this.initialized; // this is ensuring that our initialization is complete
     const exists = this.layouts.find((l: any) => l.name === layout);
     if (!exists || !exists.hasOwnProperty('fields')) {
       this.parameters.layout = layout;
@@ -141,7 +148,7 @@ export class MetaService {
     return this.get(exists.fields);
   }
 
-  parse(result: any, keepFieldsFromLayout: boolean = false): void {
+  private parse(result: any, keepFieldsFromLayout: boolean = false): void {
     if (!result) {
       return;
     }
@@ -206,7 +213,7 @@ export class MetaService {
     Cache.put(this.endpoint, result);
   }
 
-  missing(fields): string[] {
+  private missing(fields): string[] {
     if (!this.memory) {
       return fields;
     }
@@ -234,7 +241,7 @@ export class MetaService {
   /**
    * Get specific meta data properties
    */
-  extract(fields: string[]): FieldMap[] {
+  private extract(fields: string[]): FieldMap[] {
     if (!this.memory) {
       return [];
     }

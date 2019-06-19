@@ -1,22 +1,27 @@
 import { Memory } from './Memory';
 import { Browser } from './Browser';
-import { openDB } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 
 let storageReference: Storage = new Memory();
 const browserReference: Browser = new Browser();
 const STORAGE_RANKINGS_KEY: string = 'storageRankings';
-let dbPromise: any;
 const OBJECTSTORENAME: string = 'keyval';
 const DBNAME: string = 'keyval-store';
+let dbPromise: IDBPDatabase<unknown>;
 
 (async () => {
   try {
     if ('indexedDB' in window) {
-      dbPromise = await openDB(DBNAME, 1, {
-        upgrade(db) {
-          db.createObjectStore(OBJECTSTORENAME);
-        }
-      });
+      try {
+        dbPromise = await openDB(DBNAME, 1, {
+          upgrade(db) {
+            db.createObjectStore(OBJECTSTORENAME);
+          }
+        });
+      } catch (error) {
+        dbPromise = undefined;
+        console.warn('Could not set up indexed DB', error.message);
+      }
     }
 
     if (window.localStorage) {
@@ -48,9 +53,9 @@ export class Cache {
    */
   static async list() {
     if (dbPromise !== undefined) {
-      const keys = (await dbPromise).getAllKeys(OBJECTSTORENAME);
-      keys.array.forEach(async (key) => {
-        console.debug(`${key} --> ${(await Cache.get(key))}`);
+      const keys = await (await dbPromise).getAllKeys(OBJECTSTORENAME);
+      keys.forEach(async (key) => {
+        console.debug(`${key.toString()} --> ${(await Cache.get(key.toString()))}`);
       });
       return;
     }
