@@ -108,7 +108,7 @@ export class MetaService {
     }
       return this.tracks;
   }
-  
+
   async getAllLayouts(): Promise<any[]> {
     await this.initialized; // This is ensuring that our initialization is complete
     if (this.allFieldsLoaded) {
