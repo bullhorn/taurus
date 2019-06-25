@@ -97,6 +97,20 @@ export class MetaService {
     return this.extract(requested);
   }
 
+  /**
+   * Make http request to get track data. Response data will be parsed, then the Promise will be resolved.
+   */
+  async getTracks(): Promise<BullhornTrack[]> {
+    await this.initialized; // This is ensuring that our initialization is complete
+    if (!this.memory) {
+      await this.get(['*']);
+      return this.tracks;
+    } else {
+      return this.tracks;
+    }
+  }
+  
+
   async getAllLayouts(): Promise<any[]> {
     await this.initialized; // This is ensuring that our initialization is complete
     if (this.allFieldsLoaded) {
