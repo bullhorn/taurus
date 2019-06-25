@@ -105,12 +105,10 @@ export class MetaService {
     if (!this.memory) {
       await this.get(['*']);
       return this.tracks;
-    } else {
-      return this.tracks;
     }
+      return this.tracks;
   }
   
-
   async getAllLayouts(): Promise<any[]> {
     await this.initialized; // This is ensuring that our initialization is complete
     if (this.allFieldsLoaded) {
