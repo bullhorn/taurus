@@ -109,6 +109,18 @@ export class MetaService {
       return this.tracks;
   }
 
+  /**
+   * Make http request to get track data. Response data will be parsed, then the Promise will be resolved.
+   */
+  async getFields(): Promise<FieldMap[]> {
+    await this.initialized; // This is ensuring that our initialization is complete
+    if (!this.memory) {
+      await this.get(['*']);
+      return this.fields;
+    }
+      return this.fields;
+  }
+
   async getAllLayouts(): Promise<any[]> {
     await this.initialized; // This is ensuring that our initialization is complete
     if (this.allFieldsLoaded) {
