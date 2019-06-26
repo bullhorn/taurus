@@ -44,7 +44,8 @@ export class QueryService<T> {
 
   get total(): Promise<number> {
     // tslint:disable-next-line:promise-function-async
-    return this.initialized.then(() => {
+    return (async () => {
+      await this.initialized;
       if (this._lastResponse && this._lastResponse.total) {
         return Promise.resolve(this._lastResponse.total);
       }
@@ -54,7 +55,7 @@ export class QueryService<T> {
         .then((result: BullhornListResponse<T>) => {
           return result.total || 0;
         });
-    });
+    })();
   }
 
   get snapshot(): BullhornListResponse<T> {
