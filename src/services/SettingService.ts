@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { BullhornAllSettingsAndEntitlementsResponse } from '../types';
 import { Staffing } from './Staffing';
+import { Cache } from '../utils';
 
 /**
  * A Class that defines a service to grab settings from Bullhorn
@@ -8,6 +9,7 @@ import { Staffing } from './Staffing';
 export class SettingService {
   http: AxiosInstance;
   private readonly initialized: Promise<unknown>;
+  private readonly allSettingsAndEntitlementsEndpoint: string = 'services/Settings/allEntitlementsAndSettings';
 
   constructor() {
     this.initialized = this.initialize();
@@ -29,10 +31,21 @@ export class SettingService {
     return response.data;
   }
 
-  async getAllSettingsAndEntitlements(): Promise<BullhornAllSettingsAndEntitlementsResponse> {
+  async getAllSettingsAndEntitlements(cached: boolean = false): Promise<BullhornAllSettingsAndEntitlementsResponse> {
     await this.initialized;
-    const response: AxiosResponse = await this.http.get('services/Settings/allEntitlementsAndSettings');
-    const result: BullhornAllSettingsAndEntitlementsResponse = response.data;
+    let result: BullhornAllSettingsAndEntitlementsResponse;
+
+    if (cached && await Cache.has(this.allSettingsAndEntitlementsEndpoint)) {
+      result = await Cache.get(this.allSettingsAndEntitlementsEndpoint);
+    } else {
+      const response: AxiosResponse = await this.http.get(this.allSettingsAndEntitlementsEndpoint);
+      result = response.data;
+      if (cached) {
+        // tslint:disable-next-line:no-floating-promises
+        Cache.put(this.allSettingsAndEntitlementsEndpoint, result);
+      }
+    }
+
     if (result && result.dashboardEntitlements && result.entitlements) {
       result.entitlements.Dashboard = result.dashboardEntitlements;
     }

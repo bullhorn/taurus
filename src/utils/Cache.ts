@@ -7,32 +7,30 @@ const browserReference: Browser = new Browser();
 const STORAGE_RANKINGS_KEY: string = 'storageRankings';
 const OBJECTSTORENAME: string = 'keyval';
 const DBNAME: string = 'keyval-store';
-let dbPromise: IDBPDatabase<unknown>;
+let dbPromise: Promise<IDBPDatabase<unknown>>;
 
 // tslint:disable-next-line:no-floating-promises
-(async () => {
-  try {
-    if ('indexedDB' in window) {
-      try {
-        dbPromise = await openDB(DBNAME, 1, {
-          upgrade(db) {
-            db.createObjectStore(OBJECTSTORENAME);
-          }
-        });
-      } catch (error) {
-        dbPromise = undefined;
-        console.warn('Could not set up indexed DB', error.message);
-      }
+try {
+  if ('indexedDB' in window) {
+    try {
+      dbPromise = openDB(DBNAME, 1, {
+        upgrade(db) {
+          db.createObjectStore(OBJECTSTORENAME);
+        }
+      });
+    } catch (error) {
+      dbPromise = undefined;
+      console.warn('Could not set up indexed DB', error.message);
     }
-
-    if (window.localStorage) {
-      storageReference = window.localStorage;
-    }
-  } catch (err) {
-    // Swallow
-    console.warn('Unable to setup localstorage cache.', err.message);
   }
-})();
+
+  if (window.localStorage) {
+    storageReference = window.localStorage;
+  }
+} catch (err) {
+  // Swallow
+  console.warn('Unable to setup localstorage cache.', err.message);
+}
 
 /**
  * A Singleton Class that wraps localStorage calls to simply setting and
@@ -168,6 +166,19 @@ export class Cache {
     }
 
     storageReference.removeItem(key);
+  }
+
+  /**
+   * Clears out the cache
+   * @param key - The key used to identify the cached value
+   */
+  static async clear() {
+    if (dbPromise !== undefined) {
+      (await dbPromise).clear(OBJECTSTORENAME);
+      return;
+    }
+
+    storageReference.clear();
   }
 
   static getStorageRankings() {
