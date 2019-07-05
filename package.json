@@ -75,6 +75,7 @@
     "posttest": "npm run lint",
     "semantic-release": "semantic-release",
     "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "snapshot-publish": "bash snapshot-publish"
   }
 }
