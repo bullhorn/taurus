@@ -12,6 +12,7 @@ commitMessage=$(git log --oneline -n 1)
 repoName="taurus-snapshot"
 repoUrl="https://github.com/bullhorn/taurus-snapshot.git"
 repoDir="snapshot"
+repoLibDir="snapshot/lib"
 
 echo "Cloning $repoUrl into $repoDir"
 git clone $repoUrl $repoDir
@@ -23,11 +24,13 @@ cd ..
 
 echo "Cleaning snapshot repo and moving build files into it"
 rm -rf $repoDir/*
-cp -r $buildDir/* $repoDir
+mkdir $repoLibDir
 cp LICENSE $repoDir
 cp package.json $repoDir
 cp README.md $repoDir
+cp -r $buildDir/* $repoLibDir
 cd $repoDir
+
 
 # Prepare Git for pushing the artifacts to the repository.
 git config user.name "$commitAuthorName"
