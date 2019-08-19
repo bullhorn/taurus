@@ -113,18 +113,22 @@ export class Cache {
    * @param key - The key used to identify the cached value
    * @returns value - the value cached
    */
-  static async get(key: string) {
+  static async get(key: string, updateRankings: boolean = true) {
     if (localforage !== undefined) {
       await localforage.ready();
-      // tslint:disable-next-line:no-floating-promises
-      Cache.handleStorageRankingUpdate(key);
+      if (updateRankings) {
+        // tslint:disable-next-line:no-floating-promises
+        Cache.handleStorageRankingUpdate(key);
+      }
       return localforage.getItem(key);
     }
 
     const value = storageReference.getItem(key);
     if (value) {
-      // tslint:disable-next-line:no-floating-promises
-      Cache.handleStorageRankingUpdate(key);
+      if (updateRankings) {
+        // tslint:disable-next-line:no-floating-promises
+        Cache.handleStorageRankingUpdate(key);
+      }
       return Promise.resolve(JSON.parse(value));
     }
 
@@ -180,9 +184,9 @@ export class Cache {
   }
 
   static async getStorageRankings() {
-    const value = await Cache.get(STORAGE_RANKINGS_KEY);
-    if (value) {
-      return JSON.parse(value);
+    const value = await Cache.get(STORAGE_RANKINGS_KEY, false);
+    if (value && typeof value === 'string') {
+      JSON.parse(value);
     }
     return {};
   }
@@ -211,7 +215,7 @@ function overrideLocalForageSupport() {
         return version > 10.2;
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error in overrideLocalForageSupport', e);
     }
     // tslint:disable-next-line
     return localforage['originalSupports'](driver);
