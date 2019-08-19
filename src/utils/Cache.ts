@@ -10,23 +10,7 @@ const DBNAME: string = 'keyval-store';
 
 // tslint:disable-next-line:no-floating-promises
 try {
-  // tslint:disable-next-line
-  localforage['originalSupports'] = localforage.supports;
-  localforage.supports = (x: string) => {
-    const isSafari = /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
-            !/Chrome/.test(navigator.userAgent) &&
-            !/BlackBerry/.test(navigator.platform);
-    const hasFetch = typeof fetch === 'function' &&
-            (fetch.toString().indexOf('[native code') !== -1 || fetch.toString().indexOf('Zone.') > -1);
-    console.log(isSafari, hasFetch);
-    if (isSafari && hasFetch) {
-      console.log('this was a valid version of Safari');
-      return true;
-    }
-    console.log('checking with original method');
-    // tslint:disable-next-line
-    return localforage['originalSupports'](x);
-  };
+  overrideLocalForageSupport();
   localforage.config({
     driver: [localforage.INDEXEDDB,
             localforage.LOCALSTORAGE],
@@ -207,4 +191,27 @@ export class Cache {
     // tslint:disable-next-line:no-floating-promises
     Cache.put(STORAGE_RANKINGS_KEY, value);
   }
+}
+
+function overrideLocalForageSupport() {
+  // This fixes an existing bug in localForage which checks for fetch to exist to check if Safari version is later than 10.1
+  // Angular patches fetch in Safari and the test to check if fetch is native code returns false
+  // Once LocalForage fixes this bug, we can remove this method
+  // tslint:disable-next-line
+  localforage['originalSupports'] = localforage.supports;
+  localforage.supports = (driver: string) => {
+    try {
+      const isSafari = /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
+            !/Chrome/.test(navigator.userAgent) &&
+            !/BlackBerry/.test(navigator.platform);
+      if (isSafari) {
+        const version = parseInt(navigator.userAgent.split('Version/')[1].split(' ')[0], 10);
+        return version > 10.2;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    // tslint:disable-next-line
+    return localforage['originalSupports'](driver);
+  };
 }
