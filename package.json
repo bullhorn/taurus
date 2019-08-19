@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "idb": "4.0.3"
+    "localforage": "1.7.3"
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^0.3.0",

@@ -1,35 +1,27 @@
 import { Memory } from './Memory';
 import { Browser } from './Browser';
-import { openDB, IDBPDatabase } from 'idb';
+import localforage from 'localforage';
 
 let storageReference: Storage = new Memory();
 const browserReference: Browser = new Browser();
 const STORAGE_RANKINGS_KEY: string = 'storageRankings';
 const OBJECTSTORENAME: string = 'keyval';
 const DBNAME: string = 'keyval-store';
-let dbPromise: Promise<IDBPDatabase<unknown>>;
 
 // tslint:disable-next-line:no-floating-promises
 try {
-  if ('indexedDB' in window) {
-    try {
-      dbPromise = openDB(DBNAME, 1, {
-        upgrade(db) {
-          db.createObjectStore(OBJECTSTORENAME);
-        }
-      });
-    } catch (error) {
-      dbPromise = undefined;
-      console.warn('Could not set up indexed DB', error.message);
-    }
-  }
-
+  localforage.config({
+    driver: [localforage.INDEXEDDB,
+            localforage.LOCALSTORAGE],
+    name: DBNAME,
+    storeName: OBJECTSTORENAME
+  });
   if (window.localStorage) {
     storageReference = window.localStorage;
   }
 } catch (err) {
   // Swallow
-  console.warn('Unable to setup localstorage cache.', err.message);
+  console.warn('Unable to setup localforge cache.', err.message);
 }
 
 /**
@@ -51,12 +43,10 @@ export class Cache {
    * Logs all values in storage
    */
   static async list() {
-    if (dbPromise !== undefined) {
-      const keys = await (await dbPromise).getAllKeys(OBJECTSTORENAME);
-      keys.forEach(async (key) => {
-        if (console && key) {
-          console.debug(`${key.toString()} --> ${JSON.stringify(await Cache.get(key.toString()))}`);
-        }
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.iterate((value, key) => {
+        console.debug(`${key} --> ${value}`);
       });
       return;
     }
@@ -99,8 +89,9 @@ export class Cache {
    * @returns value - the value stored
    */
   static async put(key: string, value: any) {
-    if (dbPromise !== undefined) {
-      (await dbPromise).put(OBJECTSTORENAME, value, key);
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.setItem(key, value);
       return Promise.resolve(value);
     }
 
@@ -122,8 +113,10 @@ export class Cache {
    * @returns value - the value cached
    */
   static async get(key: string) {
-    if (dbPromise !== undefined) {
-      return (await dbPromise).get(OBJECTSTORENAME, key);
+    if (localforage !== undefined) {
+      await localforage.ready();
+      Cache.handleStorageRankingUpdate(key);
+      return localforage.getItem(key);
     }
 
     const value = storageReference.getItem(key);
@@ -160,8 +153,9 @@ export class Cache {
    * @param key - The key used to identify the cached value
    */
   static async remove(key: string) {
-    if (dbPromise !== undefined) {
-      (await dbPromise).delete(OBJECTSTORENAME, key);
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.removeItem(key);
       return;
     }
 
@@ -173,8 +167,9 @@ export class Cache {
    * @param key - The key used to identify the cached value
    */
   static async clear() {
-    if (dbPromise !== undefined) {
-      (await dbPromise).clear(OBJECTSTORENAME);
+    if (localforage !== undefined) {
+      await localforage.ready();
+      await localforage.clear();
       return;
     }
 
