@@ -10,6 +10,23 @@ const DBNAME: string = 'keyval-store';
 
 // tslint:disable-next-line:no-floating-promises
 try {
+  // tslint:disable-next-line
+  localforage['originalSupports'] = localforage.supports;
+  localforage.supports = (x: string) => {
+    const isSafari = /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
+            !/Chrome/.test(navigator.userAgent) &&
+            !/BlackBerry/.test(navigator.platform);
+    const hasFetch = typeof fetch === 'function' &&
+            (fetch.toString().indexOf('[native code') !== -1 || fetch.toString().indexOf('Zone.') > -1);
+    console.log(isSafari, hasFetch);
+    if (isSafari && hasFetch) {
+      console.log('this was a valid version of Safari');
+      return true;
+    }
+    console.log('checking with original method');
+    // tslint:disable-next-line
+    return localforage['originalSupports'](x);
+  };
   localforage.config({
     driver: [localforage.INDEXEDDB,
             localforage.LOCALSTORAGE],
