@@ -22,7 +22,7 @@ try {
   }
 } catch (err) {
   // Swallow
-  console.warn('Unable to setup localforge cache.', err.message);
+  console.warn('Unable to setup localforage cache.', err.message);
 }
 
 /**
@@ -116,12 +116,14 @@ export class Cache {
   static async get(key: string) {
     if (localforage !== undefined) {
       await localforage.ready();
+      // tslint:disable-next-line:no-floating-promises
       Cache.handleStorageRankingUpdate(key);
       return localforage.getItem(key);
     }
 
     const value = storageReference.getItem(key);
     if (value) {
+      // tslint:disable-next-line:no-floating-promises
       Cache.handleStorageRankingUpdate(key);
       return Promise.resolve(JSON.parse(value));
     }
@@ -177,16 +179,16 @@ export class Cache {
     storageReference.clear();
   }
 
-  static getStorageRankings() {
-    const value = storageReference.getItem(STORAGE_RANKINGS_KEY);
+  static async getStorageRankings() {
+    const value = await Cache.get(STORAGE_RANKINGS_KEY);
     if (value) {
       return JSON.parse(value);
     }
     return {};
   }
 
-  static handleStorageRankingUpdate(key: string) {
-    const value = Cache.getStorageRankings();
+  static async handleStorageRankingUpdate(key: string) {
+    const value = await Cache.getStorageRankings();
     value[key] = value[key] ? parseInt(value[key], 10) + 1 : 1;
     // tslint:disable-next-line:no-floating-promises
     Cache.put(STORAGE_RANKINGS_KEY, value);
