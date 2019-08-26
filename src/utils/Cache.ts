@@ -186,7 +186,10 @@ export class Cache {
   static async getStorageRankings() {
     const value = await Cache.get(STORAGE_RANKINGS_KEY, false);
     if (value && typeof value === 'string') {
-      JSON.parse(value);
+      return JSON.parse(value);
+    }
+    if (value && typeof value === 'object') {
+      return value;
     }
     return {};
   }
