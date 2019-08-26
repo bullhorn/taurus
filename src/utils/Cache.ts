@@ -118,7 +118,7 @@ export class Cache {
       await localforage.ready();
       if (updateRankings) {
         // tslint:disable-next-line:no-floating-promises
-        Cache.handleStorageRankingUpdate(key);
+        setTimeout(() => Cache.handleStorageRankingUpdate(key), 0);
       }
       return localforage.getItem(key);
     }
@@ -127,7 +127,7 @@ export class Cache {
     if (value) {
       if (updateRankings) {
         // tslint:disable-next-line:no-floating-promises
-        Cache.handleStorageRankingUpdate(key);
+        setTimeout(() => Cache.handleStorageRankingUpdate(key), 0);
       }
       return Promise.resolve(JSON.parse(value));
     }
