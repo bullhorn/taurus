@@ -36,7 +36,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "localforage": "1.7.3",
-    "uuid": "3.3.3"
+    "uuid-random": "1.0.9"
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^0.3.0",
