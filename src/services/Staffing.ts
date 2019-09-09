@@ -98,7 +98,7 @@ export class Staffing {
   /**
    * Retrieves the HttpService created to connect to the Bullhorn RestApi
    */
-  static async http(): Promise<AxiosInstance> {
+  static async http(routeUrl: string = ''): Promise<AxiosInstance> {
     const cookie = getCookie('UlEncodedIdentity');
     if (cookie && cookie.length) {
       const identity = JSON.parse(decodeURIComponent(cookie));
@@ -108,7 +108,7 @@ export class Staffing {
       }, {});
       Staffing._http.defaults.baseURL = endpoints.rest;
       Staffing._http.defaults.withCredentials = true;
-      return Staffing.makeCall();
+      return Staffing.makeCall(routeUrl);
     }
 
     // tslint:disable-next-line:variable-name
@@ -124,7 +124,7 @@ export class Staffing {
     return Staffing.makeCall();
   }
 
-  static makeCall(): AxiosInstance {
+  static makeCall(routeUrl: string = ''): AxiosInstance {
     if (!Staffing.httpInitialized) {
       Staffing.httpInitialized = true;
       // Add a response interceptor
@@ -159,6 +159,9 @@ export class Staffing {
           url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
         };
         config.headers.uniqueCallId = uuid();
+        if (routeUrl !== '') {
+          config.headers.highLevelCallStack = routeUrl;
+        }
         return config;
       });
     }

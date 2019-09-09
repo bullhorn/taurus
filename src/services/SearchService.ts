@@ -8,8 +8,8 @@ export class SearchService<T> extends QueryService<T> {
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'search/JobOrder'
    */
-  constructor(entity) {
-    super(entity);
+  constructor(entity, routeUrl: string = '') {
+    super(entity, routeUrl);
     this.parameters = {
       fields: ['id'],
       sort: ['-dateAdded'],

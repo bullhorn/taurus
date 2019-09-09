@@ -39,10 +39,10 @@ export class Entity<T extends Identity> extends StatefulSubject<T> {
    * constructor
    * @param  state data to inflate object with
    */
-  constructor(type: string, options: EntityOptions = {}, state?: T) {
+  constructor(type: string, options: EntityOptions = {}, state?: T, routeUrl: string = '') {
     super(state);
     this.type = type;
-    this.$entity = new EntityService<T>(this.type);
+    this.$entity = new EntityService<T>(this.type, routeUrl);
     observeOptions(options).subscribe((params) => {
       if (!params) {
         return;

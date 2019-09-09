@@ -28,12 +28,12 @@ export class MetaService {
   };
   private readonly initialized: Promise<unknown>;
 
-  constructor(public entity: string) {
-    this.initialized = this.initialize();
+  constructor(public entity: string, routeUrl: string = '') {
+    this.initialized = this.initialize(routeUrl);
   }
 
-  async initialize() {
-    this.http = await Staffing.http();
+  async initialize(routeUrl: string = '') {
+    this.http = await Staffing.http(routeUrl);
     const meta = await Cache.get(this.endpoint);
     if (meta) {
       this.parse(meta);
