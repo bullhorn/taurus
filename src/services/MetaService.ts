@@ -304,8 +304,8 @@ export class MetaService {
     return true;
   }
 
-  static async preload(entity: string) {
-    const meta: MetaService = new MetaService(entity);
+  static async preload(entity: string, routeUrl: string = '') {
+    const meta: MetaService = new MetaService(entity, routeUrl);
     return Promise.all([meta.get(['*']), meta.getAllLayouts()]);
   }
 }
