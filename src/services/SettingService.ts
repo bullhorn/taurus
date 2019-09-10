@@ -11,12 +11,12 @@ export class SettingService {
   private readonly initialized: Promise<unknown>;
   private readonly allSettingsAndEntitlementsEndpoint: string = 'services/Settings/allEntitlementsAndSettings';
 
-  constructor() {
-    this.initialized = this.initialize();
+  constructor(routeUrl: string = '') {
+    this.initialized = this.initialize(routeUrl);
   }
 
-  async initialize() {
-    this.http = await Staffing.http();
+  async initialize(routeUrl: string = '') {
+    this.http = await Staffing.http(routeUrl);
   }
 
   async getSettings(settings: string[]): Promise<{ [key: string]: any }> {

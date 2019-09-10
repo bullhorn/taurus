@@ -45,7 +45,7 @@ const getCookie = (cname: string) => {
  */
 export class Staffing {
   public static unauthorized: Subject<any> = new Subject();
-  private static readonly _http: AxiosInstance = axios.create({
+  private static _http: AxiosInstance = axios.create({
     paramsSerializer: (params: any) => {
       return QueryString.stringify(params);
     },
@@ -106,14 +106,18 @@ export class Staffing {
         obj[session.name] = session.value.endpoint;
         return obj;
       }, {});
+      Staffing._http = Staffing.makeCall(routeUrl);
       Staffing._http.defaults.baseURL = endpoints.rest;
       Staffing._http.defaults.withCredentials = true;
-      return Staffing.makeCall(routeUrl);
+
+      return Staffing._http;
     }
 
     // tslint:disable-next-line:variable-name
     const BhRestToken = await Cache.get('BhRestToken');
     const endpoint = await Cache.get('restUrl');
+
+    Staffing._http = Staffing.makeCall(routeUrl);
 
     if (BhRestToken && endpoint) {
       Staffing._http.defaults.baseURL = endpoint;
@@ -121,52 +125,57 @@ export class Staffing {
       Staffing._http.defaults.withCredentials = false;
     }
 
-    return Staffing.makeCall();
+    return Staffing._http;
   }
 
   static makeCall(routeUrl: string = ''): AxiosInstance {
+    const instance = axios.create({
+      paramsSerializer: (params: any) => {
+        return QueryString.stringify(params);
+      },
+    });
     if (!Staffing.httpInitialized) {
       Staffing.httpInitialized = true;
-      // Add a response interceptor
-      Staffing._http.interceptors.response.use(
-        (response: AxiosResponse) => {
-          // Tracking
-          const timing: { start: number; url: string } = (response.config as any)._timing || undefined;
-          if (Staffing.trackingCallback && timing) {
-            Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
-          }
-          return response;
-        },
-        async (error: AxiosError) => {
-          // Tracking
-          const errorResponse: AxiosResponse = error.response;
-          const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
-          if (Staffing.trackingCallback && timing) {
-            Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
-          }
-          // Check if Unauthorized Error
-          if (error.response.status === 401) {
-            Staffing.unauthorized.next(error);
-          }
-          return Promise.reject(error);
-        },
-      );
-      // Add a request interceptor
-      Staffing._http.interceptors.request.use((config: AxiosRequestConfig) => {
-        // Set a timing config so that we can track request times
-        (config as any)._timing = {
-          start: new Date().getTime(),
-          url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
-        };
-        config.headers.uniqueCallId = uuid();
-        if (routeUrl !== '') {
-          config.headers.highLevelCallStack = routeUrl;
-        }
-        return config;
-      });
     }
+    // Add a response interceptor
+    instance.interceptors.response.use(
+      (response: AxiosResponse) => {
+        // Tracking
+        const timing: { start: number; url: string } = (response.config as any)._timing || undefined;
+        if (Staffing.trackingCallback && timing) {
+          Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+        }
+        return response;
+      },
+      async (error: AxiosError) => {
+        // Tracking
+        const errorResponse: AxiosResponse = error.response;
+        const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
+        if (Staffing.trackingCallback && timing) {
+          Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+        }
+        // Check if Unauthorized Error
+        if (error.response.status === 401) {
+          Staffing.unauthorized.next(error);
+        }
+        return Promise.reject(error);
+      },
+    );
+    // Add a request interceptor
+    instance.interceptors.request.use((config: AxiosRequestConfig) => {
+      // Set a timing config so that we can track request times
+      (config as any)._timing = {
+        start: new Date().getTime(),
+        url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
+      };
+      config.headers.uniqueCallId = uuid();
+      if (routeUrl !== '') {
+        config.headers.highLevelCallStack = routeUrl;
+      }
+      return config;
+    });
 
-    return Staffing._http;
+    return instance;
   }
 
   async ping(): Promise<AxiosResponse> {
