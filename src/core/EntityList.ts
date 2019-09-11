@@ -26,11 +26,11 @@ export class EntityList<T> extends StatefulSubject<T[]> {
   private readonly $list: EntityListReference<T>;
   protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
 
-  constructor(type: string, options: EntityListOptions = {}, state?: T[], routeUrl: string = '') {
+  constructor(type: string, options: EntityListOptions = {}, state?: T[], callingIdentifier: string = '') {
     super(state);
     this.type = type;
     this.$ref = new Entity<T>(this.type, {} as T);
-    this.$list = this.getSearcher(this.type, routeUrl);
+    this.$list = this.getSearcher(this.type, callingIdentifier);
     observeListOptions(options).subscribe((params) => {
       if (params) {
         for (const key of Object.keys(params)) {
@@ -76,11 +76,11 @@ export class EntityList<T> extends StatefulSubject<T[]> {
     this._setUpObservable();
   }
 
-  protected getSearcher(type: string, routeUrl: string = ''): EntityListReference<T> {
+  protected getSearcher(type: string, callingIdentifier: string = ''): EntityListReference<T> {
     if (['Candidate', 'ClientContact', 'ClientCorporation', 'JobOrder', 'Lead', 'Opportunity', 'Placement', 'JobSubmission', 'Note', 'UserMessage'].indexOf(type) >= 0) {
-      return new SearchService(this.type, routeUrl);
+      return new SearchService(this.type, callingIdentifier);
     }
-    return new QueryService(this.type, routeUrl);
+    return new QueryService(this.type, callingIdentifier);
   }
 
   get lastAdded(): Entity<T> {

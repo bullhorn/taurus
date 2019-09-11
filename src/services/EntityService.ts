@@ -31,18 +31,18 @@ export class EntityService<T> {
    * constructor
    * @param  state data to inflate object with
    */
-  constructor(type: string, routeUrl: string = '') {
+  constructor(type: string, callingIdentifier: string = '') {
     this.type = type;
     this.endpoint = `entity/${this.type}`;
-    this.meta = new MetaService(this.type, routeUrl);
+    this.meta = new MetaService(this.type, callingIdentifier);
     this.parameters = {
       fields: this._fields || ['id'],
     };
-    this.initialized = this.initialize(routeUrl);
+    this.initialized = this.initialize(callingIdentifier);
   }
 
-  async initialize(routeUrl: string = '') {
-    this.http = await Staffing.http(routeUrl);
+  async initialize(callingIdentifier: string = '') {
+    this.http = await Staffing.http(callingIdentifier);
   }
 
   /**

@@ -28,12 +28,12 @@ export class MetaService {
   };
   private readonly initialized: Promise<unknown>;
 
-  constructor(public entity: string, routeUrl: string = '') {
-    this.initialized = this.initialize(routeUrl);
+  constructor(public entity: string, callingIdentifier: string = '') {
+    this.initialized = this.initialize(callingIdentifier);
   }
 
-  async initialize(routeUrl: string = '') {
-    this.http = await Staffing.http(routeUrl);
+  async initialize(callingIdentifier: string = '') {
+    this.http = await Staffing.http(callingIdentifier);
     const meta = await Cache.get(this.endpoint);
     if (meta) {
       this.parse(meta);
@@ -304,8 +304,8 @@ export class MetaService {
     return true;
   }
 
-  static async preload(entity: string, routeUrl: string = '') {
-    const meta: MetaService = new MetaService(entity, routeUrl);
+  static async preload(entity: string, callingIdentifier: string = '') {
+    const meta: MetaService = new MetaService(entity, callingIdentifier);
     return Promise.all([meta.get(['*']), meta.getAllLayouts()]);
   }
 }

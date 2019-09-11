@@ -98,7 +98,7 @@ export class Staffing {
   /**
    * Retrieves the HttpService created to connect to the Bullhorn RestApi
    */
-  static async http(routeUrl: string = ''): Promise<AxiosInstance> {
+  static async http(callingIdentifier: string = ''): Promise<AxiosInstance> {
     const cookie = getCookie('UlEncodedIdentity');
     if (cookie && cookie.length) {
       const identity = JSON.parse(decodeURIComponent(cookie));
@@ -106,7 +106,7 @@ export class Staffing {
         obj[session.name] = session.value.endpoint;
         return obj;
       }, {});
-      Staffing._http = Staffing.makeCall(routeUrl);
+      Staffing._http = Staffing.makeCall(callingIdentifier);
       Staffing._http.defaults.baseURL = endpoints.rest;
       Staffing._http.defaults.withCredentials = true;
 
@@ -117,7 +117,7 @@ export class Staffing {
     const BhRestToken = await Cache.get('BhRestToken');
     const endpoint = await Cache.get('restUrl');
 
-    Staffing._http = Staffing.makeCall(routeUrl);
+    Staffing._http = Staffing.makeCall(callingIdentifier);
 
     if (BhRestToken && endpoint) {
       Staffing._http.defaults.baseURL = endpoint;
@@ -128,7 +128,7 @@ export class Staffing {
     return Staffing._http;
   }
 
-  static makeCall(routeUrl: string = ''): AxiosInstance {
+  static makeCall(callingIdentifier: string = ''): AxiosInstance {
     const instance = axios.create({
       paramsSerializer: (params: any) => {
         return QueryString.stringify(params);
@@ -169,8 +169,8 @@ export class Staffing {
         url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
       };
       config.headers.uniqueCallId = uuid();
-      if (routeUrl !== '') {
-        config.headers.highLevelCallStack = routeUrl;
+      if (callingIdentifier !== '') {
+        config.headers.highLevelCallStack = callingIdentifier;
       }
       return config;
     });
