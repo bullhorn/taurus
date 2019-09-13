@@ -26,13 +26,13 @@ export class QueryService<T> {
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
    */
-  constructor(public entity: string) {
-    this.initialized = this.initialize();
-    this.meta = new MetaService(entity);
+  constructor(public entity: string, callingIdentifier: string = '') {
+    this.initialized = this.initialize(callingIdentifier);
+    this.meta = new MetaService(entity, callingIdentifier);
   }
 
-  async initialize() {
-    this.http = await Staffing.http();
+  async initialize(callingIdentifier: string = '') {
+    this.http = await Staffing.http(callingIdentifier);
   }
 
   get endpoint(): string {
