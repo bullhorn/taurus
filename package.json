@@ -30,7 +30,7 @@
     "npm": ">= 5"
   },
   "peerDependencies": {
-    "rxjs": "~6.0"
+    "rxjs": ">=6"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -62,8 +62,7 @@
     "ts-jest": "^22.4.0",
     "ts-node": "^6.0.0",
     "tslib": "^1.9.0",
-    "tslint": "^5.9.0",
-    "tslint-xo": "^0.7.0",
+    "tslint": "^5.19.0",
     "typedoc": "^0.11.0",
     "typescript": "3.2.4"
   },
