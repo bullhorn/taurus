@@ -1,4 +1,25 @@
-/* tslint:disable */
+interface Window {
+  webkitURL?: any;
+  opr?: any;
+  opera?: any;
+  HTMLElement?: any;
+  StyleMedia?: any;
+  chrome?: any;
+  CSS?: any;
+}
+
+interface Opr {
+  addons?: any;
+}
+interface Document {
+  documentMode?: any;
+}
+declare var window: Window;
+declare var opr: Opr;
+declare var document: Document;
+declare const InstallTrigger: any;
+declare const safari: any;
+
 export class Browser {
   private readonly name: string;
   private readonly storageSize: number = 5242880;
@@ -6,13 +27,17 @@ export class Browser {
     // Opera 8.0+
     const isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
     // Firefox 1.0+
-    var isFirefox = typeof InstallTrigger !== 'undefined';
+    const isFirefox = typeof InstallTrigger !== 'undefined';
 
     // Safari 3.0+ "[object HTMLElementConstructor]"
-    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+    const isSafari =
+      /constructor/i.test(window.HTMLElement) ||
+      (function(p) {
+        return p.toString() === '[object SafariRemoteNotification]';
+      })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
 
     // Internet Explorer 6-11
-    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isIE = /*@cc_on!@*/ false || !!document.documentMode;
 
     // Edge 20+
     var isEdge = !isIE && !!window.StyleMedia;
