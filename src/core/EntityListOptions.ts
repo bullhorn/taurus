@@ -33,8 +33,8 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
     return of(null);
   }
 
-  return new Observable((observer: Observer<SerializedListOptions>) => {
-    let combined = combineLatest([
+  return Observable.create((observer: Observer<SerializedListOptions>) => {
+    let combined = combineLatest(
       getOrCreateObservable('fields', options),
       getOrCreateObservable('layout', options),
       getOrCreateObservable('meta', options),
@@ -43,7 +43,7 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
       getOrCreateObservable('limitTo', options),
       getOrCreateObservable('filter', options),
       getOrCreateObservable('params', options),
-    ]);
+    );
     if (audit) {
       combined = combined.pipe(auditTime(0));
     }
