@@ -1,4 +1,5 @@
 {
+  "extends": "tslint-xo/space",
   "rules": {
     "arrow-parens": false,
     "no-import-side-effect": false,
@@ -6,6 +7,7 @@
     "no-unnecessary-type-annotation": false,
     "no-stateless-class": false,
     "space-before-function-paren": false,
-    "variable-name": [true, "check-format", "ban-keywords", "allow-leading-underscore"]
+    "variable-name": [true, "check-format", "ban-keywords", "allow-leading-underscore"],
+    "object-curly-spacing": [true, "always"]
   }
 }
