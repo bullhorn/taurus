@@ -1,3 +1,4 @@
+/* tslint:disable */
 interface Window {
   webkitURL?: any;
   opr?: any;
