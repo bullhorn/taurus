@@ -26,12 +26,10 @@
     "lib"
   ],
   "engines": {
-    "node": ">= 6.2.1",
-    "npm": ">= 5"
+    "node": ">= 10"
   },
   "peerDependencies": {
-    "@bullhorn/bullhorn-types": "^0.3.0",
-    "rxjs": "^6.0.0"
+    "rxjs": ">=6"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -39,7 +37,7 @@
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
-    "@bullhorn/bullhorn-types": "^0.3.0",
+    "@bullhorn/bullhorn-types": "^1.10.0",
     "@types/jest": "^22.2.0",
     "@types/node": "^8.10.10",
     "jest": "^22.4.3",
@@ -55,18 +53,18 @@
     "rollup-plugin-sourcemaps": "^0.4.0",
     "rollup-plugin-typescript2": "^0.13.0",
     "rollup-plugin-uglify": "^3.0.0",
-    "rxjs": "^6.0.0",
+    "rxjs": "~6.4.0",
     "semantic-release": "^15.13.2",
     "sinon": "^4.5.0",
     "temp-dir": "^1.0.0",
     "travis-deploy-once": "^4.3.2",
     "ts-jest": "^22.4.0",
-    "ts-node": "^6.0.0",
-    "tslib": "^1.9.0",
-    "tslint": "^5.9.0",
+    "ts-node": "~8.4.1",
+    "tslib": "^1.10.0",
+    "tslint": "^5.18.0",
     "tslint-xo": "^0.7.0",
     "typedoc": "^0.11.0",
-    "typescript": "~3.1.6"
+    "typescript": "3.5.3"
   },
   "scripts": {
     "build": "npm run clean && rollup -c",
