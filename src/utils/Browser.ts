@@ -1,4 +1,4 @@
-/* tslint:disable */
+declare const window: any, opr: any, InstallTrigger: any, safari: any, document: any;
 export class Browser {
   private readonly name: string;
   private readonly storageSize: number = 5242880;
