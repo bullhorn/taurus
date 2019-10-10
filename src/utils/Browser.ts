@@ -1,3 +1,9 @@
+declare const window: any;
+declare const opr: any;
+declare const InstallTrigger: any;
+declare const safari: any;
+declare const document: any;
+
 /* tslint:disable */
 export class Browser {
   private readonly name: string;
