@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
-import uuid from 'uuid-random';
 
 const getCookie = (cname: string) => {
   // tslint:disable-next-line:no-typeof-undefined
