@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
-import uuid from 'uuid-random';
 
 const getCookie = (cname: string) => {
   // tslint:disable-next-line:no-typeof-undefined
@@ -128,6 +127,7 @@ export class Staffing {
     return Staffing._http;
   }
 
+  // tslint:disable-next-line:no-unused
   static makeCall(callingIdentifier: string = ''): AxiosInstance {
     const instance = axios.create({
       paramsSerializer: (params: any) => {
@@ -168,10 +168,11 @@ export class Staffing {
         start: new Date().getTime(),
         url: (config.url || '').replace(config.baseURL || '', '').split('?')[0],
       };
-      config.headers.uniqueCallId = uuid();
-      if (callingIdentifier !== '') {
-        config.headers.highLevelCallStack = callingIdentifier;
+      /* config.headers.uniqueCallId = uuid();
+       if (callingIdentifier !== '') {
+         config.headers.highLevelCallStack = callingIdentifier;
       }
+      */
       return config;
     });
 
