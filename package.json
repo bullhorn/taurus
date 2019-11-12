@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "3.0.4-test",
+  "version": "3.0.5-test",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
@@ -38,9 +38,9 @@
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^1.10.0",
-    "@rollup/plugin-replace": "^2.2.1",
     "@types/jest": "^22.2.0",
     "@types/node": "^8.10.10",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest": "^22.4.3",
     "opn-cli": "^3.1.0",
     "rollup": "^0.58.0",
