@@ -6,7 +6,6 @@ import commonjs from 'rollup-plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2'
 import license from 'rollup-plugin-license'
 import uglify from 'rollup-plugin-uglify';
-import replace from 'rollup-plugin-replace'
 
 const pkg = require('./package');
 
