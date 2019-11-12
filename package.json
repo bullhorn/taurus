@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "3.0.3-test",
+  "version": "3.0.4-test",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
