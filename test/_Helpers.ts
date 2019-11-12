@@ -179,6 +179,6 @@ export const candidateListResponse = () => {
                     }
                 ].slice(0, params.count)
             })
-        ];
+        );
     };
 }
