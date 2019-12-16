@@ -35,8 +35,8 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
     return of(null);
   }
 
-  return Observable.create((observer: Observer<SerializedOptions>) => {
-    let combined = combineLatest(
+  return new Observable((observer: Observer<SerializedOptions>) => {
+    let combined = combineLatest([
       getOrCreateObservable('id', options),
       getOrCreateObservable('fields', options),
       getOrCreateObservable('layout', options),
@@ -45,7 +45,7 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
       getOrCreateObservable('showReadOnly', options),
       getOrCreateObservable('executeFormTriggers', options),
       getOrCreateObservable('params', options),
-    );
+    ]);
     if (audit) {
       combined = combined.pipe(auditTime(0));
     }
@@ -89,7 +89,6 @@ export function observeOptions(options: EntityOptions, audit: boolean = true): O
   });
 }
 
-// tslint:disable-next-line:only-arrow-functions
 export function getOrCreateObservable(key: string, options: EntityOptions): Observable<Primitive> {
   if (isObservable(options[key])) {
     return options[key];

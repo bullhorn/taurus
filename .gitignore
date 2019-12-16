@@ -62,3 +62,4 @@ typings/
 
 # IDEs and editors
 /.idea
+.vscode
