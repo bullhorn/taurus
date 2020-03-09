@@ -29,6 +29,7 @@ export class MetaService {
   private readonly initialized: Promise<unknown>;
 
   constructor(public entity: string, callingIdentifier: string = '') {
+    console.log('new constructor');
     this.initialized = this.initialize(callingIdentifier);
   }
 
@@ -182,7 +183,9 @@ export class MetaService {
               return this.memory[field.name];
             },
             set(value) {
-              this.memory[field.name] = value;
+              if (typeof value !== 'string') {
+                this.memory[field.name] = value;
+              }
             },
             configurable: true,
             enumerable: true,
@@ -193,7 +196,9 @@ export class MetaService {
         if (!exists) {
           this.fields.push(field);
         }
-        this.memory[field.name] = field;
+        if (typeof field !== 'string') {
+          this.memory[field.name] = field;
+        }
       }
       this.fields.sort((a, b) => {
         const aa = a.sortOrder ? a.sortOrder : a.name;
