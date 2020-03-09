@@ -29,7 +29,6 @@ export class MetaService {
   private readonly initialized: Promise<unknown>;
 
   constructor(public entity: string, callingIdentifier: string = '') {
-    console.log('new constructor');
     this.initialized = this.initialize(callingIdentifier);
   }
 
