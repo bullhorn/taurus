@@ -101,7 +101,7 @@ export class MetaService {
    */
   async getTracks(): Promise<BullhornTrack[]> {
     await this.initialized;
-    if (!this.memory) {
+    if (!this.hasMemory()) {
       await this.get(['*']);
       return this.tracks;
     }
@@ -113,7 +113,7 @@ export class MetaService {
    */
   async getFields(): Promise<FieldMap[]> {
     await this.initialized;
-    if (!this.memory) {
+    if (!this.hasMemory()) {
       await this.get(['*']);
       return this.fields;
     }
@@ -311,5 +311,9 @@ export class MetaService {
   static async preload(entity: string, callingIdentifier: string = '') {
     const meta: MetaService = new MetaService(entity, callingIdentifier);
     return Promise.all([meta.get(['*']), meta.getAllLayouts()]);
+  }
+
+  hasMemory(): boolean {
+    return !!this.memory && this.memory.constructor === Object && Object.keys(this.memory).length > 0;
   }
 }
