@@ -314,6 +314,6 @@ export class MetaService {
   }
 
   hasMemory(): boolean {
-    return this.memory && this.memory.constructor === Object && Object.keys(this.memory).length > 0;
+    return !!this.memory && this.memory.constructor === Object && Object.keys(this.memory).length > 0;
   }
 }
