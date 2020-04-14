@@ -133,6 +133,6 @@ export class EntityService<T> {
    */
   async delete(id?: number): Promise<AxiosResponse> {
     await this.initialized;
-    return this.http.delete(`${this.endpoint}${id}`);
+    return this.http.delete(`${this.endpoint}/${id}`);
   }
 }
