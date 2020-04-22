@@ -91,7 +91,6 @@ describe('Where', () => {
 
       expect(where).toEqual('(firstName:"Abe" OR lastName:"Lincoln") AND (owner.firstName:"Abe" OR owner.lastName:"Lincoln")');
     });
-
     it('should create a valid OR query with 3 or more or conditions', () => {
       const where = Where.toSearchSyntax({
         or: {
@@ -110,6 +109,116 @@ describe('Where', () => {
       expect(where).toEqual('(firstName:"Abe" OR lastName:"Lincoln" OR title:"Mr. President") AND (owner.firstName:"Abe" OR owner.lastName:"Lincoln")');
     });
   });
+
+  describe('with OR min/max queries', () => {
+    it('should create a valid nested OR min/max query', () => {
+      const where = Where.toQuerySyntax({
+        earncode: {
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: { min: 'tes', max: 'tet' },
+          },
+        },
+      });
+
+      expect(where).toEqual("((earncode.title>='tes' AND earncode.title<'tet') OR (earncode.code>='tes' AND earncode.code<'tet'))");
+    });
+    it('should create a valid nested OR min/max query with 3 or more conditions', () => {
+      const where = Where.toQuerySyntax({
+        earncode: {
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: { min: 'tes', max: 'tet' },
+            externalID: { min: 'tes', max: 'tet' },
+          },
+        },
+      });
+
+      expect(where).toEqual("((earncode.title>='tes' AND earncode.title<'tet') OR (earncode.code>='tes' AND earncode.code<'tet') OR (earncode.externalID>='tes' AND earncode.externalID<'tet'))");
+    });
+    it('should create a valid nested OR min/max query with other conditions', () => {
+      const where = Where.toQuerySyntax({
+        earncode: {
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: { min: 'tes', max: 'tet' },
+          },
+        },
+        or: {
+          firstName: 'Abe',
+          lastName: 'Lincoln',
+        },
+        externalID: 'testID',
+      });
+
+      expect(where).toEqual("((earncode.title>='tes' AND earncode.title<'tet') OR (earncode.code>='tes' AND earncode.code<'tet')) AND (firstName='Abe' OR lastName='Lincoln') AND externalID='testID'");
+    });
+    it('should a valid OR min/max query', () => {
+      const where = Where.toQuerySyntax({
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: { min: 'tes', max: 'tet' },
+          },
+      });
+
+      expect(where).toEqual("((title>='tes' AND title<'tet') OR (code>='tes' AND code<'tet'))");
+    });
+    it('should a valid OR min/max query with 3 or more conditions', () => {
+      const where = Where.toQuerySyntax({
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: { min: 'tes', max: 'tet' },
+            externalID: { min: 'tes', max: 'tet' },
+          },
+      });
+
+      expect(where).toEqual("((title>='tes' AND title<'tet') OR (code>='tes' AND code<'tet') OR (externalID>='tes' AND externalID<'tet'))");
+    });
+    it('should create a valid nested OR min/max query with string', () => {
+      const where = Where.toQuerySyntax({
+        earncode: {
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: 'codeTest',
+          },
+        },
+      });
+
+      expect(where).toEqual("((earncode.title>='tes' AND earncode.title<'tet') OR (earncode.code='codeTest'))");
+    });
+    it('should create a valid nested OR min/max query with string order reversed', () => {
+      const where = Where.toQuerySyntax({
+        earncode: {
+          orMinMax: {
+            code: 'codeTest',
+            title: { min: 'tes', max: 'tet' },
+          },
+        },
+      });
+
+      expect(where).toEqual("((earncode.code='codeTest') OR (earncode.title>='tes' AND earncode.title<'tet'))");
+    });
+    it('should a valid OR min/max query with string', () => {
+      const where = Where.toQuerySyntax({
+          orMinMax: {
+            title: { min: 'tes', max: 'tet' },
+            code: 'testCode',
+          },
+      });
+
+      expect(where).toEqual("((title>='tes' AND title<'tet') OR (code='testCode'))");
+    });
+    it('should a valid OR min/max query with string reverse order', () => {
+      const where = Where.toQuerySyntax({
+          orMinMax: {
+            code: 'testCode',
+            title: { min: 'tes', max: 'tet' },
+          },
+      });
+
+      expect(where).toEqual("((code='testCode') OR (title>='tes' AND title<'tet'))");
+    });
+  }
 
   describe('with nested queries', () => {
     it('should create a valid lucene query', () => {

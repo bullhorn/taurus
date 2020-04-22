@@ -120,6 +120,11 @@ export class Where {
       const value = data[key];
       if (key === 'or') {
         queries.push(`(${Where.toQuerySyntax(value).replace(/ AND /g, ' OR ')})`);
+      } else if (key === 'orMinMax') {
+        for (const subkey of Object.keys(value)) {
+          queries.push(`(${Where.parseQueryValue(subkey, value[subkey])})`);
+        }
+        return `(${queries.join(' OR ')})`;
       } else {
         queries.push(Where.parseQueryValue(key, value));
       }
@@ -184,6 +189,15 @@ export class Where {
         obj[key] = value.or;
         clauses.push(Where.toQuerySyntax(obj).replace('AND', 'OR'));
       }
+      if (value.orMinMax !== null && value.orMinMax !== undefined) {
+        const obj = {};
+        obj[key] = value.orMinMax;
+        for (const subkey of Object.keys(obj[key])) {
+          const subvalue = obj[key][subkey];
+          clauses.push(`(${Where.parseQueryValue(`${key}.${subkey}`, subvalue)})`);
+        }
+        return `(${clauses.join(' OR ')})`;
+      }
       if (value.memberOf !== null && value.memberOf !== undefined && Array.isArray(value.memberOf)) {
         const values: any[] = [];
         for (const val of value.memberOf) {
@@ -192,7 +206,7 @@ export class Where {
         isNot ? clauses.push(`(${values.join(' AND ')})`) : clauses.push(`(${values.join(' OR ')})`);
       }
       for (const subkey of Object.keys(value)) {
-        if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without', 'isNull', 'memberOf'].indexOf(subkey) < 0) {
+        if (['min', 'max', 'any', 'all', 'not', 'or', 'like', 'lookup', 'with', 'without', 'isNull', 'memberOf', 'orMinMax'].indexOf(subkey) < 0) {
           const subvalue = value[subkey];
           clauses.push(Where.parseQueryValue(`${key}.${subkey}`, subvalue));
         }
