@@ -176,7 +176,10 @@ export class MetaService {
     }
     if (result && result.fields) {
       for (const field of result.fields) {
-        if (!this.memory.hasOwnProperty(field.name)) {
+        if (
+          !this.memory.hasOwnProperty(field.name)
+          && !['label', 'http', 'memory', 'fields', 'layouts', 'tracks', 'sectionHeaders', 'trackTrigger', 'allFieldsLoaded', 'parameters'].includes(field.name)
+        ) {
           Object.defineProperty(this, field.name, {
             get() {
               return this.memory[field.name];
