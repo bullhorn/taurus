@@ -17,8 +17,8 @@ export interface FieldMapOption {
 
 export interface FieldMap {
   name: string;
-  type?: string;
-  dataType?: FieldType;
+  type?: FieldType;
+  dataType?: string;
   dataSpecialization?: string;
   maxLength?: number;
   confidential?: string;
