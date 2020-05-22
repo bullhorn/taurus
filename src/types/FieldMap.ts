@@ -39,6 +39,7 @@ export interface FieldMap {
   value?: any;
   interactions?: any[];
   defaultValue?: any;
+  systemRequired?: boolean;
 }
 
 export interface FieldLayout {
