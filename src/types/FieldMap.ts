@@ -9,7 +9,7 @@ export interface FieldMapOption {
 
 export interface FieldMap {
   name: string;
-  type?: 'ID' | 'COMPOSITE' | 'TO_ONE' | 'TO_MANY' | 'SCALAR',
+  type?: 'ID' | 'COMPOSITE' | 'TO_ONE' | 'TO_MANY' | 'SCALAR';
   dataType?: string;
   dataSpecialization?: string;
   maxLength?: number;
