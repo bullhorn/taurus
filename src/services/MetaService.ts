@@ -261,7 +261,7 @@ export class MetaService {
     for (const field of fields) {
       const cleaned: string = this._clean(field);
       const meta: any = this.memory[cleaned];
-      if (!meta) {
+      if (!meta || meta.associatedEntity && meta.associatedEntity.fields.length < this.subFieldLength(field)) {
         result.push(cleaned);
       }
     }
@@ -273,6 +273,15 @@ export class MetaService {
       .split('.')[0]
       .split('[')[0]
       .split('(')[0];
+  }
+
+  subFieldLength(field: string): number {
+    if (field.includes('(')) {
+      return field
+        .split('(')[1]
+        .split(',').length - 1;
+    }
+    return 0;
   }
 
   /**
