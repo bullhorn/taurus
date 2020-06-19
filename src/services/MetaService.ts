@@ -199,7 +199,7 @@ export class MetaService {
           this.fields.push(field);
         } else if (field.associatedEntity && field.associatedEntity.fields) {
           for (const assocEntityField of field.associatedEntity.fields) {
-            const assocEntityFieldExists = exists.associatedEntity.fields.find((f: any) => f.name === assocEntityField.name);
+            const assocEntityFieldExists = exists.associatedEntity.fields.find((f: { name: string }) => f.name === assocEntityField.name);
             if (!assocEntityFieldExists) {
               exists.associatedEntity.fields.push(assocEntityField);
             }
