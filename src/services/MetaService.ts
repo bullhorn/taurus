@@ -279,7 +279,7 @@ export class MetaService {
     if (field.includes('(')) {
       return field
         .split('(')[1]
-        .split(',').length - 1;
+        .split(',').length;
     }
     return 0;
   }
