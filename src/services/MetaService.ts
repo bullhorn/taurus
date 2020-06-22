@@ -265,7 +265,7 @@ export class MetaService {
         result.push(cleaned);
       } else if (meta.associatedEntity
         && meta.associatedEntity.fields
-        && meta.associatedEntity.fields.some(f => !this.getSubFields(fields).includes(f.name))) {
+        && meta.associatedEntity.fields.some(f => !this.getSubFields(field).includes(f.name))) {
         result.push(cleaned);
       }
     }
@@ -280,13 +280,10 @@ export class MetaService {
   }
 
   getSubFields(field: string): string[] {
-    if (field.includes('(')) {
-      return field
-        .split(')')[0]
-        .split('(')[1]
-        .split(',');
-    }
-    return [];
+    return field
+      // remove [] and {} bracket contents from fields if present
+      .replace(/(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
+      .match(/(?:\([^)]*\)|[^,\s])+/gi) || [];
   }
 
   /**
