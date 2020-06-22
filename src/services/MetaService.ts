@@ -281,7 +281,7 @@ export class MetaService {
 
   getSubFields(field: string): string[] {
     return field
-      // remove [] and {} bracket contents from fields if present
+      // Remove [] and {} bracket contents from fields if present
       .replace(/(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
       .match(/(?:\([^)]*\)|[^,\s])+/gi) || [];
   }
