@@ -265,7 +265,7 @@ export class MetaService {
         result.push(cleaned);
       } else if (meta.associatedEntity
         && meta.associatedEntity.fields
-        && meta.associatedEntity.fields.some(f => !this.getSubFields(field).includes(f.name))) {
+        && this.getSubFields(field).some(subField => !meta.associatedEntity.fields.find(aef => aef.name === subField))) {
         result.push(cleaned);
       }
     }
@@ -281,9 +281,11 @@ export class MetaService {
 
   getSubFields(field: string): string[] {
     return field
-      // Remove [] and {} bracket contents from fields if present
+      // Remove spaces, [] and {} bracket contents from fields if present
       .replace(/\s|(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
-      .match(/(?:\([^)]*\)|[^,\s])+/gi) || [];
+      .match(/(?:\(([^)]*)\))/gi)[0]
+      .match(/[^,\(\)]+/gi)
+      || [];[]
   }
 
   /**
