@@ -53,36 +53,42 @@ describe('MetaService', () => {
     });
     it('should return array of fields case 1', () => {
       const meta: MetaService = new MetaService('Candidate');
-      const fields = 'id,name';
-      const res = meta.getSubFields(fields);
+      const field = 'jobOrders(id,title,status)';
+      const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
-      expect(res[1]).toBe('name');
+      expect(res[1]).toBe('title');
+      expect(res[2]).toBe('status');
     });
     it('should return array of fields case 2', () => {
       const meta: MetaService = new MetaService('Candidate');
-      const fields = 'id,name,jobOrders(id,title,status)';
-      const res = meta.getSubFields(fields);
+      const field = 'jobOrders[3](id,title,status)';
+      const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
-      expect(res[1]).toBe('name');
-      expect(res[2]).toBe('jobOrders(id,title,status)');
+      expect(res[1]).toBe('title');
+      expect(res[2]).toBe('status');
     });
     it('should return array of fields case 3', () => {
       const meta: MetaService = new MetaService('Candidate');
-      const fields = 'id,name,jobOrders[5]{status=\'closed\'}(id,title)';
-      const res = meta.getSubFields(fields);
+      const field = 'jobOrders{status=\'closed\'}(id,title,status)';
+      const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
-      expect(res[1]).toBe('name');
-      expect(res[2]).toBe('jobOrders(id,title)');
+      expect(res[1]).toBe('title');
+      expect(res[2]).toBe('status');
+    });
+    it('should return array of fields case 3', () => {
+      const meta: MetaService = new MetaService('Candidate');
+      const field = 'jobOrders(id, title, status)';
+      const res = meta.getSubFields(field);
+      expect(res[0]).toBe('id');
+      expect(res[1]).toBe('title');
+      expect(res[2]).toBe('status');
     });
     it('should return array of fields case 4', () => {
       const meta: MetaService = new MetaService('Candidate');
-      const fields = 'id, name, jobOrders(id,title), businessSectors[3](name,id){name=\'Insurance\'}, category';
+      const fields = ' businessSectors[3](name,id){name=\'Insurance\'}, category';
       const res = meta.getSubFields(fields);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('name');
-      expect(res[2]).toBe('jobOrders(id,title)');
-      expect(res[3]).toBe('businessSectors(name,id)');
-      expect(res[4]).toBe('category');
+      expect(res[0]).toBe('name');
+      expect(res[1]).toBe('id');
     });
   });
 
