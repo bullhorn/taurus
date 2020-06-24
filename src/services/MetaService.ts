@@ -284,8 +284,7 @@ export class MetaService {
       // Remove spaces, [] and {} bracket contents from fields if present
       .replace(/\s|(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
       .match(/(?:\(([^)]*)\))/gi)[0]
-      .match(/[^,\(\)]+/gi)
-      || [];[]
+      .match(/[^,\(\)]+/gi) || [];
   }
 
   /**
