@@ -83,7 +83,7 @@ describe('MetaService', () => {
       expect(res[1]).toBe('title');
       expect(res[2]).toBe('status');
     });
-    it('should return array of fields case 3', () => {
+    it('should return array of fields case 4', () => {
       const meta: MetaService = new MetaService('EarnCodeGroup');
       const field = 'jobOrders(id, title, status)';
       const res = meta.getSubFields(field);
@@ -91,7 +91,7 @@ describe('MetaService', () => {
       expect(res[1]).toBe('title');
       expect(res[2]).toBe('status');
     });
-    it('should return array of fields case 4', () => {
+    it('should return array of fields case 5', () => {
       const meta: MetaService = new MetaService('EarnCodeGroup');
       const fields = ' businessSectors[3](name,id){name=\'Insurance\'}, category';
       const res = meta.getSubFields(fields);
