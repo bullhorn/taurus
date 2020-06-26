@@ -93,7 +93,7 @@ describe('MetaService', () => {
     });
     it('should return array of fields case 5', () => {
       const meta: MetaService = new MetaService('EarnCodeGroup');
-      const fields = ' businessSectors[3](name,id){name=\'Insurance\'}, category';
+      const fields = 'businessSectors[3](name,id){name=\'Insurance\'},category';
       const res = meta.getSubFields(fields);
       expect(res[0]).toBe('name');
       expect(res[1]).toBe('id');
