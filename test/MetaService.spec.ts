@@ -47,12 +47,20 @@ describe('MetaService', () => {
 
   describe('function: getSubFields', () => {
     it('should be defined', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const actual = meta.getSubFields;
       expect(actual).toBeDefined();
     });
     it('should return array of fields case 1', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
+      const field = 'jobOrders(id,title,status)';
+      const res = meta.getSubFields(field);
+      expect(res[0]).toBe('id');
+      expect(res[1]).toBe('title');
+      expect(res[2]).toBe('status');
+    });
+    it('should return array of fields case 1', () => {
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const field = 'jobOrders(id,title,status)';
       const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
@@ -60,7 +68,7 @@ describe('MetaService', () => {
       expect(res[2]).toBe('status');
     });
     it('should return array of fields case 2', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const field = 'jobOrders[3](id,title,status)';
       const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
@@ -68,7 +76,7 @@ describe('MetaService', () => {
       expect(res[2]).toBe('status');
     });
     it('should return array of fields case 3', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const field = 'jobOrders{status=\'closed\'}(id,title,status)';
       const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
@@ -76,7 +84,7 @@ describe('MetaService', () => {
       expect(res[2]).toBe('status');
     });
     it('should return array of fields case 3', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const field = 'jobOrders(id, title, status)';
       const res = meta.getSubFields(field);
       expect(res[0]).toBe('id');
@@ -84,7 +92,7 @@ describe('MetaService', () => {
       expect(res[2]).toBe('status');
     });
     it('should return array of fields case 4', () => {
-      const meta: MetaService = new MetaService('Candidate');
+      const meta: MetaService = new MetaService('EarnCodeGroup');
       const fields = ' businessSectors[3](name,id){name=\'Insurance\'}, category';
       const res = meta.getSubFields(fields);
       expect(res[0]).toBe('name');

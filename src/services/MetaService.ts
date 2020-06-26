@@ -263,7 +263,9 @@ export class MetaService {
       const meta: any = this.memory[cleaned];
       if (!meta) {
         result.push(cleaned);
-      } else if (meta.associatedEntity
+      } else if (
+        meta.dataSpecialization === 'INLINE_EMBEDDED'
+        && meta.associatedEntity
         && meta.associatedEntity.fields
         && this.getSubFields(field).some(subField => !meta.associatedEntity.fields.find(aef => aef.name === subField))) {
         result.push(cleaned);
