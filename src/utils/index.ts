@@ -6,3 +6,4 @@ export * from './Lazy';
 export * from './Memory';
 export * from './QueryString';
 export * from './Browser';
+export * from './FieldUtils';

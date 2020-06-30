@@ -39,64 +39,31 @@ describe('MetaService', () => {
     });
     it('should return true when memory is a non-empty Object', () => {
       const meta: MetaService = new MetaService('Candidate');
-      meta.memory = {test: 'test'};
+      meta.memory = { test: 'test' };
       const actual = meta.hasMemory();
       expect(actual).toEqual(true);
     });
   });
 
-  describe('function: getSubFields', () => {
+  describe('function: missing', () => {
     it('should be defined', () => {
       const meta: MetaService = new MetaService('EarnCodeGroup');
-      const actual = meta.getSubFields;
+      const actual = meta.missing;
       expect(actual).toBeDefined();
     });
     it('should return array of fields case 1', () => {
       const meta: MetaService = new MetaService('EarnCodeGroup');
-      const field = 'jobOrders(id,title,status)';
-      const res = meta.getSubFields(field);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('title');
-      expect(res[2]).toBe('status');
-    });
-    it('should return array of fields case 1', () => {
-      const meta: MetaService = new MetaService('EarnCodeGroup');
-      const field = 'jobOrders(id,title,status)';
-      const res = meta.getSubFields(field);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('title');
-      expect(res[2]).toBe('status');
-    });
-    it('should return array of fields case 2', () => {
-      const meta: MetaService = new MetaService('EarnCodeGroup');
-      const field = 'jobOrders[3](id,title,status)';
-      const res = meta.getSubFields(field);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('title');
-      expect(res[2]).toBe('status');
-    });
-    it('should return array of fields case 3', () => {
-      const meta: MetaService = new MetaService('EarnCodeGroup');
-      const field = 'jobOrders{status=\'closed\'}(id,title,status)';
-      const res = meta.getSubFields(field);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('title');
-      expect(res[2]).toBe('status');
-    });
-    it('should return array of fields case 4', () => {
-      const meta: MetaService = new MetaService('EarnCodeGroup');
-      const field = 'jobOrders(id, title, status)';
-      const res = meta.getSubFields(field);
-      expect(res[0]).toBe('id');
-      expect(res[1]).toBe('title');
-      expect(res[2]).toBe('status');
-    });
-    it('should return array of fields case 5', () => {
-      const meta: MetaService = new MetaService('EarnCodeGroup');
-      const fields = 'businessSectors[3](name,id){name=\'Insurance\'},category';
-      const res = meta.getSubFields(fields);
-      expect(res[0]).toBe('name');
-      expect(res[1]).toBe('id');
+      const associatedEntity = { fields: [{ name: 'id' }] };
+      meta.memory = {
+        id: { name: 'id' },
+        candidate: { name: 'candidate', associatedEntity },
+        jobOrder: { name: 'jobOrder', associatedEntity },
+      };
+      const fields = ['id', 'payRate', 'candidate(id,name,address)', 'jobOrder(id,status,title)'];
+      const res = meta.missing(fields);
+      expect(res[0]).toBe('payRate');
+      expect(res[1]).toBe('candidate(name,address)');
+      expect(res[2]).toBe('jobOrder(status,title)');
     });
   });
 

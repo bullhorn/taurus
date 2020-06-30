@@ -1,8 +1,7 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { Cache } from '../utils';
+import { Cache, missingSubFields } from '../utils';
 import { BullhornMetaResponse, FieldMap, FieldLayout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
-
 /**
  * A Class that defines the base Meta Model
  * @param endpoint - Base Url for all relative http calls eg. 'meta/JobOrder'
@@ -105,7 +104,7 @@ export class MetaService {
       await this.get(['*']);
       return this.tracks;
     }
-      return this.tracks;
+    return this.tracks;
   }
 
   /**
@@ -117,7 +116,7 @@ export class MetaService {
       await this.get(['*']);
       return this.fields;
     }
-      return this.fields;
+    return this.fields;
   }
 
   async getAllLayouts(): Promise<any[]> {
@@ -177,8 +176,8 @@ export class MetaService {
     if (result && result.fields) {
       for (const field of result.fields) {
         if (
-          !this.memory.hasOwnProperty(field.name)
-          && !['label', 'http', 'memory', 'fields', 'layouts', 'tracks', 'sectionHeaders', 'trackTrigger', 'allFieldsLoaded', 'parameters'].includes(field.name)
+          !this.memory.hasOwnProperty(field.name) &&
+          !['label', 'http', 'memory', 'fields', 'layouts', 'tracks', 'sectionHeaders', 'trackTrigger', 'allFieldsLoaded', 'parameters'].includes(field.name)
         ) {
           Object.defineProperty(this, field.name, {
             get() {
@@ -250,7 +249,7 @@ export class MetaService {
     Cache.put(this.endpoint, result);
   }
 
-  private missing(fields): string[] {
+  public missing(fields): string[] {
     if (!this.memory) {
       return fields;
     }
@@ -262,31 +261,21 @@ export class MetaService {
       const cleaned: string = this._clean(field);
       const meta: any = this.memory[cleaned];
       if (!meta) {
-        result.push(cleaned);
-      } else if (
-        meta.dataSpecialization === 'INLINE_EMBEDDED'
-        && meta.associatedEntity
-        && meta.associatedEntity.fields
-        && this.getSubFields(field).some(subField => !meta.associatedEntity.fields.find(aef => aef.name === subField))) {
-        result.push(cleaned);
+        // We can't push `cleaned` field because that wouldn't request subField
+        result.push(field);
+      } else if (meta.associatedEntity) {
+        // Filter out any existing associatedEntity fields
+        const found = missingSubFields(field, meta);
+        if (found) {
+          result.push(found);
+        }
       }
     }
     return result;
   }
 
   _clean(name): string {
-    return name
-      .split('.')[0]
-      .split('[')[0]
-      .split('(')[0];
-  }
-
-  getSubFields(field: string): string[] {
-    return field
-      // Remove spaces, [] and {} bracket contents from fields if present
-      .replace(/\s|(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
-      .match(/(?:\(([^)]*)\))/gi)[0]
-      .match(/[^,\(\)]+/gi) || [];
+    return name.split('.')[0].split('[')[0].split('(')[0];
   }
 
   /**
