@@ -148,15 +148,17 @@ export class Staffing {
         return response;
       },
       async (error: AxiosError) => {
-        // Tracking
-        const errorResponse: AxiosResponse = error.response;
-        const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
-        if (Staffing.trackingCallback && timing) {
-          Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
-        }
-        // Check if Unauthorized Error
-        if (error.response.status === 401) {
-          Staffing.unauthorized.next(error);
+        if (error && error.response) {
+          // Tracking
+          const errorResponse: AxiosResponse = error.response;
+          const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
+          if (Staffing.trackingCallback && timing) {
+            Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+          }
+          // Check if Unauthorized Error
+          if (error.response.status === 401) {
+            Staffing.unauthorized.next(error);
+          }
         }
         return Promise.reject(error);
       },
