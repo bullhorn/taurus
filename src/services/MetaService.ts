@@ -1,8 +1,7 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { Cache } from '../utils';
+import { Cache, missingSubFields } from '../utils';
 import { BullhornMetaResponse, FieldMap, FieldLayout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
-
 /**
  * A Class that defines the base Meta Model
  * @param endpoint - Base Url for all relative http calls eg. 'meta/JobOrder'
@@ -105,7 +104,7 @@ export class MetaService {
       await this.get(['*']);
       return this.tracks;
     }
-      return this.tracks;
+    return this.tracks;
   }
 
   /**
@@ -117,7 +116,7 @@ export class MetaService {
       await this.get(['*']);
       return this.fields;
     }
-      return this.fields;
+    return this.fields;
   }
 
   async getAllLayouts(): Promise<any[]> {
@@ -177,8 +176,8 @@ export class MetaService {
     if (result && result.fields) {
       for (const field of result.fields) {
         if (
-          !this.memory.hasOwnProperty(field.name)
-          && !['label', 'http', 'memory', 'fields', 'layouts', 'tracks', 'sectionHeaders', 'trackTrigger', 'allFieldsLoaded', 'parameters'].includes(field.name)
+          !this.memory.hasOwnProperty(field.name) &&
+          !['label', 'http', 'memory', 'fields', 'layouts', 'tracks', 'sectionHeaders', 'trackTrigger', 'allFieldsLoaded', 'parameters'].includes(field.name)
         ) {
           Object.defineProperty(this, field.name, {
             get() {
@@ -197,6 +196,13 @@ export class MetaService {
         const exists = this.fields.find((f: any) => f.name === field.name);
         if (!exists) {
           this.fields.push(field);
+        } else if (field.associatedEntity && field.associatedEntity.fields) {
+          for (const assocEntityField of field.associatedEntity.fields) {
+            const assocEntityFieldExists = exists.associatedEntity.fields.find((f: { name: string }) => f.name === assocEntityField.name);
+            if (!assocEntityFieldExists) {
+              exists.associatedEntity.fields.push(assocEntityField);
+            }
+          }
         }
         if (typeof field !== 'string') {
           this.memory[field.name] = field;
@@ -243,7 +249,7 @@ export class MetaService {
     Cache.put(this.endpoint, result);
   }
 
-  private missing(fields): string[] {
+  public missing(fields): string[] {
     if (!this.memory) {
       return fields;
     }
@@ -255,17 +261,21 @@ export class MetaService {
       const cleaned: string = this._clean(field);
       const meta: any = this.memory[cleaned];
       if (!meta) {
-        result.push(cleaned);
+        // We can't push `cleaned` field because that wouldn't request subField
+        result.push(field);
+      } else if (meta.associatedEntity) {
+        // Filter out any existing associatedEntity fields
+        const found = missingSubFields(field, meta);
+        if (found) {
+          result.push(found);
+        }
       }
     }
     return result;
   }
 
   _clean(name): string {
-    return name
-      .split('.')[0]
-      .split('[')[0]
-      .split('(')[0];
+    return name.split('.')[0].split('[')[0].split('(')[0];
   }
 
   /**
