@@ -197,6 +197,13 @@ export class MetaService {
         const exists = this.fields.find((f: any) => f.name === field.name);
         if (!exists) {
           this.fields.push(field);
+        } else if (field.associatedEntity && field.associatedEntity.fields) {
+          for (const assocEntityField of field.associatedEntity.fields) {
+            const assocEntityFieldExists = exists.associatedEntity.fields.find((f: { name: string }) => f.name === assocEntityField.name);
+            if (!assocEntityFieldExists) {
+              exists.associatedEntity.fields.push(assocEntityField);
+            }
+          }
         }
         if (typeof field !== 'string') {
           this.memory[field.name] = field;
@@ -256,6 +263,12 @@ export class MetaService {
       const meta: any = this.memory[cleaned];
       if (!meta) {
         result.push(cleaned);
+      } else if (
+        meta.dataSpecialization === 'INLINE_EMBEDDED'
+        && meta.associatedEntity
+        && meta.associatedEntity.fields
+        && this.getSubFields(field).some(subField => !meta.associatedEntity.fields.find(aef => aef.name === subField))) {
+        result.push(cleaned);
       }
     }
     return result;
@@ -266,6 +279,14 @@ export class MetaService {
       .split('.')[0]
       .split('[')[0]
       .split('(')[0];
+  }
+
+  getSubFields(field: string): string[] {
+    return field
+      // Remove spaces, [] and {} bracket contents from fields if present
+      .replace(/\s|(\{[^\}]*?\})|(\[[^\]]*?\])/gi, '')
+      .match(/(?:\(([^)]*)\))/gi)[0]
+      .match(/[^,\(\)]+/gi) || [];
   }
 
   /**
