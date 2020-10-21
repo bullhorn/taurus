@@ -120,6 +120,15 @@ export class MetaService {
       return this.fields;
   }
 
+  async getFieldsAsRecord(): Promise<Record<string, FieldMap>> {
+    return (await this.getFields()).reduce((obj, item) => {
+      return {
+        ...obj,
+        [item.name]: item,
+      };
+    }, {});
+  }
+
   async getAllLayouts(): Promise<any[]> {
     await this.initialized;
     if (this.allFieldsLoaded) {
