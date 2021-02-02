@@ -1,8 +1,8 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { BullhornListResponse, BullhornMetaResponse } from '../types';
+import { BullhornListResponse } from '../types';
+import { MetaService } from './MetaService';
 import { Staffing } from './Staffing';
 import { Where } from './Where';
-import { MetaService } from './MetaService';
 
 /**
  * A base class for making Query calls via Rest
@@ -43,11 +43,10 @@ export class QueryService<T> {
   }
 
   get total(): Promise<number> {
-    // tslint:disable-next-line:promise-function-async
     return (async () => {
       await this.initialized;
       if (this._lastResponse && this._lastResponse.total) {
-        return Promise.resolve(this._lastResponse.total);
+        return this._lastResponse.total;
       }
       return this.http
         .get(this.endpoint, { params: { fields: 'id', count: 0, ...this.parameters } })
@@ -58,11 +57,11 @@ export class QueryService<T> {
     })();
   }
 
-  get snapshot(): BullhornListResponse<T> {
+  get snapshot() {
     return this._lastResponse;
   }
 
-  fields(...args) {
+  fields(...args: string[][]) {
     this.parameters.fields = args[0] instanceof Array ? args[0] : args;
     return this;
   }
@@ -70,10 +69,10 @@ export class QueryService<T> {
     this.parameters.orderBy = args[0] instanceof Array ? args[0] : args;
     return this;
   }
-  where(value: any) {
+  where(value: {}) {
     return this.query(Where.toQuerySyntax(value));
   }
-  query(value: any) {
+  query(value: string) {
     this.parameters.where = value;
     return this;
   }
@@ -86,7 +85,7 @@ export class QueryService<T> {
     this.parameters.start = this.parameters.count * value;
     return this;
   }
-  async nextpage(): Promise<BullhornListResponse<T>> {
+  nextpage(): Promise<BullhornListResponse<T>> {
     return this.page(++this._page).run(true);
   }
   params(object) {
@@ -96,23 +95,31 @@ export class QueryService<T> {
   async get(add): Promise<BullhornListResponse<T>> {
     return this.run(add);
   }
-  async run(add): Promise<BullhornListResponse<T>> {
+  async run(add: boolean): Promise<BullhornListResponse<T>> {
     await this.initialized;
-    return Promise.all([this.http.get(this.endpoint, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)])
-      .then(([response, metadata]) => [response.data, metadata])
-      .then(([result, metadata]: [BullhornListResponse<T>, BullhornMetaResponse]) => {
-        this._lastResponse = result;
-        const records = result.data;
-        if (add) {
-          this.records = this.records.concat(records);
-        } else {
-          this.records = records;
-        }
-        result.meta = metadata;
-        return result;
-      });
+    const [response, metadata] = await Promise.all([this.httpGet(this.parameters), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
+    const result = response.data;
+
+    // TODO look at what was asked and what is return. And ask for more
+    const needMore = (this.parameters.count - result.count > 0) && this.parameters.fields.includes('billingCalendarInstances') && this.parameters.count === 500;
+    if (needMore) {
+      const response2 = await this.httpGet({ ...this.parameters, ...{ start: this.parameters.start + result.count } });
+      result.data = result.data.concat(response2.data.data);
+    }
+
+    this._lastResponse = result;
+    if (add) {
+      this.records = this.records.concat(result.data);
+    } else {
+      this.records = result.data;
+    }
+    result.meta = metadata;
+    return result;
   }
-  async then(done: any, fail?: any): Promise<any> {
+  private httpGet(params) {
+    return this.http.get(this.endpoint, { params });
+  }
+  then(done: any, fail?: any) {
     return this.run(false).then(done, fail);
   }
 }

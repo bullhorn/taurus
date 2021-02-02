@@ -32,7 +32,7 @@
     "rxjs": ">=6"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "localforage": "1.7.3",
     "uuid-random": "1.0.9"
   },
