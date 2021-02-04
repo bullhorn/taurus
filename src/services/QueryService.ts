@@ -10,14 +10,15 @@ import { Where } from './Where';
 export class QueryService<T> {
   public http: AxiosInstance;
   public meta: MetaService;
-  public records: any[] = [];
-  public parameters: any = {
+  public records = [];
+  public parameters: { fields, orderBy?: string[], start: number, count: number, where?: string, layout?: string, sort?, query?} = {
     fields: ['id'],
     orderBy: ['-dateAdded'],
     start: 0,
     count: 10,
   };
-  protected _page: number = 0;
+  protected _page = 0;
+  private readonly MAX_RECORDS = 500;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<T>;
   private readonly initialized: Promise<unknown>;
@@ -26,12 +27,12 @@ export class QueryService<T> {
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
    */
-  constructor(public entity: string, callingIdentifier: string = '') {
+  constructor(public entity: string, callingIdentifier = '') {
     this.initialized = this.initialize(callingIdentifier);
     this.meta = new MetaService(entity, callingIdentifier);
   }
 
-  async initialize(callingIdentifier: string = '') {
+  async initialize(callingIdentifier = '') {
     this.http = await Staffing.http(callingIdentifier);
   }
 
@@ -99,14 +100,13 @@ export class QueryService<T> {
     await this.initialized;
     const [response, metadata] = await Promise.all([this.httpGet(this.parameters), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
     const result = response.data;
-
-    // TODO look at what was asked and what is return. And ask for more
-    const needMore = (this.parameters.count - result.count > 0) && this.parameters.fields.includes('billingCalendarInstances') && this.parameters.count === 500;
-    if (needMore) {
-      const response2 = await this.httpGet({ ...this.parameters, ...{ start: this.parameters.start + result.count } });
-      result.data = result.data.concat(response2.data.data);
+    if (this.shouldPullMoreRecords(result)) {
+      const recursiveData = await this.recursiveQueryPull(result);
+      result.data = result.data.concat(recursiveData);
     }
+    result.count = result.data.length;
 
+    console.log(result);
     this._lastResponse = result;
     if (add) {
       this.records = this.records.concat(result.data);
@@ -116,9 +116,41 @@ export class QueryService<T> {
     result.meta = metadata;
     return result;
   }
+
+  private async recursiveQueryPull({ count = 0, data = [], start = 0, total = 0 }) {
+    const [nextStart, nextCount] = this.getNext(start, count);
+    // console.log('--> start:%s  count:%s', nextStart, nextCount);
+    const response = await this.httpGet({ ...this.parameters, ...{ start: nextStart, count: nextCount } });
+    if (this.shouldPullMoreRecords(response.data)) {
+      const nextData = await this.recursiveQueryPull(response.data);
+      response.data.data = response.data.data.concat(nextData);
+    }
+    console.log(response.data.data);
+    return response.data.data;
+  }
+
+  private shouldPullMoreRecords({ count = 0, data = [], start = 0, total = 0 }) {
+    if (!this.parameters.fields.includes('billingCalendarInstances') || this.parameters.count !== this.MAX_RECORDS || (start === 0 && count === 25)) {
+      return 0;
+    }
+    const [nextStart, nextCount] = this.getNext(start, count);
+    if (nextStart < total && count !== 0) {
+      return nextCount;
+    }
+    return 0;
+  }
+
+  private getNext(start: number, count: number) {
+    const nextStart = start + count;
+    const alreadyFetchRecord = nextStart - this.parameters.start;
+    const nextCount = this.MAX_RECORDS - alreadyFetchRecord;
+    return [nextStart, nextCount];
+  }
+
   private httpGet(params) {
     return this.http.get(this.endpoint, { params });
   }
+
   then(done: any, fail?: any) {
     return this.run(false).then(done, fail);
   }
