@@ -130,7 +130,7 @@ export class QueryService<T> {
   }
 
   private shouldPullMoreRecords({ count = 0, data = [], start = 0, total = 0 }) {
-    if (!this.parameters.fields.includes('billingCalendarInstances') || this.parameters.count !== this.MAX_RECORDS || (start === 0 && count === 25)) {
+    if (this.parameters.count !== this.MAX_RECORDS || (start === 0 && count === 25)) {
       return 0;
     }
     const [nextStart, nextCount] = this.getNext(start, count);
