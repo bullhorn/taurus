@@ -106,7 +106,6 @@ export class QueryService<T> {
     }
     result.count = result.data.length;
 
-    console.log(result);
     this._lastResponse = result;
     if (add) {
       this.records = this.records.concat(result.data);
