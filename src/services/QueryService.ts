@@ -8,10 +8,10 @@ import { Where } from './Where';
  * A base class for making Query calls via Rest
  */
 export class QueryService<T> {
-  public http: AxiosInstance;
-  public meta: MetaService;
-  public records = [];
-  public parameters: { fields, orderBy?: string[], start: number, count: number, where?: string, layout?: string, sort?, query?} = {
+  http: AxiosInstance;
+  meta: MetaService;
+  records = [];
+  parameters: { fields; orderBy?: string[]; start: number; count: number; where?: string; layout?: string; sort?; query?} = {
     fields: ['id'],
     orderBy: ['-dateAdded'],
     start: 0,
@@ -115,7 +115,7 @@ export class QueryService<T> {
     return result;
   }
 
-  private async recursiveQueryPull({ count = 0, data = [], start = 0, total = 0 }) {
+  private async recursiveQueryPull({ count = 0, start = 0 }) {
     const [nextStart, nextCount] = this.getNext(start, count);
     const response = await this.httpGet({ ...this.parameters, ...{ start: nextStart, count: nextCount } });
     if (this.shouldPullMoreRecords(response.data)) {
@@ -125,12 +125,9 @@ export class QueryService<T> {
     return response.data.data;
   }
 
-  private shouldPullMoreRecords({ count = 0, data = [], start = 0, total = 0 }) {
+  private shouldPullMoreRecords({ count = 0, start = 0, total = 0 }) {
     const [nextStart, nextCount] = this.getNext(start, count);
-    if (nextStart < total && count !== 0) {
-      return nextCount;
-    }
-    return 0;
+    return (nextStart < total && count !== 0) ? nextCount : 0;
   }
 
   private getNext(start: number, count: number) {
