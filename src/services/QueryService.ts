@@ -136,8 +136,8 @@ export class QueryService<T> {
 
   private getNext(start: number, count: number) {
     const nextStart = start + count;
-    const alreadyFetchRecord = nextStart - this.parameters.start;
-    const nextCount = this.MAX_RECORDS - alreadyFetchRecord;
+    const alreadyFetched = nextStart - this.parameters.start;
+    const nextCount = this.parameters.count - alreadyFetched;
     return [nextStart, nextCount];
   }
 
