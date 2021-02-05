@@ -85,14 +85,14 @@ export class QueryService<T> {
     this.parameters.start = this.parameters.count * value;
     return this;
   }
-  nextpage(): Promise<BullhornListResponse<T>> {
+  nextpage() {
     return this.page(++this._page).run(true);
   }
   params(object) {
     this.parameters = { ...this.parameters, ...object };
     return this;
   }
-  async get(add): Promise<BullhornListResponse<T>> {
+  get(add) {
     return this.run(add);
   }
   async run(add: boolean): Promise<BullhornListResponse<T>> {
