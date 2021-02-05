@@ -1,9 +1,9 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs';
-import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
+import uuid from 'uuid-random';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
-import uuid from 'uuid-random';
+import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 
 const getCookie = (cname: string) => {
   // tslint:disable-next-line:no-typeof-undefined
@@ -44,7 +44,7 @@ const getCookie = (cname: string) => {
  * ```
  */
 export class Staffing {
-  public static unauthorized: Subject<any> = new Subject();
+  public static unauthorized = new Subject();
   private static _http: AxiosInstance = axios.create({
     paramsSerializer: (params: any) => {
       return QueryString.stringify(params);
@@ -174,8 +174,8 @@ export class Staffing {
         config.params = {};
       }
       config.params.uniqueCallId = uuid();
-       if (callingIdentifier !== '') {
-         config.params.highLevelCallStack = callingIdentifier;
+      if (callingIdentifier !== '') {
+        config.params.highLevelCallStack = callingIdentifier;
       }
       return config;
     });

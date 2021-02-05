@@ -1,7 +1,7 @@
-import { Observable, Observer, of, combineLatest } from 'rxjs';
+import { combineLatest, Observable, Observer, of } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
-import { getOrCreateObservable } from './EntityOptions';
 import { is } from '../utils';
+import { getOrCreateObservable } from './EntityOptions';
 
 export interface SerializedListOptions {
   [key: string]: any;
