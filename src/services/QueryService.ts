@@ -119,20 +119,15 @@ export class QueryService<T> {
 
   private async recursiveQueryPull({ count = 0, data = [], start = 0, total = 0 }) {
     const [nextStart, nextCount] = this.getNext(start, count);
-    // console.log('--> start:%s  count:%s', nextStart, nextCount);
     const response = await this.httpGet({ ...this.parameters, ...{ start: nextStart, count: nextCount } });
     if (this.shouldPullMoreRecords(response.data)) {
       const nextData = await this.recursiveQueryPull(response.data);
       response.data.data = response.data.data.concat(nextData);
     }
-    console.log(response.data.data);
     return response.data.data;
   }
 
   private shouldPullMoreRecords({ count = 0, data = [], start = 0, total = 0 }) {
-    if (this.parameters.count !== this.MAX_RECORDS || (start === 0 && count === 25)) {
-      return 0;
-    }
     const [nextStart, nextCount] = this.getNext(start, count);
     if (nextStart < total && count !== 0) {
       return nextCount;
