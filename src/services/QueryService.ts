@@ -18,7 +18,6 @@ export class QueryService<T> {
     count: 10,
   };
   protected _page = 0;
-  private readonly MAX_RECORDS = 500;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<T>;
   private readonly initialized: Promise<unknown>;
@@ -145,7 +144,7 @@ export class QueryService<T> {
     return this.http.get(this.endpoint, { params });
   }
 
-  then(done: any, fail?: any) {
+  then(done, fail?) {
     return this.run(false).then(done, fail);
   }
 }
