@@ -53,14 +53,14 @@ export class OptionsService {
     this.parameters.start = this.parameters.count * value;
     return this;
   }
-  nextpage() {
+  async nextpage() {
     return this.page(++this._page).run(true);
   }
   params(object) {
     this.parameters = { ...this.parameters, ...object };
     return this;
   }
-  get(add) {
+  async get(add) {
     return this.run(add);
   }
   async run(add): Promise<BullhornListResponse<FieldMapOption>> {
@@ -82,7 +82,7 @@ export class OptionsService {
         return message;
       });
   }
-  then(done, fail?) {
+  async then(done, fail?) {
     return this.run(false).then(done, fail);
   }
 }
