@@ -1,10 +1,10 @@
-import { BullhornListResponse } from './../types/Responses';
-import { StatefulSubject } from './StatefulSubject';
-import { Entity } from './Entity';
-import { QueryService, SearchService } from '../services';
-import { EntityListOptions, observeListOptions } from './EntityListOptions';
 import { EntityMessageBroker } from '../broker';
+import { QueryService, SearchService } from '../services';
 import { is } from '../utils';
+import { BullhornListResponse } from './../types/Responses';
+import { Entity } from './Entity';
+import { EntityListOptions, observeListOptions } from './EntityListOptions';
+import { StatefulSubject } from './StatefulSubject';
 
 export type EntityListReference<T> = SearchService<T> | QueryService<T>;
 export type EntityOperation = number | Entity<any>;
@@ -17,7 +17,7 @@ export interface ListResults {
 }
 
 export class EntityList<T> extends StatefulSubject<T[]> {
-  static useSearch: boolean = false;
+  static useSearch = false;
   // Name of Entity
   public type: string;
   public descriptor: any;
@@ -26,7 +26,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
   private readonly $list: EntityListReference<T>;
   protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
 
-  constructor(type: string, options: EntityListOptions = {}, state?: T[], callingIdentifier: string = '') {
+  constructor(type: string, options: EntityListOptions = {}, state?: T[], callingIdentifier = '') {
     super(state);
     this.type = type;
     this.$ref = new Entity<T>(this.type, {} as T);
@@ -76,7 +76,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
     this._setUpObservable();
   }
 
-  protected getSearcher(type: string, callingIdentifier: string = ''): EntityListReference<T> {
+  protected getSearcher(type: string, callingIdentifier = ''): EntityListReference<T> {
     if (['Candidate', 'ClientContact', 'ClientCorporation', 'JobOrder', 'Lead', 'Opportunity', 'Placement', 'JobSubmission', 'Note', 'UserMessage'].indexOf(type) >= 0) {
       return new SearchService(this.type, callingIdentifier);
     }
@@ -87,7 +87,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
     return this.$ref;
   }
 
-  get info(): any {
+  get info() {
     return {
       total: this.$latest.total,
       messages: this.$latest.messages,
