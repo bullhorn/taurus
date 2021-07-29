@@ -120,6 +120,10 @@ export class Where {
       const value = data[key];
       if (key === 'or') {
         queries.push(`(${Where.toQuerySyntax(value).replace(/ AND /g, ' OR ')})`);
+      } else if (key === 'groupedOr' && Array.isArray(value) && value.length > 0) {
+        queries.push(`(${value.map((group) => {
+          return `(${Where.toQuerySyntax(group)})`;
+        }).join(' OR ')})`);
       } else if (key === 'orMinMax') {
         for (const subkey of Object.keys(value)) {
           queries.push(`(${Where.parseQueryValue(subkey, value[subkey])})`);
