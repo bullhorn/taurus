@@ -110,6 +110,43 @@ describe('Where', () => {
     });
   });
 
+  describe('with groupedOr queries', () => {
+    it('should create a valid grouped OR query', () => {
+      const where = Where.toQuerySyntax({
+        title: 'Mr. President',
+        groupedOr: [{
+          firstName: 'Abe',
+          lastName: 'Lincoln',
+        }, {
+          owner: {
+            firstName: 'Abe',
+            lastName: 'Lincoln',
+          },
+        }]
+      });
+
+      expect(where).toEqual("title='Mr. President' AND ((firstName='Abe' AND lastName='Lincoln') OR (owner.firstName='Abe' AND owner.lastName='Lincoln'))");
+    });
+    it('should create a valid OR query with 3 or more grouped or conditions', () => {
+      const where = Where.toQuerySyntax({
+        groupedOr: [{
+          firstName: 'Abe',
+          lastName: 'Lincoln',
+          title: 'Mr. President',
+        }, {
+          owner: {
+            firstName: 'Abe',
+            lastName: 'Lincoln',
+          },
+        }, {
+          externalID: 'testID',
+        }]
+      });
+
+      expect(where).toEqual("((firstName='Abe' AND lastName='Lincoln' AND title='Mr. President') OR (owner.firstName='Abe' AND owner.lastName='Lincoln') OR (externalID='testID'))");
+    });
+  });
+
   describe('with OR min/max queries', () => {
     it('should create a valid nested OR min/max query', () => {
       const where = Where.toQuerySyntax({

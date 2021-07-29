@@ -4,7 +4,7 @@
 
 ---
 
-[![Build Status](https://travis-ci.org/bullhorn/taurus.svg?branch=master)](https://travis-ci.org/bullhorn/taurus)
+[![Build Status](https://travis-ci.com/bullhorn/taurus.svg?branch=master)](https://travis-ci.com/bullhorn/taurus)
 [![Dependency Status](https://dependencyci.com/github/bullhorn/taurus/badge)](https://dependencyci.com/github/bullhorn/taurus)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![npm version](https://badge.fury.io/js/%40bullhorn%2Ftaurus.svg)](https://badge.fury.io/js/%40bullhorn%2Ftaurus)
