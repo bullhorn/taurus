@@ -57,7 +57,6 @@
     "semantic-release": "^17.3.8",
     "sinon": "9.2.4",
     "temp-dir": "^1.0.0",
-    "travis-deploy-once": "^4.3.2",
     "ts-jest": "^22.4.0",
     "ts-node": "~9.1.1",
     "tslib": "^1.10.0",
@@ -74,8 +73,6 @@
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "semantic-release": "semantic-release",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
-    "travis-deploy-once": "travis-deploy-once",
-    "snapshot-publish": "bash snapshot-publish"
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html"
   }
 }

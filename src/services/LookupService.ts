@@ -7,6 +7,7 @@ export interface LookupOptions {
   filter?: string;
   count?: number;
   isCountPerEntity?: boolean;
+  start?: number;
 }
 
 /**

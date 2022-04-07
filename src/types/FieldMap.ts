@@ -41,6 +41,7 @@ export interface FieldMap {
   interactions?: any[];
   defaultValue?: any;
   systemRequired?: boolean;
+  disabled?: boolean;
 }
 
 export interface FieldLayout {
