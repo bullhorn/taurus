@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs';
-import uuidv4 from "@bundled-es-modules/uuid/v4.js";
+import uuidv4 from '@bundled-es-modules/uuid/v4.js';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
