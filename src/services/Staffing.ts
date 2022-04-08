@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs';
-import uuid from 'uuid-random';
+import uuidv4 from '@bundled-es-modules/uuid/v4.js';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
 import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
@@ -173,7 +173,7 @@ export class Staffing {
       if (!config.params) {
         config.params = {};
       }
-      config.params.uniqueCallId = uuid();
+      config.params.uniqueCallId = uuidv4();
       if (callingIdentifier !== '') {
         config.params.highLevelCallStack = callingIdentifier;
       }
