@@ -17,7 +17,7 @@
 
 - **Authentication** - built-in authentication functionality.
 - **Realtime bindings** - Synchronize database collections as objects or lists.
-- **Note** - Taurus is designed for use only in client side environments
+- **Note** - Taurus is designed for use only in client side environments.
 
 ## Install
 
