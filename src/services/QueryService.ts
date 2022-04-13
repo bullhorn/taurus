@@ -116,7 +116,7 @@ export class QueryService<T> {
   }
 
   private async recursiveQueryPull({ count = 0, start = 0 }) {
-    const { nextStart, nextCount } = this.getNext(start, count);
+    const [nextStart, nextCount] = this.getNext(start, count);
     const response = await this.httpGet({ ...this.parameters, ...{ start: nextStart, count: nextCount } });
     if (this.shouldPullMoreRecords(response.data)) {
       const nextData = await this.recursiveQueryPull(response.data);
@@ -126,9 +126,9 @@ export class QueryService<T> {
   }
 
   private shouldPullMoreRecords({ count = 0, start = 0, total = 0 }) {
-    const { nextStart, nextCount, alreadyFetched } = this.getNext(start, count);
+    const [nextStart, nextCount] = this.getNext(start, count);
     if (!this.parameters.showTotalMatched) {
-      return (alreadyFetched < this.parameters.count && count !== 0) ? nextCount : 0;
+      return (count === 0) ? false : (nextCount > 0);
     }
     return (nextStart < total && count !== 0) ? nextCount : 0;
   }
@@ -137,7 +137,7 @@ export class QueryService<T> {
     const nextStart = start + count;
     const alreadyFetched = nextStart - this.parameters.start;
     const nextCount = this.parameters.count - alreadyFetched;
-    return { nextStart, nextCount, alreadyFetched };
+    return [nextStart, nextCount];
   }
 
   private async httpGet(params) {
