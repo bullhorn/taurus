@@ -11,7 +11,7 @@ export class QueryService<T> {
   http: AxiosInstance;
   meta: MetaService;
   records = [];
-  parameters: { fields; orderBy?: string[]; start: number; count: number; where?: string; layout?: string; sort?; query?} = {
+  parameters: { fields; orderBy?: string[]; start: number; count: number; where?: string; layout?: string; sort?; query?; showTotalMatched?: boolean} = {
     fields: ['id'],
     orderBy: ['-dateAdded'],
     start: 0,
@@ -127,6 +127,9 @@ export class QueryService<T> {
 
   private shouldPullMoreRecords({ count = 0, start = 0, total = 0 }) {
     const [nextStart, nextCount] = this.getNext(start, count);
+    if (!this.parameters.showTotalMatched) {
+      return (count === 0) ? false : (nextCount > 0);
+    }
     return (nextStart < total && count !== 0) ? nextCount : 0;
   }
 
