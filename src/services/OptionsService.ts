@@ -7,13 +7,13 @@ import { Staffing } from './Staffing';
  */
 export class OptionsService {
   public http: AxiosInstance;
-  public records: any[] = [];
+  public records = [];
   public parameters: any = {
     filter: undefined,
     start: 0,
     count: 10,
   };
-  protected _page: number = 0;
+  protected _page = 0;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<FieldMapOption>;
   private readonly initialized: Promise<unknown>;
@@ -29,14 +29,14 @@ export class OptionsService {
     this.http = await Staffing.http();
   }
 
-  get endpoint(): string {
+  get endpoint() {
     return this._endpoint || `options/${this.optionType}`;
   }
   set endpoint(value: string) {
     this._endpoint = value;
   }
 
-  get snapshot(): BullhornListResponse<FieldMapOption> {
+  get snapshot() {
     return this._lastResponse;
   }
 
@@ -53,14 +53,14 @@ export class OptionsService {
     this.parameters.start = this.parameters.count * value;
     return this;
   }
-  async nextpage(): Promise<BullhornListResponse<FieldMapOption>> {
+  async nextpage() {
     return this.page(++this._page).run(true);
   }
   params(object) {
     this.parameters = { ...this.parameters, ...object };
     return this;
   }
-  async get(add): Promise<BullhornListResponse<FieldMapOption>> {
+  async get(add) {
     return this.run(add);
   }
   async run(add): Promise<BullhornListResponse<FieldMapOption>> {
@@ -82,7 +82,7 @@ export class OptionsService {
         return message;
       });
   }
-  async then(done: any, fail?: any): Promise<any> {
+  async then(done, fail?) {
     return this.run(false).then(done, fail);
   }
 }

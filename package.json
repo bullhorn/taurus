@@ -1,6 +1,6 @@
 {
   "name": "@bullhorn/taurus",
-  "version": "3.2.0",
+  "version": "3.3.1",
   "description": "A simple client library for Bullhorn",
   "keywords": [
     "taurus",
@@ -32,14 +32,14 @@
     "rxjs": ">=6"
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "localforage": "1.7.3",
-    "uuid-random": "1.0.9"
+    "@bundled-es-modules/uuid": "^3.3.2",
+    "axios": "^0.21.1",
+    "localforage": "1.7.3"
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^1.10.0",
     "@types/jest": "^22.2.0",
-    "@types/node": "^8.10.10",
+    "@types/node": "^14.14.25",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest": "^22.4.3",
     "opn-cli": "^3.1.0",
@@ -54,17 +54,16 @@
     "rollup-plugin-typescript2": "^0.13.0",
     "rollup-plugin-uglify": "^3.0.0",
     "rxjs": "~6.4.0",
-    "semantic-release": "^15.13.2",
-    "sinon": "^4.5.0",
+    "semantic-release": "^17.3.8",
+    "sinon": "9.2.4",
     "temp-dir": "^1.0.0",
-    "travis-deploy-once": "^4.3.2",
     "ts-jest": "^22.4.0",
-    "ts-node": "~8.4.1",
+    "ts-node": "~9.1.1",
     "tslib": "^1.10.0",
     "tslint": "^5.18.0",
     "tslint-xo": "^0.7.0",
     "typedoc": "^0.11.0",
-    "typescript": "3.5.3"
+    "typescript": "4.1.5"
   },
   "scripts": {
     "build": "npm run clean && rollup -c",
@@ -74,8 +73,6 @@
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "semantic-release": "semantic-release",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
-    "travis-deploy-once": "travis-deploy-once",
-    "snapshot-publish": "bash snapshot-publish"
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html"
   }
 }

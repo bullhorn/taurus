@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
+import { BullhornMetaResponse, BullhornSectionHeader, BullhornTrack, FieldLayout, FieldMap } from '../types';
 import { Cache } from '../utils';
-import { BullhornMetaResponse, FieldMap, FieldLayout, BullhornTrack, BullhornSectionHeader } from '../types';
 import { Staffing } from './Staffing';
 
 /**
@@ -105,7 +105,7 @@ export class MetaService {
       await this.get(['*']);
       return this.tracks;
     }
-      return this.tracks;
+    return this.tracks;
   }
 
   /**
@@ -117,7 +117,16 @@ export class MetaService {
       await this.get(['*']);
       return this.fields;
     }
-      return this.fields;
+    return this.fields;
+  }
+
+  async getFieldsAsRecord(): Promise<Record<string, FieldMap>> {
+    return (await this.getFields()).reduce((obj, item) => {
+      return {
+        ...obj,
+        [item.name]: item,
+      };
+    }, {});
   }
 
   async getAllLayouts(): Promise<any[]> {

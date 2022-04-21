@@ -116,7 +116,7 @@ export class Where {
    * @param  data the object that contains query string name value pairs
    * @return  resulting querystring
    */
-  static toQuerySyntax(data: any) {
+  static toQuerySyntax(data: {}) {
     const queries: string[] = [];
     for (const key of Object.keys(data)) {
       const value = data[key];

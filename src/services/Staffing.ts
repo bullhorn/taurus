@@ -1,9 +1,9 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs';
-import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
+import uuidv4 from '@bundled-es-modules/uuid/v4.js';
 import { StaffingConfiguration } from '../types';
 import { Cache, QueryString } from '../utils';
-import uuid from 'uuid-random';
+import { RestCredentials, StaffingAuthProvider } from './StaffingAuthProvider';
 
 const getCookie = (cname: string) => {
   // tslint:disable-next-line:no-typeof-undefined
@@ -44,7 +44,7 @@ const getCookie = (cname: string) => {
  * ```
  */
 export class Staffing {
-  public static unauthorized: Subject<any> = new Subject();
+  public static unauthorized = new Subject();
   private static _http: AxiosInstance = axios.create({
     paramsSerializer: (params: any) => {
       return QueryString.stringify(params);
@@ -148,15 +148,17 @@ export class Staffing {
         return response;
       },
       async (error: AxiosError) => {
-        // Tracking
-        const errorResponse: AxiosResponse = error.response;
-        const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
-        if (Staffing.trackingCallback && timing) {
-          Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
-        }
-        // Check if Unauthorized Error
-        if (error.response.status === 401) {
-          Staffing.unauthorized.next(error);
+        if (error && error.response) {
+          // Tracking
+          const errorResponse: AxiosResponse = error.response;
+          const timing: { start: number; url: string } = (errorResponse.config as any)._timing || {};
+          if (Staffing.trackingCallback && timing) {
+            Staffing.trackingCallback(timing.url, new Date().getTime() - timing.start);
+          }
+          // Check if Unauthorized Error
+          if (error.response.status === 401) {
+            Staffing.unauthorized.next(error);
+          }
         }
         return Promise.reject(error);
       },
@@ -171,9 +173,9 @@ export class Staffing {
       if (!config.params) {
         config.params = {};
       }
-      config.params.uniqueCallId = uuid();
-       if (callingIdentifier !== '') {
-         config.params.highLevelCallStack = callingIdentifier;
+      config.params.uniqueCallId = uuidv4();
+      if (callingIdentifier !== '') {
+        config.params.highLevelCallStack = callingIdentifier;
       }
       return config;
     });

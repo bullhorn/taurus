@@ -218,7 +218,7 @@ describe('Where', () => {
 
       expect(where).toEqual("((code='testCode') OR (title>='tes' AND title<'tet'))");
     });
-  }
+  });
 
   describe('with nested queries', () => {
     it('should create a valid lucene query', () => {

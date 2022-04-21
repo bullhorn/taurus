@@ -1,4 +1,6 @@
 import { MetaService } from '../src';
+import { FieldMap } from '../lib/types';
+import { of } from 'rxjs';
 
 describe('MetaService', () => {
     describe('function: hasMemory', () => {
@@ -43,5 +45,18 @@ describe('MetaService', () => {
             const actual = meta.hasMemory();
             expect(actual).toEqual(true);
         });
+    });
+
+    describe('getFieldAsRecord', () => {
+      it('should return as a record', async() => {
+        const meta: MetaService = new MetaService('Candidate');
+        const alphaField: FieldMap = {
+          name: 'alpha',
+          label: 'Alpha'
+        };
+        spyOn(meta, 'getFields').and.returnValue(of([alphaField]).toPromise());
+        const response = await meta.getFieldsAsRecord();
+        expect(response.alpha).toBe(alphaField);
+      });
     });
 });

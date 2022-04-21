@@ -1,23 +1,23 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
-import { BullhornListResponse, BullhornMetaResponse } from '../types';
+import { BullhornListResponse } from '../types';
+import { MetaService } from './MetaService';
 import { Staffing } from './Staffing';
 import { Where } from './Where';
-import { MetaService } from './MetaService';
 
 /**
  * A base class for making Query calls via Rest
  */
 export class QueryService<T> {
-  public http: AxiosInstance;
-  public meta: MetaService;
-  public records: any[] = [];
-  public parameters: any = {
+  http: AxiosInstance;
+  meta: MetaService;
+  records = [];
+  parameters: { fields; orderBy?: string[]; start: number; count: number; where?: string; layout?: string; sort?; query?; showTotalMatched?: boolean} = {
     fields: ['id'],
     orderBy: ['-dateAdded'],
     start: 0,
     count: 10,
   };
-  protected _page: number = 0;
+  protected _page = 0;
   protected _endpoint: string;
   protected _lastResponse: BullhornListResponse<T>;
   private readonly initialized: Promise<unknown>;
@@ -26,12 +26,12 @@ export class QueryService<T> {
    * constructor description
    * @param endpoint - Base Url for all relative http calls eg. 'query/JobOrder'
    */
-  constructor(public entity: string, callingIdentifier: string = '') {
+  constructor(public entity: string, callingIdentifier = '') {
     this.initialized = this.initialize(callingIdentifier);
     this.meta = new MetaService(entity, callingIdentifier);
   }
 
-  async initialize(callingIdentifier: string = '') {
+  async initialize(callingIdentifier = '') {
     this.http = await Staffing.http(callingIdentifier);
   }
 
@@ -43,11 +43,10 @@ export class QueryService<T> {
   }
 
   get total(): Promise<number> {
-    // tslint:disable-next-line:promise-function-async
     return (async () => {
       await this.initialized;
       if (this._lastResponse && this._lastResponse.total) {
-        return Promise.resolve(this._lastResponse.total);
+        return this._lastResponse.total;
       }
       return this.http
         .get(this.endpoint, { params: { fields: 'id', count: 0, ...this.parameters } })
@@ -58,11 +57,11 @@ export class QueryService<T> {
     })();
   }
 
-  get snapshot(): BullhornListResponse<T> {
+  get snapshot() {
     return this._lastResponse;
   }
 
-  fields(...args) {
+  fields(...args: string[][]) {
     this.parameters.fields = args[0] instanceof Array ? args[0] : args;
     return this;
   }
@@ -70,10 +69,10 @@ export class QueryService<T> {
     this.parameters.orderBy = args[0] instanceof Array ? args[0] : args;
     return this;
   }
-  where(value: any) {
+  where(value: {}) {
     return this.query(Where.toQuerySyntax(value));
   }
-  query(value: any) {
+  query(value: string) {
     this.parameters.where = value;
     return this;
   }
@@ -86,33 +85,66 @@ export class QueryService<T> {
     this.parameters.start = this.parameters.count * value;
     return this;
   }
-  async nextpage(): Promise<BullhornListResponse<T>> {
+  async nextpage() {
     return this.page(++this._page).run(true);
   }
   params(object) {
     this.parameters = { ...this.parameters, ...object };
     return this;
   }
-  async get(add): Promise<BullhornListResponse<T>> {
+  async get(add) {
     return this.run(add);
   }
-  async run(add): Promise<BullhornListResponse<T>> {
+  async run(add: boolean): Promise<BullhornListResponse<T>> {
     await this.initialized;
-    return Promise.all([this.http.get(this.endpoint, { params: this.parameters }), this.meta.getFull(this.parameters.fields, this.parameters.layout)])
-      .then(([response, metadata]) => [response.data, metadata])
-      .then(([result, metadata]: [BullhornListResponse<T>, BullhornMetaResponse]) => {
-        this._lastResponse = result;
-        const records = result.data;
-        if (add) {
-          this.records = this.records.concat(records);
-        } else {
-          this.records = records;
-        }
-        result.meta = metadata;
-        return result;
-      });
+    const [response, metadata] = await Promise.all([this.httpGet(this.parameters), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
+    const result = response.data;
+    if (this.shouldPullMoreRecords(result)) {
+      const recursiveData = await this.recursiveQueryPull(result);
+      result.data = result.data.concat(recursiveData);
+    }
+    result.count = result.data.length;
+
+    this._lastResponse = result;
+    if (add) {
+      this.records = this.records.concat(result.data);
+    } else {
+      this.records = result.data;
+    }
+    result.meta = metadata;
+    return result;
   }
-  async then(done: any, fail?: any): Promise<any> {
+
+  private async recursiveQueryPull({ count = 0, start = 0 }) {
+    const [nextStart, nextCount] = this.getNext(start, count);
+    const response = await this.httpGet({ ...this.parameters, ...{ start: nextStart, count: nextCount } });
+    if (this.shouldPullMoreRecords(response.data)) {
+      const nextData = await this.recursiveQueryPull(response.data);
+      response.data.data = response.data.data.concat(nextData);
+    }
+    return response.data.data;
+  }
+
+  private shouldPullMoreRecords({ count = 0, start = 0, total = 0 }) {
+    const [nextStart, nextCount] = this.getNext(start, count);
+    if (!this.parameters.showTotalMatched) {
+      return (count === 0) ? false : (nextCount > 0);
+    }
+    return (nextStart < total && count !== 0) ? nextCount : 0;
+  }
+
+  private getNext(start: number, count: number) {
+    const nextStart = start + count;
+    const alreadyFetched = nextStart - this.parameters.start;
+    const nextCount = this.parameters.count - alreadyFetched;
+    return [nextStart, nextCount];
+  }
+
+  private async httpGet(params) {
+    return this.http.get(this.endpoint, { params });
+  }
+
+  async then(done, fail?) {
     return this.run(false).then(done, fail);
   }
 }
