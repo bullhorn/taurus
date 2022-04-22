@@ -36,9 +36,7 @@ git config user.name "$commitAuthorName"
 git config user.email "$commitAuthorEmail"
 git config credential.helper "store --file=.git/credentials"
 
-echo "GITHUB_TOKEN: ${GITHUB_TOKEN}"
-echo "API_TOKEN_GITHUB: ${API_TOKEN_GITHUB}"
-echo "https://${API_TOKEN_GITHUB}:@github.com" > .git/credentials
+echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
 
 git status
 git add -A
