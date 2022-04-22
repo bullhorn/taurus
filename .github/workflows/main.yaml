@@ -39,9 +39,10 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
         with:
           name: build-artifact
-          path: dist
+          path: lib
       - uses: bvkimball/branch-vars@1.0.1
       - env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
