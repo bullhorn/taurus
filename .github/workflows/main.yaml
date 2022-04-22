@@ -33,6 +33,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm run semantic-release
+      - uses: actions/upload-artifact@master
+        with:
+          name: build-artifact
+          path: lib
 
   publish:
     runs-on: ubuntu-latest
