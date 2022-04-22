@@ -39,7 +39,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@master
-      - uses: actions/download-artifact@master
         with:
           name: build-artifact
           path: dist
