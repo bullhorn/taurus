@@ -42,6 +42,10 @@ export interface FieldMap {
   defaultValue?: any;
   systemRequired?: boolean;
   disabled?: boolean;
+  parentEntity?;
+  showDisabledUsers?: boolean;
+  rateType?: string;
+  timeType?: string;
 }
 
 export interface FieldLayout {
