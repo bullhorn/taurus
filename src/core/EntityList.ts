@@ -69,13 +69,12 @@ export class EntityList<T> extends StatefulSubject<T[]> {
       this.$list.then((results: BullhornListResponse<T>) => {
         this.descriptor = results.meta;
         this.$latest = results;
-        if (results.timestamp) {
-          // Ignore responses that are for older requests when we have a newer completed request
-          if (results.timestamp > this.latestTimestamp) {
-            this.latestTimestamp = results.timestamp;
-            this.next(results.data);
-          }
-        } else {
+        if (!results.timestamp) {
+          return this.next(results.data);
+        }
+        // Ignore responses that are for older requests when we have a newer completed request
+        if (results.timestamp > this.latestTimestamp) {
+          this.latestTimestamp = results.timestamp;
           this.next(results.data);
         }
       }, error => {
