@@ -25,6 +25,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
   private readonly $ref: Entity<T>;
   private readonly $list: EntityListReference<T>;
   protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
+  private latestTimestamp = 0;
 
   constructor(type: string, options: EntityListOptions = {}, state?: T[], callingIdentifier = '') {
     super(state);
@@ -68,7 +69,15 @@ export class EntityList<T> extends StatefulSubject<T[]> {
       this.$list.then((results: BullhornListResponse<T>) => {
         this.descriptor = results.meta;
         this.$latest = results;
-        this.next(results.data);
+        if (results.timestamp) {
+          // Ignore responses that are for older requests when we have a newer completed request
+          if (results.timestamp > this.latestTimestamp) {
+            this.latestTimestamp = results.timestamp;
+            this.next(results.data);
+          }
+        } else {
+          this.next(results.data);
+        }
       }, error => {
         this.error(error);
       });
