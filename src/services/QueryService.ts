@@ -97,6 +97,7 @@ export class QueryService<T> {
   }
   async run(add: boolean): Promise<BullhornListResponse<T>> {
     await this.initialized;
+    const requestTimestamp = Date.now();
     const [response, metadata] = await Promise.all([this.httpGet(this.parameters), this.meta.getFull(this.parameters.fields, this.parameters.layout)]);
     const result = response.data;
     if (this.shouldPullMoreRecords(result)) {
@@ -112,6 +113,7 @@ export class QueryService<T> {
       this.records = result.data;
     }
     result.meta = metadata;
+    result.timestamp = requestTimestamp;
     return result;
   }
 
