@@ -76,6 +76,10 @@ export class QueryService<T> {
     this.parameters.where = value;
     return this;
   }
+  appendQuery(value: string) {
+    this.parameters.where = this.parameters.where?.length ? `${this.parameters.where} AND ${value}` : value;
+    return this;
+  }
   count(value: number) {
     this.parameters.count = value;
     return this;
