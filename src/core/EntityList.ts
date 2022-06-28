@@ -61,7 +61,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
               this.$list.params(params.params);
               break;
             case 'where':
-              this.$list.appendQuery(params.where);
+              this.$list.appendQuery(params.where.query);
               break;
             default:
               console.warn(`Unknown key in params: ${key}`);
