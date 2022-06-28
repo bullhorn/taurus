@@ -77,7 +77,9 @@ export class QueryService<T> {
     return this;
   }
   appendQuery(value: string) {
-    this.parameters.where = this.parameters.where?.length ? `${this.parameters.where} AND ${value}` : value;
+    if (value.length) {
+      this.parameters.where = this.parameters.where?.length ? `${this.parameters.where} AND ${value}` : value;
+    }
     return this;
   }
   count(value: number) {
