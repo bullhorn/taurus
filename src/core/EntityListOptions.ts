@@ -13,6 +13,7 @@ export interface SerializedListOptions {
   limitTo?: number;
   filter?: Object;
   params?: Object;
+  where?: { query: string; form: any };
 }
 
 export interface EntityListOptions {
@@ -25,6 +26,7 @@ export interface EntityListOptions {
   limitTo?: number | Observable<number>;
   filter?: Object | Observable<Object>;
   params?: Object | Observable<Object>;
+  where?: { query: string; form: any } | Observable<{ query: string; form: any }>;
 }
 
 // tslint:disable-next-line:only-arrow-functions
@@ -43,11 +45,12 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
       getOrCreateObservable('limitTo', options),
       getOrCreateObservable('filter', options),
       getOrCreateObservable('params', options),
+      getOrCreateObservable('where', options),
     ]);
     if (audit) {
       combined = combined.pipe(auditTime(0));
     }
-    combined.subscribe(([fields, layout, meta, orderBy, startAt, limitTo, filter, params]: [string[], string, string, string, number, number, Object, Object]) => {
+    combined.subscribe(([fields, layout, meta, orderBy, startAt, limitTo, filter, params, where]: [string[], string, string, string, number, number, Object, Object, { query: string; form: any }]) => {
       const serializedOptions: SerializedListOptions = {};
 
       if (fields !== undefined) {
@@ -80,6 +83,10 @@ export function observeListOptions(options: EntityListOptions, audit: boolean = 
 
       if (params !== undefined) {
         serializedOptions.params = params;
+      }
+
+      if (where !== undefined) {
+        serializedOptions.where = where;
       }
 
       observer.next(serializedOptions);

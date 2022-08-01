@@ -16,7 +16,9 @@ export class Where {
     const queries: string[] = [];
     for (const key of Object.keys(data)) {
       const value = data[key];
-      if (key === 'or') {
+      if (key === 'and') {
+        queries.push(`(${Where.toSearchSyntax(value)}`);
+      } else if (key === 'or') {
         queries.push(`(${Where.toSearchSyntax(value).replace(/ AND /g, ' OR ')})`);
       } else {
         queries.push(Where.parseSearchValue(key, value));
@@ -118,7 +120,9 @@ export class Where {
     const queries: string[] = [];
     for (const key of Object.keys(data)) {
       const value = data[key];
-      if (key === 'or') {
+      if (key === 'and') {
+        queries.push(`${Where.toQuerySyntax(value)}`);
+      } else if (key === 'or') {
         queries.push(`(${Where.toQuerySyntax(value).replace(/ AND /g, ' OR ')})`);
       } else if (key === 'orMinMax') {
         for (const subkey of Object.keys(value)) {
