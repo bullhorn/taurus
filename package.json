@@ -46,7 +46,7 @@
     "rollup": "^0.58.0",
     "rollup-plugin-commonjs": "^9.0.0",
     "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-license": "^0.6.0",
+    "rollup-plugin-license": "^3.0.1",
     "rollup-plugin-node-builtins": "^2.1.0",
     "rollup-plugin-node-globals": "^1.2.0",
     "rollup-plugin-node-resolve": "^3.3.0",
