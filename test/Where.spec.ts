@@ -1,6 +1,6 @@
 import { Where } from '../src/index';
 
-fdescribe('Where', () => {
+describe('Where', () => {
   describe('with simple queries', () => {
     const SIMPLE_QUERY = {
       id: 101,
