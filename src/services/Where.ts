@@ -129,6 +129,8 @@ export class Where {
           queries.push(`(${Where.parseQueryValue(subkey, value[subkey])})`);
         }
         return `(${queries.join(' OR ')})`;
+      } else if (key === 'group') {
+        queries.push(`(${Where.toQuerySyntax(value)})`);
       } else {
         queries.push(Where.parseQueryValue(key, value));
       }
