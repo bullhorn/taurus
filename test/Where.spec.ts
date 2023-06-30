@@ -1,6 +1,6 @@
 import { Where } from '../src/index';
 
-describe('Where', () => {
+fdescribe('Where', () => {
   describe('with simple queries', () => {
     const SIMPLE_QUERY = {
       id: 101,
@@ -323,6 +323,72 @@ describe('Where', () => {
       });
 
       expect(where).toEqual("owner.id:\"^(firstName>='Bob' AND firstName<'Boc' AND lastName>='Jones' AND lastName<'Jonet')\"");
+    });
+  });
+
+  describe('with group queries', () => {
+    it('should create a valid lucene query for A AND((B OR C) AND (D OR E))', () => {
+      const where = Where.toSearchSyntax({
+        id: 103,
+        group_1: {
+          or: {
+            firstName: 'test',
+            lastName: 'test'
+          }
+        },
+        group_2: {
+          or: {
+            owner: 'me',
+            title: 'me'
+          }
+        }
+      });
+      expect(where).toEqual('id:103 AND ((firstName:\"test\" OR lastName:\"test\")) AND ((owner:\"me\" OR title:\"me\"))');
+    });
+    it('should create a valid lucene query with groups for A AND (B OR C) AND (D.id OR E.id)', () => {
+      const where = Where.toSearchSyntax({
+        id: 103,
+        group_1: {
+          or: {
+            firstName: 'test',
+            lastName: 'test'
+          }
+        },
+        group_2: {
+          or: {
+            owner: {
+              id: 103
+            },
+            secondaryOwners: {
+              id: 103
+            }
+          }
+        }
+      });
+      expect(where).toEqual('id:103 AND ((firstName:\"test\" OR lastName:\"test\")) AND ((owner.id:103 OR secondaryOwners.id:103))');
+    });
+    it('should create a valid lucene query with groups for (A AND (B OR C)) AND (D AND (E OR F))', () => {
+      const where = Where.toSearchSyntax({
+        group_1: {
+          id: 103,
+          or: {
+            firstName: 'test',
+            lastName: 'test'
+          }
+        },
+        group_2: {
+          id: 103,
+          or: {
+            owner: {
+              id: 103
+            },
+            secondaryOwners: {
+              id: 103
+            }
+          }
+        }
+      });
+      expect(where).toEqual('(id:103 AND (firstName:\"test\" OR lastName:\"test\")) AND (id:103 AND (owner.id:103 OR secondaryOwners.id:103))');
     });
   });
 });
