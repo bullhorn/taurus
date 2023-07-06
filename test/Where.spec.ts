@@ -330,10 +330,10 @@ describe('Where', () => {
     it('should create a valid lucene query for A AND (B OR C) AND (D OR E)', () => {
       const where = Where.toSearchSyntax({
         id: 103,
-        $group_1: {
+        group_1: {
           startDate: { or: {max: '2022-01-01', isNull: true}},
         },
-        $group_2: {
+        group_2: {
           endDate: { or: { min: '2026-12-31', isNull: true }},
         }
       });
@@ -342,13 +342,13 @@ describe('Where', () => {
     it('should create a valid lucene query with groups for A AND (B OR C) AND (D.id OR E.id)', () => {
       const where = Where.toSearchSyntax({
         id: 103,
-        $group_1: {
+        group_1: {
           or: {
             firstName: 'test',
             lastName: 'test'
           }
         },
-        $group_2: {
+        group_2: {
           or: {
             owner: {
               id: 103
@@ -363,14 +363,14 @@ describe('Where', () => {
     });
     it('should create a valid lucene query with groups for (A AND (B OR C)) AND (D AND (E OR F))', () => {
       const where = Where.toSearchSyntax({
-        $group_1: {
+        group_1: {
           id: 103,
           or: {
             firstName: 'test',
             lastName: 'test'
           }
         },
-        $group_2: {
+        group_2: {
           id: 103,
           or: {
             owner: {
