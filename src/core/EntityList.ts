@@ -90,11 +90,11 @@ export class EntityList<T> extends StatefulSubject<T[]> {
   protected getSearcher(type: string, callingIdentifier = ''): EntityListReference<T> {
     if (['Placement'].indexOf(type) >= 0 && callingIdentifier === 'ComplianceManager') { // TODO this will be removed once Advance Search works with Searchable entities.
       return new QueryService(this.type, callingIdentifier);
-    } else if (['Candidate', 'ClientContact', 'ClientCorporation', 'JobOrder', 'Lead', 'Opportunity', 'Placement', 'JobSubmission', 'Note', 'UserMessage'].indexOf(type) >= 0) {
-      return new SearchService(this.type, callingIdentifier);
-    } else {
-      return new QueryService(this.type, callingIdentifier);
     }
+    if (['Candidate', 'ClientContact', 'ClientCorporation', 'JobOrder', 'Lead', 'Opportunity', 'Placement', 'JobSubmission', 'Note', 'UserMessage'].indexOf(type) >= 0) {
+      return new SearchService(this.type, callingIdentifier);
+    }
+    return new QueryService(this.type, callingIdentifier);
   }
 
   get lastAdded(): Entity<T> {
