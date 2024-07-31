@@ -291,10 +291,12 @@ export class MetaService {
     for (const field of fields) {
       const cleaned: string = this._clean(field);
       const meta: FieldMap = this.memory[cleaned];
-      if (meta && meta.name === 'id') {
-        result.unshift(meta);
-      } else {
-        result.push(meta);
+      if (meta !== undefined){
+        if (meta && meta.name === 'id') {
+          result.unshift(meta);
+        } else {
+          result.push(meta);
+        }
       }
     }
     return result;
