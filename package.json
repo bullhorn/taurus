@@ -34,7 +34,7 @@
   "dependencies": {
     "@bundled-es-modules/uuid": "^3.3.2",
     "axios": "^0.21.1",
-    "localforage": "1.7.3"
+    "localforage": "1.10.0"
   },
   "devDependencies": {
     "@bullhorn/bullhorn-types": "^1.10.0",
