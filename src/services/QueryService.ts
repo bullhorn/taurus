@@ -77,7 +77,7 @@ export class QueryService<T> {
     return this;
   }
   appendQuery(value: string) {
-    if (value.length) {
+    if (value?.length) {
       this.parameters.where = this.parameters.where?.length ? `${this.parameters.where} AND ${value}` : value;
     }
     return this;
