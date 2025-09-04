@@ -240,7 +240,6 @@ export class MetaService {
     if (result && result.sectionHeaders) {
       this.sectionHeaders = result.sectionHeaders;
     }
-    result.fields = keepFieldsFromLayout ? result.fields : this.fields;
     result.layouts = this.layouts;
     result.trackTrigger = this.trackTrigger;
     result.tracks = this.tracks;
@@ -248,8 +247,16 @@ export class MetaService {
 
     result.allFieldsLoaded = result.allFieldsLoaded || this.allFieldsLoaded;
     this.allFieldsLoaded = result.allFieldsLoaded;
-    // tslint:disable-next-line:no-floating-promises
-    Cache.put(this.endpoint, result);
+    if (keepFieldsFromLayout) {
+      // Save cache as separate object
+      const cacheResult = { ...result, fields: this.fields };
+      // tslint:disable-next-line:no-floating-promises
+      Cache.put(this.endpoint, cacheResult);
+    } else {
+      result.fields = this.fields;
+      // tslint:disable-next-line:no-floating-promises
+      Cache.put(this.endpoint, result);
+    }
   }
 
   private missing(fields): string[] {
