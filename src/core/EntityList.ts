@@ -1,3 +1,4 @@
+import { Observable, Subject } from 'rxjs';
 import { EntityMessageBroker } from '../broker';
 import { QueryService, SearchService } from '../services';
 import { is } from '../utils';
@@ -24,6 +25,8 @@ export class EntityList<T> extends StatefulSubject<T[]> {
   private $latest: BullhornListResponse<T>;
   private readonly $ref: Entity<T>;
   private readonly $list: EntityListReference<T>;
+  public readonly $loadError: Observable<any>;
+  private readonly loadErrorSubject = new Subject<any>();
   protected broker: EntityMessageBroker = EntityMessageBroker.getInstance();
   private latestTimestamp = 0;
 
@@ -32,6 +35,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
     this.type = type;
     this.$ref = new Entity<T>(this.type, {} as T);
     this.$list = this.getSearcher(this.type, callingIdentifier);
+    this.$loadError = this.loadErrorSubject.asObservable();
     observeListOptions(options).subscribe((params) => {
       if (params) {
         for (const key of Object.keys(params)) {
@@ -81,7 +85,7 @@ export class EntityList<T> extends StatefulSubject<T[]> {
           this.next(results.data);
         }
       }, error => {
-        this.error(error);
+        this.loadErrorSubject.next(error);
       });
     });
     this._setUpObservable();
