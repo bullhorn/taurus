@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@bundled-es-modules/uuid": "^3.3.2",
-    "axios": "^1.13.2",
+    "axios": "^0.21.1",
     "localforage": "1.7.3"
   },
   "devDependencies": {
