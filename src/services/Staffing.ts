@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Subject } from 'rxjs';
 import uuidv4 from '@bundled-es-modules/uuid/v4.js';
 import { StaffingConfiguration } from '../types';
@@ -164,7 +164,7 @@ export class Staffing {
       },
     );
     // Add a request interceptor
-    instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    instance.interceptors.request.use((config: AxiosRequestConfig) => {
       // Set a timing config so that we can track request times
       (config as any)._timing = {
         start: new Date().getTime(),
