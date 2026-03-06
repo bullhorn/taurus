@@ -10,6 +10,30 @@ export enum FieldType {
   SCALAR = 'SCALAR',
 }
 
+export enum DataType {
+  Boolean = 'Boolean',
+  String = 'String',
+  Integer = 'Integer',
+  Address = 'Address',
+  Date = 'Date',
+  AddressWithStateID = 'AddressWithStateID',
+  Timestamp = 'Timestamp',
+  Double = 'Double',
+  BigDecimal = 'BigDecimal',
+}
+
+export enum DataSpecialization {
+  SYSTEM = "SYSTEM",
+  ADDRESS_BLOCK = "ADDRESS_BLOCK",
+  DATE = "DATE",
+  DATETIME = "DATETIME",
+  FLOAT = "FLOAT",
+  HTML = "HTML",
+  INTEGER = "INTEGER",
+  MONEY = "MONEY",
+  STATE_ID = "STATE_ID"
+}
+
 export interface FieldMapOption {
   value?: any;
   label?: string;
@@ -19,8 +43,8 @@ export interface FieldMapOption {
 export interface FieldMap {
   name: string;
   type?: FieldType | string;
-  dataType?: string;
-  dataSpecialization?: string;
+  dataType?: DataType | string;
+  dataSpecialization?: DataSpecialization | string;
   maxLength?: number;
   confidential?: string;
   optional?: boolean;
@@ -42,6 +66,8 @@ export interface FieldMap {
   defaultValue?: any;
   systemRequired?: boolean;
   disabled?: boolean;
+  fields?: FieldMap[];
+  shouldAddCustomEntityLabel?: boolean;
 }
 
 export interface FieldLayout {
